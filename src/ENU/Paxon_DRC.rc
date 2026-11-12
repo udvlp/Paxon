@@ -1,0 +1,1797 @@
+/* Paxon 3.0 - resourcestrings of the language DLL (ENU, LCID 00000409). */
+/* Generated from ..\Paxon.drc. The IDs must match Paxon.exe: */
+/* regenerate after every change to resourcestrings in the main program. */
+#pragma code_page(1252)
+
+#define HostmodeDeviceU_SStart 64928
+#define HostmodeDeviceU_SReceiving 64929
+#define HostmodeDeviceU_SSwitchingToHostmode 64930
+#define HostmodeDeviceU_SErrorCount 64931
+#define DeviceSettingsU_STooManyDevices 64944
+#define DeviceSettingsU_SRemoveDeviceCaption 64945
+#define DeviceSettingsU_SRemoveDevice 64946
+#define FileSettingsU_SFolderForDownloadedFiles 64947
+#define FileSettingsU_SFolderForRemoteFiles 64948
+#define DeviceU_SStatusReady 64949
+#define DeviceU_SStatusInit 64950
+#define DeviceU_SStatusError 64951
+#define DeviceU_SStatusInactive 64952
+#define HostmodeTFWinDeviceU_SDLLNotFound 64953
+#define HostmodeTFWinDeviceU_STFOpenFailed 64954
+#define HostmodeDeviceU_SAllPortsBusy 64955
+#define HostmodeDeviceU_SIsInHostmodeSendInit 64956
+#define HostmodeDeviceU_SOpeningPort 64957
+#define HostmodeDeviceU_SFrameReject 64958
+#define HostmodeDeviceU_SStatusPrefix 64959
+#define PGPClassU_SSignatureNotChecked 64960
+#define PGPClassU_SUnknownKey 64961
+#define PGPClassU_SValidityUnknown 64962
+#define PGPClassU_SSignatureVerified 64963
+#define PGPClassU_SSignatureNotVerified 64964
+#define PGPClassU_SCreationTime 64965
+#define PGPClassU_SKeyRevoked 64966
+#define PGPClassU_SKeyDisabled 64967
+#define PGPClassU_SKeyExpired 64968
+#define PGPClassU_SSigner 64969
+#define PGPClassU_SShareError 64970
+#define PGPClassU_SKeysAdded 64971
+#define PGPClassU_SKeysNotAdded 64972
+#define GeneralSettingsU_SRowsChanged 64973
+#define DisplaySettingsU_SExampleConnectedTo 64974
+#define DisplaySettingsU_SExampleDisconnectedFrom 64975
+#define SendFileDlgU_SOnlyParts 64976
+#define SendFileDlgU_SNoParts 64977
+#define SendFileDlgU_SEditTemplates 64978
+#define SendFileDlgU_SStandardTextBeforeTemplate0 64979
+#define SendFileDlgU_SStandardTextBeforeTemplate1 64980
+#define SendFileDlgU_SStandardTextAfterTemplate0 64981
+#define SendFileDlgU_SStandardTextAfterTemplate1 64982
+#define SendFileDlgU_SStandardTextAfterTemplate2 64983
+#define SendFileDlgU_SStandardTextAfterTemplate3 64984
+#define StationDatabaseU_SErrorCannotSaveDatabase 64985
+#define StationDatabaseU_SDatabaseSaved 64986
+#define StationDatabaseU_SErrorCannotOpenDatabase 64987
+#define StationDatabaseU_SErrorDiskFull 64988
+#define StationDatabaseU_SErrorCannotCreateNewFile 64989
+#define StationDatabaseU_SCheckIncomplete 64990
+#define StationDatabaseU_SCheckRepairFile 64991
+#define ChannelU_SDateTimeFormat 64992
+#define SendFilePartsSelectionDlgU_SListItem 64993
+#define SendFileDlgU_SSendTitle 64994
+#define SendFileDlgU_SNeedPGP 64995
+#define SendFileDlgU_SReallyCancelTextInput 64996
+#define SendFileDlgU_SDescText 64997
+#define SendFileDlgU_SDescAutoBin 64998
+#define SendFileDlgU_SDescDidadit 64999
+#define SendFileDlgU_SOpenDialogFilter 65000
+#define SendFileDlgU_SOpenDialogTitle 65001
+#define SendFileDlgU_SInvalidPassword 65002
+#define SendFileDlgU_SInvalidPasswordTitle 65003
+#define SendFileDlgU_SFileOpenError 65004
+#define SendFileDlgU_SFileOpenErrorTitle 65005
+#define SendFileDlgU_SNotConnected 65006
+#define SendFileDlgU_SOnlyPart 65007
+#define ChannelU_SSaveDialogFilter 65008
+#define ChannelU_SSaveDialogTitle 65009
+#define ChannelU_SOverwriteOrAppend 65010
+#define ChannelU_SFileError 65011
+#define ChannelU_SChannel 65012
+#define ChannelU_SDay 65013
+#define ChannelU_SDays 65014
+#define ChannelU_SHour 65015
+#define ChannelU_SHours 65016
+#define ChannelU_SMinute 65017
+#define ChannelU_SMinutes 65018
+#define ChannelU_SSecond 65019
+#define ChannelU_SSeconds 65020
+#define ChannelU_SToday 65021
+#define ChannelU_SYesterday 65022
+#define ChannelU_SDateTimeHintFormat 65023
+#define ChannelU_SNoUIDestination 65024
+#define ChannelU_SNoUIMycall 65025
+#define ChannelU_SUnknownName 65026
+#define ChannelU_SName 65027
+#define ChannelU_SType 65028
+#define ChannelU_SConnectedTo 65029
+#define ChannelU_SConnectedVia 65030
+#define ChannelU_SDisconnectedFrom 65031
+#define ChannelU_SDisconnectedFromFailure 65032
+#define ChannelU_SDisconnectedFromBusy 65033
+#define ChannelU_SDisconnectedVia 65034
+#define ChannelU_SStateDisconnect 65035
+#define ChannelU_SStateDisconnected 65036
+#define ChannelU_SStateConnect 65037
+#define ChannelU_SStateConnected 65038
+#define ChannelU_SFilenameUnknown 65039
+#define ConnectionAutobinSendU_SAutobinSendOk 65040
+#define ConnectionAutobinSendU_SAutobinSendCanceled 65041
+#define ConnectionDidaditSendU_SDidaditSendOK 65042
+#define ConnectionDidaditSendU_SDidaditSendAbort 65043
+#define ConnectionDidaditReceiveU_SDidaditReceiveOk 65044
+#define ConnectionDidaditReceiveU_SDidaditReceiveAbort 65045
+#define ConnectionStandardU_SNoRemote 65046
+#define ConnectionStandardU_STooManyValues 65047
+#define ConnectionStandardU_SInvalidChars 65048
+#define ConnectionStandardU_STooShort 65049
+#define ConnectionStandardU_SNotLength1620 65050
+#define ChannelU_STimestamp 65051
+#define ChannelU_SMonitorCaption 65052
+#define ChannelU_SBufferError 65053
+#define ChannelU_SBufferErrorCaption 65054
+#define ChannelU_SNoUIPort 65055
+#define MainU_SCanNotLoadRequiredFile 65056
+#define PGPCheckU_SNoAutoAddPublicKey 65057
+#define PGPCheckU_SPGPMessageTooBig 65058
+#define Connection7PlusReceiveU_S7PlusReceiveOk 65059
+#define Connection7PlusReceiveU_S7PlusReceiveError 65060
+#define Connection7PlusReceiveU_SReceivedFileSaved 65061
+#define Connection7PlusReceiveU_SReceivedFileNotSaved 65062
+#define ConnectionGoTextReceiveU_SGoTextReceiveOk 65063
+#define ConnectionGoTextReceiveU_SGoTextReceiveError 65064
+#define ConnectionGoTextReceiveU_SReceivedFileSaved 65065
+#define ConnectionGoTextReceiveU_SReceivedFileNotSaved 65066
+#define ConnectionAutobinReceiveU_SAutobinOk 65067
+#define ConnectionAutobinReceiveU_SAutobinOkWithoutCRC 65068
+#define ConnectionAutobinReceiveU_SAutobinCanceled 65069
+#define ConnectionAutobinReceiveU_SAutobinCRCErr 65070
+#define ConnectionTextSendU_STextFileSendCanceled 65071
+#define ReceiveFilePostprocessorU_SCannotOpenDestinationFile 65072
+#define ReceiveFilePostprocessorU_SErrorWritingDestinationFile 65073
+#define ReceiveFilePostprocessorU_SCannotDeleteFile 65074
+#define ReceiveFilePostprocessorU_SCannotDeletePart 65075
+#define ReceiveFilePostprocessorU_SReceivedFileSaved 65076
+#define MainU_SInitFonts 65077
+#define MainU_SInitStations 65078
+#define MainU_SInitChannels 65079
+#define MainU_SInitDevices 65080
+#define MainU_SReady 65081
+#define MainU_SErrorDatabase 65082
+#define MainU_SHintReady 65083
+#define MainU_SHintNotReady 65084
+#define MainU_SDatabaseRepair 65085
+#define MainU_SClearConsole 65086
+#define MainU_SClearConsoleTitle 65087
+#define ConnectCommandU_SNoFreeChannel 65088
+#define ConnectCommandU_SNotSimultaneous 65089
+#define ReceiveFilePostprocessorU_SFileSaved 65090
+#define ReceiveFilePostprocessorU_SErrorSavingFile 65091
+#define ReceiveFilePostprocessorU_SFileNotSaved 65092
+#define ReceiveFilePostprocessorU_SErrorCreatingFolder 65093
+#define ReceiveFilePostprocessorU_SPartReceived 65094
+#define ReceiveFilePostprocessorU_SAllPartsAvailable 65095
+#define ReceiveFilePostprocessorU_SPartsMissing 65096
+#define ReceiveFilePostprocessorU_SDec 65097
+#define ReceiveFilePostprocessorU_SHex 65098
+#define ReceiveFilePostprocessorU_SCRCError 65099
+#define ReceiveFilePostprocessorU_SWrongDataInHeader 65100
+#define ReceiveFilePostprocessorU_SHeaderInvalidOrTooShort 65101
+#define ReceiveFilePostprocessorU_SErrorInAccumulatedCRC 65102
+#define ReceiveFilePostprocessorU_SReceivedFileNotSavedFolderCouldNotCreateFolder 65103
+#define StationDatabaseDlgU_SRemove 65104
+#define StationDatabaseDlgU_SInvalidCallsign 65105
+#define StationDatabaseDlgU_SStationExists 65106
+#define StationDatabaseDlgU_SCannotAddStation 65107
+#define StationDatabaseDlgU_SPropertiesOf 65108
+#define ConnectCommandU_SUIDestination 65109
+#define ConnectCommandU_SUIDestinationTitle 65110
+#define ConnectCommandU_SMessageboxCaption 65111
+#define ConnectCommandU_SNoChannelSelected 65112
+#define ConnectCommandU_SDeviceTimeout 65113
+#define ConnectCommandU_SNoDevice 65114
+#define ConnectCommandU_SChannelAlreadyConnected 65115
+#define ConnectCommandU_SNoSSID 65116
+#define ConnectCommandU_SDeviceError 65117
+#define ConnectCommandU_SUnknownError 65118
+#define ConnectCommandU_SUnhandledError 65119
+#define RemoteCommandsU_SRemoteCommandDirSummary 65120
+#define RemoteCommandsU_SRemoteCommandDirHelp 65121
+#define RemoteCommandsU_SRemoteCommandCDCurrentDirectory 65122
+#define RemoteCommandsU_SRemoteCommandCDInvalidParameter 65123
+#define RemoteCommandsU_SRemoteCommandCDHelp 65124
+#define RemoteCommandsU_SRemoteCommandReadFolderAccessDenied 65125
+#define RemoteCommandsU_SRemoteCommandReadHelp 65126
+#define RemoteCommandsU_SRemoteCommandDeleteNoParam 65127
+#define RemoteCommandsU_SRemoteCommandDeleteNotFound 65128
+#define RemoteCommandsU_SRemoteCommandDeleteFileDeleted 65129
+#define RemoteCommandsU_SRemoteCommandDeleteFileAccessDenied 65130
+#define RemoteCommandsU_SRemoteCommandDeleteHelp 65131
+#define RemoteCommandsU_SRemoteCommandBinmodeHelp 65132
+#define StationDatabasePasswordDlgU_SAddPassword 65133
+#define StationDatabasePasswordDlgU_SEditPassword 65134
+#define StationDatabaseDlgU_SRemoveCaption 65135
+#define RemoteCommandsU_SRemoteCommandRingHelp 65136
+#define RemoteCommandsU_SNoInfo 65137
+#define RemoteCommandsU_SRemoteCommandInfoHelp 65138
+#define RemoteCommandsU_SNameUnknown 65139
+#define RemoteCommandsU_SNameHello 65140
+#define RemoteCommandsU_SNameError 65141
+#define RemoteCommandsU_SRemoteCommandNameHelp 65142
+#define RemoteCommandsU_SNoNews 65143
+#define RemoteCommandsU_SRemoteCommandNewsHelp 65144
+#define RemoteCommandsU_SCStatusTitle 65145
+#define RemoteCommandsU_SRemoteCommandCStatusHelp 65146
+#define RemoteCommandsU_SRttError 65147
+#define RemoteCommandsU_SRttResult 65148
+#define RemoteCommandsU_SRemoteCommandRTTHelp 65149
+#define RemoteCommandsU_SRemoteCommandDirFolderAccessDenied 65150
+#define RemoteCommandsU_SRemoteCommandDirHeader 65151
+#define TextsU_SDefaultConnectText 65152
+#define TextsU_SDefaultQuitText 65153
+#define RemoteCommandsU_SInvalidRemoteCommand 65154
+#define RemoteCommandsU_SRemoteCommandDenied 65155
+#define RemoteCommandsU_SRemoteCommandError 65156
+#define RemoteCommandsU_SRemoteCommandEchoHelp 65157
+#define RemoteCommandsU_SHelpEnabled 65158
+#define RemoteCommandsU_SHelpDisabled 65159
+#define RemoteCommandsU_SRemoteCommandHelpHelp 65160
+#define RemoteCommandsU_SRemoteCommandQuitHelp 65161
+#define RemoteCommandsU_SVersion 65162
+#define RemoteCommandsU_SRemoteCommandVersionHelp 65163
+#define RemoteCommandsU_SRemoteCommandDisconnectHelp 65164
+#define RemoteCommandsU_SRemoteCommandSIDHelp 65165
+#define RemoteCommandsU_SDidRing 65166
+#define RemoteCommandsU_SDidntRing 65167
+#define MessageboxU_SIgnore 65168
+#define MessageboxU_SAll 65169
+#define MessageboxU_SHelp 65170
+#define SendFilePreprocessorU_SPartFileError 65171
+#define SendFilePreprocessorU_SPGPNotAvailable 65172
+#define SendFilePreprocessorU_SNoPGPKey 65173
+#define SendFilePreprocessorU_SNoResult 65174
+#define SendFilePreprocessorU_SPGPSignError 65175
+#define MyCallsU_SIncomingConnectAccept 65176
+#define MyCallsU_SIncomingConnectIgnore 65177
+#define MyCallsU_SIncomingConnectBusy 65178
+#define SoundsFormU_SLoadSaveDialogFilter 65179
+#define SoundsFormU_SOpenDialogFilter 65180
+#define SoundsFormU_SOpenDialogTitle 65181
+#define SoundsFormU_SLoadDialogTitle 65182
+#define SoundsFormU_SSaveDialogTitle 65183
+#define InterfacesU_SStationTypeCluster 65184
+#define TBXConsts_STBXCannotInsertOwnParent 65185
+#define TBXConsts_STBXCannotRegisterTheme 65186
+#define TBXConsts_STBXThemeAlreadyRegistered 65187
+#define TBXConsts_STBXUnknownTheme 65188
+#define TBXConsts_STBXCannotReleaseTheme 65189
+#define PGPApiU_SUnknownError 65190
+#define JConsts_sChangeJPGSize 65191
+#define JConsts_sJPEGError 65192
+#define JConsts_sJPEGImageFile 65193
+#define MessageboxU_SYes 65194
+#define MessageboxU_SNo 65195
+#define MessageboxU_SOk 65196
+#define MessageboxU_SCancel 65197
+#define MessageboxU_SAbort 65198
+#define MessageboxU_SRetry 65199
+#define SoundsConstsU_sen_pgp_wrong 65200
+#define SoundsConstsU_sen_channelswitch 65201
+#define SoundsConstsU_sen_programstart 65202
+#define SoundsConstsU_sen_programend 65203
+#define TextsConstsU_ten_greeting 65204
+#define TextsConstsU_ten_end 65205
+#define TextsConstsU_ten_info 65206
+#define TextsConstsU_ten_news 65207
+#define TextsConstsU_ten_n 65208
+#define InterfacesU_SPasswordTypeUser 65209
+#define InterfacesU_SPasswordTypeSysop 65210
+#define InterfacesU_SStationTypeAutomatic 65211
+#define InterfacesU_SStationTypeNode 65212
+#define InterfacesU_SStationTypeMailbox 65213
+#define InterfacesU_SStationTypeConvers 65214
+#define InterfacesU_SStationTypeTerminal 65215
+#define SoundsConstsU_sen_connecting 65216
+#define SoundsConstsU_sen_connected_out 65217
+#define SoundsConstsU_sen_connected_in 65218
+#define SoundsConstsU_sen_disconnecting 65219
+#define SoundsConstsU_sen_disconnected 65220
+#define SoundsConstsU_sen_linkfailure 65221
+#define SoundsConstsU_sen_ring 65222
+#define SoundsConstsU_sen_rx_active 65223
+#define SoundsConstsU_sen_rx_inactive 65224
+#define SoundsConstsU_sen_tx 65225
+#define SoundsConstsU_sen_transfer_start 65226
+#define SoundsConstsU_sen_transfer_success 65227
+#define SoundsConstsU_sen_transfer_cancel 65228
+#define SoundsConstsU_sen_transfer_error 65229
+#define SoundsConstsU_sen_pgp_valid 65230
+#define SoundsConstsU_sen_pgp_unknown 65231
+#define ComStrs_sTabFailClear 65232
+#define ComStrs_sTabFailDelete 65233
+#define ComStrs_sTabFailRetrieve 65234
+#define ComStrs_sTabFailGetObject 65235
+#define ComStrs_sTabFailSet 65236
+#define ComStrs_sTabFailSetObject 65237
+#define ComStrs_sTabMustBeMultiLine 65238
+#define ComStrs_sInvalidOwner 65239
+#define ComStrs_sRichEditInsertError 65240
+#define ComStrs_sRichEditLoadFail 65241
+#define ComStrs_sRichEditSaveFail 65242
+#define ComStrs_sUDAssociated 65243
+#define ComStrs_sPageIndexError 65244
+#define ComStrs_sInvalidComCtl32 65245
+#define WinHelpViewer_hNoKeyword 65246
+#define GlobalU_SApplicationDataPathError 65247
+#define ExtCtrls_clNameHighlight 65248
+#define ExtCtrls_clNameHighlightText 65249
+#define ExtCtrls_clNameInactiveBorder 65250
+#define ExtCtrls_clNameInactiveCaption 65251
+#define ExtCtrls_clNameInactiveCaptionText 65252
+#define ExtCtrls_clNameInfoBk 65253
+#define ExtCtrls_clNameInfoText 65254
+#define ExtCtrls_clNameMenu 65255
+#define ExtCtrls_clNameMenuText 65256
+#define ExtCtrls_clNameNone 65257
+#define ExtCtrls_clNameScrollBar 65258
+#define ExtCtrls_clName3DDkShadow 65259
+#define ExtCtrls_clName3DLight 65260
+#define ExtCtrls_clNameWindow 65261
+#define ExtCtrls_clNameWindowFrame 65262
+#define ExtCtrls_clNameWindowText 65263
+#define ExtCtrls_clNameWhite 65264
+#define ExtCtrls_clNameMoneyGreen 65265
+#define ExtCtrls_clNameSkyBlue 65266
+#define ExtCtrls_clNameCream 65267
+#define ExtCtrls_clNameMedGray 65268
+#define ExtCtrls_clNameActiveBorder 65269
+#define ExtCtrls_clNameActiveCaption 65270
+#define ExtCtrls_clNameAppWorkSpace 65271
+#define ExtCtrls_clNameBackground 65272
+#define ExtCtrls_clNameBtnFace 65273
+#define ExtCtrls_clNameBtnHighlight 65274
+#define ExtCtrls_clNameBtnShadow 65275
+#define ExtCtrls_clNameBtnText 65276
+#define ExtCtrls_clNameCaptionText 65277
+#define ExtCtrls_clNameDefault 65278
+#define ExtCtrls_clNameGrayText 65279
+#define HelpIntfs_hNoTopics 65280
+#define ExtCtrls_clNameBlack 65281
+#define ExtCtrls_clNameMaroon 65282
+#define ExtCtrls_clNameGreen 65283
+#define ExtCtrls_clNameOlive 65284
+#define ExtCtrls_clNameNavy 65285
+#define ExtCtrls_clNamePurple 65286
+#define ExtCtrls_clNameTeal 65287
+#define ExtCtrls_clNameGray 65288
+#define ExtCtrls_clNameSilver 65289
+#define ExtCtrls_clNameRed 65290
+#define ExtCtrls_clNameLime 65291
+#define ExtCtrls_clNameYellow 65292
+#define ExtCtrls_clNameBlue 65293
+#define ExtCtrls_clNameFuchsia 65294
+#define ExtCtrls_clNameAqua 65295
+#define Consts_SIconToClipboard 65296
+#define Consts_SCannotOpenClipboard 65297
+#define Consts_SDefault 65298
+#define Consts_SInvalidMemoSize 65299
+#define Consts_SNoDefaultPrinter 65300
+#define Consts_SDuplicateMenus 65301
+#define Consts_SDockedCtlNeedsName 65302
+#define Consts_SDockTreeRemoveError 65303
+#define Consts_SDockZoneNotFound 65304
+#define Consts_SDockZoneHasNoCtl 65305
+#define Consts_SErrorSettingCount 65306
+#define Consts_SListBoxMustBeVirtual 65307
+#define Consts_SNoGetItemEventHandler 65308
+#define HelpIntfs_hNoTableOfContents 65309
+#define HelpIntfs_hNothingFound 65310
+#define HelpIntfs_hNoContext 65311
+#define Consts_SmkcPgUp 65312
+#define Consts_SmkcPgDn 65313
+#define Consts_SmkcEnd 65314
+#define Consts_SmkcHome 65315
+#define Consts_SmkcLeft 65316
+#define Consts_SmkcUp 65317
+#define Consts_SmkcRight 65318
+#define Consts_SmkcDown 65319
+#define Consts_SmkcIns 65320
+#define Consts_SmkcDel 65321
+#define Consts_SmkcShift 65322
+#define Consts_SmkcCtrl 65323
+#define Consts_SmkcAlt 65324
+#define Consts_SOutOfRange 65325
+#define Consts_SInsertLineError 65326
+#define Consts_SInvalidClipFmt 65327
+#define Consts_SMsgDlgYes 65328
+#define Consts_SMsgDlgNo 65329
+#define Consts_SMsgDlgOK 65330
+#define Consts_SMsgDlgCancel 65331
+#define Consts_SMsgDlgHelp 65332
+#define Consts_SMsgDlgAbort 65333
+#define Consts_SMsgDlgRetry 65334
+#define Consts_SMsgDlgIgnore 65335
+#define Consts_SMsgDlgAll 65336
+#define Consts_SMsgDlgNoToAll 65337
+#define Consts_SMsgDlgYesToAll 65338
+#define Consts_SmkcBkSp 65339
+#define Consts_SmkcTab 65340
+#define Consts_SmkcEsc 65341
+#define Consts_SmkcEnter 65342
+#define Consts_SmkcSpace 65343
+#define Consts_SNoButton 65344
+#define Consts_SHelpButton 65345
+#define Consts_SCloseButton 65346
+#define Consts_SIgnoreButton 65347
+#define Consts_SRetryButton 65348
+#define Consts_SAbortButton 65349
+#define Consts_SAllButton 65350
+#define Consts_SCannotDragForm 65351
+#define Consts_SVMetafiles 65352
+#define Consts_SVEnhMetafiles 65353
+#define Consts_SVIcons 65354
+#define Consts_SVBitmaps 65355
+#define Consts_SMsgDlgWarning 65356
+#define Consts_SMsgDlgError 65357
+#define Consts_SMsgDlgInformation 65358
+#define Consts_SMsgDlgConfirm 65359
+#define Consts_SCannotShowModal 65360
+#define Consts_SPropertyOutOfRange 65361
+#define Consts_SMenuIndexError 65362
+#define Consts_SMenuReinserted 65363
+#define Consts_SMenuNotFound 65364
+#define Consts_SNoTimers 65365
+#define Consts_SNotPrinting 65366
+#define Consts_SPrinting 65367
+#define Consts_SInvalidPrinter 65368
+#define Consts_SDeviceOnPort 65369
+#define Consts_SGroupIndexTooLow 65370
+#define Consts_SNoMDIForm 65371
+#define Consts_SControlParentSetToSelf 65372
+#define Consts_SOKButton 65373
+#define Consts_SCancelButton 65374
+#define Consts_SYesButton 65375
+#define Consts_SChangeIconSize 65376
+#define Consts_SUnknownClipboardFormat 65377
+#define Consts_SOutOfResources 65378
+#define Consts_SNoCanvasHandle 65379
+#define Consts_SInvalidImageSize 65380
+#define Consts_SInvalidImageList 65381
+#define Consts_SReplaceImage 65382
+#define Consts_SImageIndexError 65383
+#define Consts_SImageReadFail 65384
+#define Consts_SImageWriteFail 65385
+#define Consts_SWindowDCError 65386
+#define Consts_SWindowClass 65387
+#define Consts_SCannotFocus 65388
+#define Consts_SParentRequired 65389
+#define Consts_SMDIChildNotVisible 65390
+#define Consts_SVisibleChanged 65391
+#define RTLConsts_SRegSetDataFailed 65392
+#define RTLConsts_SResNotFound 65393
+#define RTLConsts_SSeekNotImplemented 65394
+#define RTLConsts_SSortedListError 65395
+#define RTLConsts_SUnknownGroup 65396
+#define RTLConsts_SUnknownProperty 65397
+#define RTLConsts_SWriteError 65398
+#define RTLConsts_SThreadCreateError 65399
+#define RTLConsts_SThreadError 65400
+#define Consts_SInvalidTabPosition 65401
+#define Consts_SInvalidTabStyle 65402
+#define Consts_SInvalidBitmap 65403
+#define Consts_SInvalidIcon 65404
+#define Consts_SInvalidMetafile 65405
+#define Consts_SInvalidPixelFormat 65406
+#define Consts_SScanLine 65407
+#define RTLConsts_SFOpenErrorEx 65408
+#define RTLConsts_SIniFileWriteError 65409
+#define RTLConsts_SInvalidImage 65410
+#define RTLConsts_SInvalidName 65411
+#define RTLConsts_SInvalidProperty 65412
+#define RTLConsts_SInvalidPropertyPath 65413
+#define RTLConsts_SInvalidPropertyValue 65414
+#define RTLConsts_SInvalidRegType 65415
+#define RTLConsts_SListCapacityError 65416
+#define RTLConsts_SListCountError 65417
+#define RTLConsts_SListIndexError 65418
+#define RTLConsts_SMemoryStreamError 65419
+#define RTLConsts_SPropertyException 65420
+#define RTLConsts_SReadError 65421
+#define RTLConsts_SReadOnlyProperty 65422
+#define RTLConsts_SRegGetDataFailed 65423
+#define SysConst_SLongDayNameWed 65424
+#define SysConst_SLongDayNameThu 65425
+#define SysConst_SLongDayNameFri 65426
+#define SysConst_SLongDayNameSat 65427
+#define SysConst_SCannotCreateDir 65428
+#define RTLConsts_SAncestorNotFound 65429
+#define RTLConsts_SAssignError 65430
+#define RTLConsts_SBitsIndexError 65431
+#define RTLConsts_SCantWriteResourceStreamError 65432
+#define RTLConsts_SCheckSynchronizeError 65433
+#define RTLConsts_SClassNotFound 65434
+#define RTLConsts_SDuplicateClass 65435
+#define RTLConsts_SDuplicateItem 65436
+#define RTLConsts_SDuplicateName 65437
+#define RTLConsts_SDuplicateString 65438
+#define RTLConsts_SFCreateErrorEx 65439
+#define SysConst_SLongMonthNameJul 65440
+#define SysConst_SLongMonthNameAug 65441
+#define SysConst_SLongMonthNameSep 65442
+#define SysConst_SLongMonthNameOct 65443
+#define SysConst_SLongMonthNameNov 65444
+#define SysConst_SLongMonthNameDec 65445
+#define SysConst_SShortDayNameSun 65446
+#define SysConst_SShortDayNameMon 65447
+#define SysConst_SShortDayNameTue 65448
+#define SysConst_SShortDayNameWed 65449
+#define SysConst_SShortDayNameThu 65450
+#define SysConst_SShortDayNameFri 65451
+#define SysConst_SShortDayNameSat 65452
+#define SysConst_SLongDayNameSun 65453
+#define SysConst_SLongDayNameMon 65454
+#define SysConst_SLongDayNameTue 65455
+#define SysConst_SShortMonthNameMar 65456
+#define SysConst_SShortMonthNameApr 65457
+#define SysConst_SShortMonthNameMay 65458
+#define SysConst_SShortMonthNameJun 65459
+#define SysConst_SShortMonthNameJul 65460
+#define SysConst_SShortMonthNameAug 65461
+#define SysConst_SShortMonthNameSep 65462
+#define SysConst_SShortMonthNameOct 65463
+#define SysConst_SShortMonthNameNov 65464
+#define SysConst_SShortMonthNameDec 65465
+#define SysConst_SLongMonthNameJan 65466
+#define SysConst_SLongMonthNameFeb 65467
+#define SysConst_SLongMonthNameMar 65468
+#define SysConst_SLongMonthNameApr 65469
+#define SysConst_SLongMonthNameMay 65470
+#define SysConst_SLongMonthNameJun 65471
+#define SysConst_SVarOverflow 65472
+#define SysConst_SVarInvalid 65473
+#define SysConst_SVarBadType 65474
+#define SysConst_SVarNotImplemented 65475
+#define SysConst_SVarUnexpected 65476
+#define SysConst_SExternalException 65477
+#define SysConst_SAssertionFailed 65478
+#define SysConst_SIntfCastError 65479
+#define SysConst_SSafecallException 65480
+#define SysConst_SAssertError 65481
+#define SysConst_SAbstractError 65482
+#define SysConst_SModuleAccessViolation 65483
+#define SysConst_SOSError 65484
+#define SysConst_SUnkOSError 65485
+#define SysConst_SShortMonthNameJan 65486
+#define SysConst_SShortMonthNameFeb 65487
+#define SysConst_SException 65488
+#define SysConst_SExceptTitle 65489
+#define SysConst_SInvalidFormat 65490
+#define SysConst_SArgumentMissing 65491
+#define SysConst_SDispatchError 65492
+#define SysConst_SReadAccess 65493
+#define SysConst_SWriteAccess 65494
+#define SysConst_SVarArrayCreate 65495
+#define SysConst_SVarArrayBounds 65496
+#define SysConst_SVarArrayLocked 65497
+#define SysConst_SInvalidVarCast 65498
+#define SysConst_SInvalidVarOp 65499
+#define SysConst_SInvalidVarNullOp 65500
+#define SysConst_SInvalidVarOpWithHResultWithPrefix 65501
+#define SysConst_SVarTypeCouldNotConvert 65502
+#define SysConst_SVarTypeConvertOverflow 65503
+#define SysConst_SInvalidInput 65504
+#define SysConst_SDivByZero 65505
+#define SysConst_SRangeError 65506
+#define SysConst_SIntOverflow 65507
+#define SysConst_SInvalidOp 65508
+#define SysConst_SZeroDivide 65509
+#define SysConst_SOverflow 65510
+#define SysConst_SUnderflow 65511
+#define SysConst_SInvalidPointer 65512
+#define SysConst_SInvalidCast 65513
+#define SysConst_SAccessViolationArg3 65514
+#define SysConst_SAccessViolationNoArg 65515
+#define SysConst_SStackOverflow 65516
+#define SysConst_SControlC 65517
+#define SysConst_SPrivilege 65518
+#define SysConst_SOperationAborted 65519
+#define SysConst_SInvalidInteger 65520
+#define SysConst_SInvalidFloat 65521
+#define SysConst_SInvalidDate 65522
+#define SysConst_SInvalidTime 65523
+#define SysConst_SInvalidDateTime 65524
+#define SysConst_SInvalidTimeStamp 65525
+#define SysConst_STimeEncodeError 65526
+#define SysConst_SDateEncodeError 65527
+#define SysConst_SOutOfMemory 65528
+#define SysConst_SInOutError 65529
+#define SysConst_SFileNotFound 65530
+#define SysConst_SInvalidFilename 65531
+#define SysConst_STooManyOpenFiles 65532
+#define SysConst_SAccessDenied 65533
+#define SysConst_SEndOfFile 65534
+#define SysConst_SDiskFull 65535
+
+STRINGTABLE
+BEGIN
+	/* ID:HostmodeDeviceU_SStartOrig:"Start"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeDeviceU_SStart "Start"
+	/* ID:HostmodeDeviceU_SReceivingOrig:"Empfange"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeDeviceU_SReceiving "Receiving"
+	/* ID:HostmodeDeviceU_SSwitchingToHostmodeOrig:"Schalte in Hostmode"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeDeviceU_SSwitchingToHostmode "Switching to hostmode"
+	/* ID:HostmodeDeviceU_SErrorCountOrig:"%d Fehler"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeDeviceU_SErrorCount "%d Error(s)"
+	/* ID:DeviceSettingsU_STooManyDevicesOrig:"Es können höchstens %d Geräte eingerichtet werden."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  DeviceSettingsU_STooManyDevices "No more than %d devices can be set up."
+	/* ID:DeviceSettingsU_SRemoveDeviceCaptionOrig:"Entfernen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  DeviceSettingsU_SRemoveDeviceCaption "Remove"
+	/* ID:DeviceSettingsU_SRemoveDeviceOrig:"Gerät wirklich entfernen?"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  DeviceSettingsU_SRemoveDevice "Remove device?"
+	/* ID:FileSettingsU_SFolderForDownloadedFilesOrig:"Ordner für empfangene Dateien:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  FileSettingsU_SFolderForDownloadedFiles "Folder for received files"
+	/* ID:FileSettingsU_SFolderForRemoteFilesOrig:"Ordner für per Fernsteuerung lesbare Dateien:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  FileSettingsU_SFolderForRemoteFiles "Folder for remotely accessible files"
+	/* ID:DeviceU_SStatusReadyOrig:"Bereit"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  DeviceU_SStatusReady "Ready"
+	/* ID:DeviceU_SStatusInitOrig:"Init"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  DeviceU_SStatusInit "Init"
+	/* ID:DeviceU_SStatusErrorOrig:"Fehler"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  DeviceU_SStatusError "Error"
+	/* ID:DeviceU_SStatusInactiveOrig:"Inaktiv"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  DeviceU_SStatusInactive "Inactive"
+	/* ID:HostmodeTFWinDeviceU_SDLLNotFoundOrig:"TFWIN32.DLL nicht gefunden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeTFWinDeviceU_SDLLNotFound "TFWIN32.DLL not found"
+	/* ID:HostmodeTFWinDeviceU_STFOpenFailedOrig:"TFOpen fehlgeschlagen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeTFWinDeviceU_STFOpenFailed "TFOpen failed"
+	/* ID:HostmodeDeviceU_SAllPortsBusyOrig:"Alle Kanäle sind belegt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeDeviceU_SAllPortsBusy "All ports are busy."
+	/* ID:HostmodeDeviceU_SIsInHostmodeSendInitOrig:"Ist im Hostmode... Sende Init."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeDeviceU_SIsInHostmodeSendInit "Is in hostmode... sending init."
+	/* ID:HostmodeDeviceU_SOpeningPortOrig:"Öffnen der Schnittstelle"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeDeviceU_SOpeningPort "Opening port"
+	/* ID:HostmodeDeviceU_SFrameRejectOrig:"Frame Reject (%s)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeDeviceU_SFrameReject "Frame Reject (%s)"
+	/* ID:HostmodeDeviceU_SStatusPrefixOrig:"Resynchronisierung: "Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HostmodeDeviceU_SStatusPrefix "Resynchronizing: "
+	/* ID:PGPClassU_SSignatureNotCheckedOrig:"Die Unterschrift wurde nicht überprüft."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SSignatureNotChecked "The signature has not been checked."
+	/* ID:PGPClassU_SUnknownKeyOrig:"Unbekannt (ID=%s)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SUnknownKey "Unknown (ID=%s)"
+	/* ID:PGPClassU_SValidityUnknownOrig:"Die Echtheit des Unterzeichnerschlüssels ist unbekannt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SValidityUnknown "The authenticity of the signing key is unknown."
+	/* ID:PGPClassU_SSignatureVerifiedOrig:"Die Unterschrift ist gültig."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SSignatureVerified "The signature is valid."
+	/* ID:PGPClassU_SSignatureNotVerifiedOrig:"Die Unterschrift ist ungültig, die Nachricht wurde verändert."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SSignatureNotVerified "The signature is invalid, the message has been altered."
+	/* ID:PGPClassU_SCreationTimeOrig:"\"Unterzeichnet am\" dd.mm.yyyy \"um\" hh:nn:ss \"utc.\""Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SCreationTime "\"Signed \"mm\"/\"dd\"/\"yyyy hh\":\"nn\":\"ss\" utc.\""
+	/* ID:PGPClassU_SKeyRevokedOrig:"Der Schlüssel wurde zurückgezogen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SKeyRevoked "The key has been revoked."
+	/* ID:PGPClassU_SKeyDisabledOrig:"Der Schlüssel wurde deaktiviert."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SKeyDisabled "This key has been disabled."
+	/* ID:PGPClassU_SKeyExpiredOrig:"Der Schlüssel ist abgelaufen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SKeyExpired "This key is expired."
+	/* ID:PGPClassU_SSignerOrig:"Unterzeichner:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SSigner "Signer:"
+	/* ID:PGPClassU_SShareErrorOrig:"Die Schlüssel können nicht zum Schlüsselbund hinzugefügt werden,\rda eine andere Anwendung (z.B. PGPKeys) auf diesen zugreift."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SShareError "Cannot add key to keyring. The file is in use."
+	/* ID:PGPClassU_SKeysAddedOrig:"Folgende Schlüssel wurden dem Schlüsselring hinzugefügt:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SKeysAdded "The following keys were added to the keyring:"
+	/* ID:PGPClassU_SKeysNotAddedOrig:"Die Nachricht enthält öffentliche Schlüssel. Sie wurden nicht\rzum Schlüsselbund hinzugefügt, da das automatische Hinzufügen\rausgeschaltet ist."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPClassU_SKeysNotAdded "The message contains public keys. They were not\radded to the keyring because adding keys\rautomatically is switched off."
+	/* ID:GeneralSettingsU_SRowsChangedOrig:"Bei Änderung der Zeilenzahl werden die Inhalte der Empfangsfenster gelöscht. Fortsetzen?"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  GeneralSettingsU_SRowsChanged "Changing the line count will clear the receive buffers. Proceed?"
+	/* ID:DisplaySettingsU_SExampleConnectedToOrig:"DG1FAZ: Verbunden mit DB0FT"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  DisplaySettingsU_SExampleConnectedTo "DG1FAZ: Connected to DB0FT"
+	/* ID:DisplaySettingsU_SExampleDisconnectedFromOrig:"DG1FAZ: Getrennt von DB0FT"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  DisplaySettingsU_SExampleDisconnectedFrom "DG1FAZ: Disconnected from DB0FT"
+	/* ID:SendFileDlgU_SOnlyPartsOrig:"nur Teile %s."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SOnlyParts "only parts %s."
+	/* ID:SendFileDlgU_SNoPartsOrig:"keine Teile ausgewählt"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SNoParts "no parts selected"
+	/* ID:SendFileDlgU_SEditTemplatesOrig:"Vorlagen bearbeiten..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SEditTemplates "Edit templates..."
+	/* ID:SendFileDlgU_SStandardTextBeforeTemplate0Orig:"s rubrik@dl #10 Titel\r\n"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SStandardTextBeforeTemplate0 "s board@dl #10 Title\r\n"
+	/* ID:SendFileDlgU_SStandardTextBeforeTemplate1Orig:"s rubrik@dl #10 %n (%p/%q)\r\n"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SStandardTextBeforeTemplate1 "s board@dl #10 %n (%p/%q)\r\n"
+	/* ID:SendFileDlgU_SStandardTextAfterTemplate0Orig:"***end\r\n"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SStandardTextAfterTemplate0 "***end\r\n"
+	/* ID:SendFileDlgU_SStandardTextAfterTemplate1Orig:"NNNN\r\n"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SStandardTextAfterTemplate1 "NNNN\r\n"
+	/* ID:SendFileDlgU_SStandardTextAfterTemplate2Orig:"/EX\r\n"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SStandardTextAfterTemplate2 "/EX\r\n"
+	/* ID:SendFileDlgU_SStandardTextAfterTemplate3Orig:"^Z\r\n"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SStandardTextAfterTemplate3 "^Z\r\n"
+	/* ID:StationDatabaseU_SErrorCannotSaveDatabaseOrig:"Die Stationsdatenbank \"%s\" kann nicht geöffnet und nicht gesichert werden."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseU_SErrorCannotSaveDatabase "The station database \"%s\" can neither be opened nor backed up."
+	/* ID:StationDatabaseU_SDatabaseSavedOrig:"Die Stationsdatenbank \"%s\" kann nicht gelesen werden und ist vermutlich beschädigt.\r\rDie Datei wurde unverändert als \"%s\" gesichert. Es wird eine neue, leere Stationsdatenbank angelegt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseU_SDatabaseSaved "The station database \"%s\" cannot be read and is probably damaged.\r\rThe file was saved unchanged as \"%s\". A new, empty station database will be created."
+	/* ID:StationDatabaseU_SErrorCannotOpenDatabaseOrig:"Die Stationsdatenbank \"%s\" kann zurzeit nicht geöffnet werden (Fehler %.8x), z. B. weil ein anderes Programm sie gesperrt hat. Die Datei wurde nicht verändert."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseU_SErrorCannotOpenDatabase "The station database \"%s\" cannot be opened at the moment (error %.8x), e.g. because another program has locked it. The file was not changed."
+	/* ID:StationDatabaseU_SErrorDiskFullOrig:"Auf der Festplatte ist nicht genügend freier Speicherplatz vorhanden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseU_SErrorDiskFull "Not enough free disk space."
+	/* ID:StationDatabaseU_SErrorCannotCreateNewFileOrig:"Kann neue Datei nicht anlegen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseU_SErrorCannotCreateNewFile "Cannot create new file."
+	/* ID:StationDatabaseU_SCheckIncompleteOrig:"Die Stationsdatenbank konnte nicht vollständig geprüft werden.\r\rDie bisherige Datei \"%s\" wird unverändert weiter verwendet."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseU_SCheckIncomplete "The station database could not be checked completely.\r\rThe existing file \"%s\" will continue to be used unchanged."
+	/* ID:StationDatabaseU_SCheckRepairFileOrig:"\r\rAlle lesbaren Stationen wurden in \"%s\" kopiert. Um sie zu verwenden, Paxon beenden und die bisherige Datei durch diese ersetzen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseU_SCheckRepairFile "\r\rAll readable stations were copied to \"%s\". To use them, exit Paxon and replace the existing file with this one."
+	/* ID:ChannelU_SDateTimeFormatOrig:"ddddd, tt"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SDateTimeFormat "ddddd, tt"
+	/* ID:SendFilePartsSelectionDlgU_SListItemOrig:"Teil %0:3.3d (.B%0:2.2x)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFilePartsSelectionDlgU_SListItem "Part %0:3.3d (.B%0:2.2x)"
+	/* ID:SendFileDlgU_SSendTitleOrig:"Senden - %s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SSendTitle "Send - %s"
+	/* ID:SendFileDlgU_SNeedPGPOrig:"Um Nachrichten signieren zu können, benötigen Sie PGP 6.5.8 (Freeware)."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SNeedPGP "For signing messages, you need PGP 6.5.8 (freeware)."
+	/* ID:SendFileDlgU_SReallyCancelTextInputOrig:"Texteingabe wirklich abbrechen?"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SReallyCancelTextInput "Abort text edit?"
+	/* ID:SendFileDlgU_SDescTextOrig:"Senden Sie Text (*.txt) und 7Plus-Dateien (*.7pl, *.p01, ...) mit diesem Protokoll."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SDescText "Send text (*.TXT) and 7plus-files (*.7pl, *.p01,...) with this protocol."
+	/* ID:SendFileDlgU_SDescAutoBinOrig:"Benutzen Sie das AutoBin-Protokoll, um Bild-, Programm- und andere binäre Dateien zu übertragen. Wenn Ihre Gegenstation jedoch das neuere Didadit-Protokoll unterstützt, verwenden Sie dieses."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SDescAutoBin "Use this protocol for binary transfer (pictures, programs). Note: If your QSO-partner is able to use the newer DIDADIT-protocol, it is recommended to use DIDADIT"
+	/* ID:SendFileDlgU_SDescDidaditOrig:"Benutzen Sie Didadit, um Bild-, Programm- und andere binäre Dateien zu übertragen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SDescDidadit "Use this enhanced protocol for binary transfer (pictures, programs)"
+	/* ID:SendFileDlgU_SOpenDialogFilterOrig:"Alle Dateien (*)|*.*"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SOpenDialogFilter "All files (*)|*.*"
+	/* ID:SendFileDlgU_SOpenDialogTitleOrig:"Datei(en) hinzufügen..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SOpenDialogTitle "Add file(s)..."
+	/* ID:SendFileDlgU_SInvalidPasswordOrig:"Falsches Passwort."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SInvalidPassword "Wrong password."
+	/* ID:SendFileDlgU_SInvalidPasswordTitleOrig:"PGP"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SInvalidPasswordTitle "PGP"
+	/* ID:SendFileDlgU_SFileOpenErrorOrig:"Datei konnte nicht geöffnet werden. Noch einmal versuchen?"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SFileOpenError "Can not open file. Retry?"
+	/* ID:SendFileDlgU_SFileOpenErrorTitleOrig:"Fehler"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SFileOpenErrorTitle "Error"
+	/* ID:SendFileDlgU_SNotConnectedOrig:"nicht verbunden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SNotConnected "not connected"
+	/* ID:SendFileDlgU_SOnlyPartOrig:"nur Teil %s."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFileDlgU_SOnlyPart "only part %s."
+	/* ID:ChannelU_SSaveDialogFilterOrig:"Text Dateien (*.txt)|*.txt|Alle Dateien (*.*)|*.*"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SSaveDialogFilter "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+	/* ID:ChannelU_SSaveDialogTitleOrig:"Speichern"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SSaveDialogTitle "Save"
+	/* ID:ChannelU_SOverwriteOrAppendOrig:"Soll die bereits existierende Datei \"%s\" überschrieben werden oder möchten Sie den Text an diese anhängen?"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SOverwriteOrAppend "Should the existing file \"%s\" be replaced or do you want to append to this file?"
+	/* ID:ChannelU_SFileErrorOrig:"Datei kann nicht zum Schreiben geöffnet werden."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SFileError "Cannot open file for writing."
+	/* ID:ChannelU_SChannelOrig:"Kanal%2.2d"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SChannel "Channel%2.2d"
+	/* ID:ChannelU_SDayOrig:"Tag"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SDay "day"
+	/* ID:ChannelU_SDaysOrig:"Tagen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SDays "days"
+	/* ID:ChannelU_SHourOrig:"Stunde"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SHour "hour"
+	/* ID:ChannelU_SHoursOrig:"Stunden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SHours "hours"
+	/* ID:ChannelU_SMinuteOrig:"Minute"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SMinute "minute"
+	/* ID:ChannelU_SMinutesOrig:"Minuten"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SMinutes "minutes"
+	/* ID:ChannelU_SSecondOrig:"Sekunde"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SSecond "second"
+	/* ID:ChannelU_SSecondsOrig:"Sekunden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SSeconds "seconds"
+	/* ID:ChannelU_STodayOrig:"Heute"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SToday "Today"
+	/* ID:ChannelU_SYesterdayOrig:"Gestern"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SYesterday "Yesterday"
+	/* ID:ChannelU_SDateTimeHintFormatOrig:"%s%s\r\n(vor %s)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SDateTimeHintFormat "%s%s\r\n(%s ago)"
+	/* ID:ChannelU_SNoUIDestinationOrig:"Kein Ziel für UI-Pakete ausgewählt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SNoUIDestination "No destination for UI frames selected."
+	/* ID:ChannelU_SNoUIMycallOrig:"Kein eigenes Rufzeichen für UI-Pakete ausgewählt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SNoUIMycall "No mycall for UI frames selected."
+	/* ID:ChannelU_SUnknownNameOrig:"Unbekannt"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SUnknownName "Unknown"
+	/* ID:ChannelU_SNameOrig:"Name"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SName "Name"
+	/* ID:ChannelU_STypeOrig:"Typ"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SType "Type"
+	/* ID:ChannelU_SConnectedToOrig:"%s: Verbunden mit %s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SConnectedTo "%s: Connected to %s"
+	/* ID:ChannelU_SConnectedViaOrig:" (via %s)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SConnectedVia " (via %s)"
+	/* ID:ChannelU_SDisconnectedFromOrig:"%s: Getrennt von %s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SDisconnectedFrom "%s: Disconnected from %s"
+	/* ID:ChannelU_SDisconnectedFromFailureOrig:"%s: Verbindungsfehler. Getrennt von %s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SDisconnectedFromFailure "%s: Link failure. Disconnected from %s"
+	/* ID:ChannelU_SDisconnectedFromBusyOrig:"%s: Besetzt. Getrennt von %s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SDisconnectedFromBusy "%s: Busy. Disconnected from %s"
+	/* ID:ChannelU_SDisconnectedViaOrig:" (via %s)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SDisconnectedVia " (via %s)"
+	/* ID:ChannelU_SStateDisconnectOrig:"Trenne..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SStateDisconnect "Disconnecting..."
+	/* ID:ChannelU_SStateDisconnectedOrig:"Getrennt"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SStateDisconnected "Disconnected"
+	/* ID:ChannelU_SStateConnectOrig:"Verbinde..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SStateConnect "Connecting..."
+	/* ID:ChannelU_SStateConnectedOrig:"Verbunden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SStateConnected "Connected"
+	/* ID:ChannelU_SFilenameUnknownOrig:"(unbekannt)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SFilenameUnknown "(unknown)"
+	/* ID:ConnectionAutobinSendU_SAutobinSendOkOrig:"Autobin-Senden ok."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionAutobinSendU_SAutobinSendOk "Autobin send ok."
+	/* ID:ConnectionAutobinSendU_SAutobinSendCanceledOrig:"Autobin-Senden abgebrochen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionAutobinSendU_SAutobinSendCanceled "Autobin send canceled."
+	/* ID:ConnectionDidaditSendU_SDidaditSendOKOrig:"Didadit-Senden ok."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionDidaditSendU_SDidaditSendOK "Didadit send ok."
+	/* ID:ConnectionDidaditSendU_SDidaditSendAbortOrig:"Didadit-Senden abgebrochen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionDidaditSendU_SDidaditSendAbort "Didadit send canceled."
+	/* ID:ConnectionDidaditReceiveU_SDidaditReceiveOkOrig:"Didadit-Empfang ok."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionDidaditReceiveU_SDidaditReceiveOk "Didadit receive ok."
+	/* ID:ConnectionDidaditReceiveU_SDidaditReceiveAbortOrig:"Didadit-Empfang abgebrochen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionDidaditReceiveU_SDidaditReceiveAbort "Didadit receive canceled."
+	/* ID:ConnectionStandardU_SNoRemoteOrig:"Keine Auswertung von Fernsteuerbefehlen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionStandardU_SNoRemote "Not processing remote commands."
+	/* ID:ConnectionStandardU_STooManyValuesOrig:"Passwort-Prompt enthält zu viele Positionen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionStandardU_STooManyValues "The password-prompt contains too many positions."
+	/* ID:ConnectionStandardU_SInvalidCharsOrig:"Passwort-Prompt enthält ungültige Zeichen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionStandardU_SInvalidChars "The password-prompt contains invalid characters."
+	/* ID:ConnectionStandardU_STooShortOrig:"Gespeichertes Passwort zu kurz."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionStandardU_STooShort "The password saved in the database is too short."
+	/* ID:ConnectionStandardU_SNotLength1620Orig:"Das in der Datenbank gespeicherte Passwort hat nicht die erforderliche Länge von 1620 Zeichen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionStandardU_SNotLength1620 "The password stored in the database does not have the required length of 1620 characters."
+	/* ID:ChannelU_STimestampOrig:"c"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_STimestamp "c"
+	/* ID:ChannelU_SMonitorCaptionOrig:"Monitor"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SMonitorCaption "Monitor"
+	/* ID:ChannelU_SBufferErrorOrig:"Fehler beim Öffnen der Textpuffer. Bitte starten Sie Windows neu."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SBufferError "Error opening text buffers. Please restart Windows."
+	/* ID:ChannelU_SBufferErrorCaptionOrig:"Fehler"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SBufferErrorCaption "Error"
+	/* ID:ChannelU_SNoUIPortOrig:"Kein Kanal für UI-Pakete ausgewählt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ChannelU_SNoUIPort "No port for UI frames selected."
+	/* ID:MainU_SCanNotLoadRequiredFileOrig:"Die erforderliche Datei \"%s\" kann nicht geladen werden."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SCanNotLoadRequiredFile "The required file \"%s\" could not be loaded."
+	/* ID:PGPCheckU_SNoAutoAddPublicKeyOrig:"Das automatische Hinzufügen von öffentlichen Schlüsseln zum Schlüsselbund ist ausgeschaltet."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPCheckU_SNoAutoAddPublicKey "Automatically adding received public keys to your keyring is disabled"
+	/* ID:PGPCheckU_SPGPMessageTooBigOrig:"PGP-signierte Nachricht zu groß."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPCheckU_SPGPMessageTooBig "PGP signed message is too big."
+	/* ID:Connection7PlusReceiveU_S7PlusReceiveOkOrig:"7Plus-Empfang ok."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Connection7PlusReceiveU_S7PlusReceiveOk "7Plus receive ok."
+	/* ID:Connection7PlusReceiveU_S7PlusReceiveErrorOrig:"7Plus-Empfang Fehler."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Connection7PlusReceiveU_S7PlusReceiveError "7Plus receive error."
+	/* ID:Connection7PlusReceiveU_SReceivedFileSavedOrig:"Empfangene Datei gespeichert:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Connection7PlusReceiveU_SReceivedFileSaved "Received file has been saved:"
+	/* ID:Connection7PlusReceiveU_SReceivedFileNotSavedOrig:"Empfangene Datei NICHT gespeichert."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Connection7PlusReceiveU_SReceivedFileNotSaved "Received file has NOT been saved."
+	/* ID:ConnectionGoTextReceiveU_SGoTextReceiveOkOrig:"GoText-Empfang ok."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionGoTextReceiveU_SGoTextReceiveOk "GoText receive ok."
+	/* ID:ConnectionGoTextReceiveU_SGoTextReceiveErrorOrig:"GoText-Empfang Fehler."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionGoTextReceiveU_SGoTextReceiveError "GoText receive error."
+	/* ID:ConnectionGoTextReceiveU_SReceivedFileSavedOrig:"Empfangene Datei gespeichert:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionGoTextReceiveU_SReceivedFileSaved "Received file has been saved:"
+	/* ID:ConnectionGoTextReceiveU_SReceivedFileNotSavedOrig:"Empfangene Datei NICHT gespeichert."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionGoTextReceiveU_SReceivedFileNotSaved "Received file has NOT been saved."
+	/* ID:ConnectionAutobinReceiveU_SAutobinOkOrig:"Autobin-Empfang ok."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionAutobinReceiveU_SAutobinOk "Autobin receive ok."
+	/* ID:ConnectionAutobinReceiveU_SAutobinOkWithoutCRCOrig:"Autobin-Empfang ok. (ohne CRC-Prüfung.)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionAutobinReceiveU_SAutobinOkWithoutCRC "Autobin receive ok. (without CRC check.)"
+	/* ID:ConnectionAutobinReceiveU_SAutobinCanceledOrig:"Autobin-Empfang abgebrochen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionAutobinReceiveU_SAutobinCanceled "Autobin receive canceled."
+	/* ID:ConnectionAutobinReceiveU_SAutobinCRCErrOrig:"Autobin-Empfang CRC-Fehler."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionAutobinReceiveU_SAutobinCRCErr "Autobin receive CRC error."
+	/* ID:ConnectionTextSendU_STextFileSendCanceledOrig:"Textdatei-Senden abgebrochen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectionTextSendU_STextFileSendCanceled "Sending canceled."
+	/* ID:ReceiveFilePostprocessorU_SCannotOpenDestinationFileOrig:"Kann Zieldatei nicht öffnen:\r%s\r"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SCannotOpenDestinationFile "Cannot open destination file:\r%s\r"
+	/* ID:ReceiveFilePostprocessorU_SErrorWritingDestinationFileOrig:"Fehler beim Schreiben der Zieldatei:\r%s\r"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SErrorWritingDestinationFile "Error writing destination file:\r%s\r"
+	/* ID:ReceiveFilePostprocessorU_SCannotDeleteFileOrig:"Kann Datei nicht löschen: \r%s\r%s\r\r"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SCannotDeleteFile "Cannot delete file:\r%s\r%s\r\r"
+	/* ID:ReceiveFilePostprocessorU_SCannotDeletePartOrig:"Kann Teil nicht löschen: \r%s\r\r"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SCannotDeletePart "Cannot delete part: \r%s\r\r"
+	/* ID:ReceiveFilePostprocessorU_SReceivedFileSavedOrig:"Empfangene Datei gespeichert:\r%s\r"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SReceivedFileSaved "Received file has been saved:\r%s\r"
+	/* ID:MainU_SInitFontsOrig:"Initialisiere Schriften..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SInitFonts "Initializing Fonts..."
+	/* ID:MainU_SInitStationsOrig:"Initialisiere Datenbank..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SInitStations "Initializing Database..."
+	/* ID:MainU_SInitChannelsOrig:"Initialisiere Kanäle..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SInitChannels "Initializing Channels..."
+	/* ID:MainU_SInitDevicesOrig:"Initialisiere Geräte..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SInitDevices "Initializing Devices..."
+	/* ID:MainU_SReadyOrig:"Bereit."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SReady "Ready."
+	/* ID:MainU_SErrorDatabaseOrig:"Fehler beim Öffnen der Datenbank. (%s)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SErrorDatabase "Error while opening the database. (%s)"
+	/* ID:MainU_SHintReadyOrig:"Alle Geräte sind bereit|"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SHintReady "All devices are ready|"
+	/* ID:MainU_SHintNotReadyOrig:"Ein Gerät ist nicht bereit|"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SHintNotReady "A device is not ready|"
+	/* ID:MainU_SDatabaseRepairOrig:"Die Datenbank wird beim nächsten Start von Paxon repariert und optimiert."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SDatabaseRepair "The database will be repaired and/or optimized upon the next startup."
+	/* ID:MainU_SClearConsoleOrig:"Ausgabefenster löschen?"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SClearConsole "Clear output window?"
+	/* ID:MainU_SClearConsoleTitleOrig:"Paxon"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MainU_SClearConsoleTitle "Paxon"
+	/* ID:ConnectCommandU_SNoFreeChannelOrig:"Alle Kanäle sind belegt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SNoFreeChannel "All channels are busy."
+	/* ID:ConnectCommandU_SNotSimultaneousOrig:"Gewählte Betriebsarten sind nicht gleichzeitig möglich."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SNotSimultaneous "Selected operating modes are not available at the same time."
+	/* ID:ReceiveFilePostprocessorU_SFileSavedOrig:"Empfangene Datei gespeichert:\r%s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SFileSaved "Received file has been saved:\r%s"
+	/* ID:ReceiveFilePostprocessorU_SErrorSavingFileOrig:"Fehler beim Speichern der Datei:\r%s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SErrorSavingFile "Error saving file:\r%s"
+	/* ID:ReceiveFilePostprocessorU_SFileNotSavedOrig:"Empfangene Datei NICHT gespeichert."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SFileNotSaved "Received file has NOT been saved."
+	/* ID:ReceiveFilePostprocessorU_SErrorCreatingFolderOrig:"Empfangene Datei NICHT gespeichert.\rEmpfangs-Ordner konnte nicht angelegt werden:\r%s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SErrorCreatingFolder "Received file has NOT been saved.\rCannot create folder:\r%s"
+	/* ID:ReceiveFilePostprocessorU_SPartReceivedOrig:"Teil %d von %s empfangen."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SPartReceived "Received part %d of %s."
+	/* ID:ReceiveFilePostprocessorU_SAllPartsAvailableOrig:"Alle Teile verfügbar. Kombiniere..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SAllPartsAvailable "All parts available. Combining..."
+	/* ID:ReceiveFilePostprocessorU_SPartsMissingOrig:"Folgende Teile fehlen noch:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SPartsMissing "Missing parts:"
+	/* ID:ReceiveFilePostprocessorU_SDecOrig:"dez:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SDec "dec:"
+	/* ID:ReceiveFilePostprocessorU_SHexOrig:"hex:"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SHex "hex:"
+	/* ID:ReceiveFilePostprocessorU_SCRCErrorOrig:"CRC-Fehler:\r%s, Teil %d von %d"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SCRCError "CRC error:\r%s, part %d of %d"
+	/* ID:ReceiveFilePostprocessorU_SWrongDataInHeaderOrig:"FEHLER: Falsche Daten im Header."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SWrongDataInHeader "ERROR: Wrong data in header."
+	/* ID:ReceiveFilePostprocessorU_SHeaderInvalidOrTooShortOrig:"FEHLER: Header ungültig oder zu kurz."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SHeaderInvalidOrTooShort "ERROR: Header invalid or too short."
+	/* ID:ReceiveFilePostprocessorU_SErrorInAccumulatedCRCOrig:"Fehler im akkumulierten CRC von Teil %d."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SErrorInAccumulatedCRC "Error in accumulated CRC of part %d."
+	/* ID:ReceiveFilePostprocessorU_SReceivedFileNotSavedFolderCouldNotCreateFolderOrig:"Empfangene Datei NICHT gespeichert.\rEmpfangs-Ordner konnte nicht angelegt werden:\r%s\r"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ReceiveFilePostprocessorU_SReceivedFileNotSavedFolderCouldNotCreateFolder "Received file has NOT been saved.\rThe folder for received data could not be created:\r%s\r"
+	/* ID:StationDatabaseDlgU_SRemoveOrig:"Station wirklich entfernen?"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseDlgU_SRemove "Really remove station?"
+	/* ID:StationDatabaseDlgU_SInvalidCallsignOrig:"Ungültiges Rufzeichen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseDlgU_SInvalidCallsign "Invalid callsign"
+	/* ID:StationDatabaseDlgU_SStationExistsOrig:"Die Station ist bereits in der Datenbank vorhanden."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseDlgU_SStationExists "The station already exists in the database."
+	/* ID:StationDatabaseDlgU_SCannotAddStationOrig:"Die Station kann nicht angelegt werden."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseDlgU_SCannotAddStation "The station cannot be created."
+	/* ID:StationDatabaseDlgU_SPropertiesOfOrig:"Einstellungen für %s:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseDlgU_SPropertiesOf "Settings for %s:"
+	/* ID:ConnectCommandU_SUIDestinationOrig:"UI-Ziel"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SUIDestination "UI Destination"
+	/* ID:ConnectCommandU_SUIDestinationTitleOrig:"UI-Ziel einstellen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SUIDestinationTitle "Set UI Destination"
+	/* ID:ConnectCommandU_SMessageboxCaptionOrig:"Verbinden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SMessageboxCaption "Connect"
+	/* ID:ConnectCommandU_SNoChannelSelectedOrig:"Kein Kanal ausgewählt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SNoChannelSelected "No channel selected."
+	/* ID:ConnectCommandU_SDeviceTimeoutOrig:"Das Gerät antwortet nicht."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SDeviceTimeout "The device is not responding."
+	/* ID:ConnectCommandU_SNoDeviceOrig:"Kein Gerät vorhanden."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SNoDevice "No device available."
+	/* ID:ConnectCommandU_SChannelAlreadyConnectedOrig:"Der Kanal ist bereits verbunden."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SChannelAlreadyConnected "The channel is already connected."
+	/* ID:ConnectCommandU_SNoSSIDOrig:"Keine freie SSID verfügbar."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SNoSSID "There is no SSID available."
+	/* ID:ConnectCommandU_SDeviceErrorOrig:"Gerätefehler."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SDeviceError "Device error."
+	/* ID:ConnectCommandU_SUnknownErrorOrig:"Unbekannter Fehler."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SUnknownError "Unknown error."
+	/* ID:ConnectCommandU_SUnhandledErrorOrig:"Unbehandelter Fehler."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ConnectCommandU_SUnhandledError "Unhandled error."
+	/* ID:RemoteCommandsU_SRemoteCommandDirSummaryOrig:"%d Dateien, %.0n Bytes"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDirSummary "%d files, %.0n bytes"
+	/* ID:RemoteCommandsU_SRemoteCommandDirHelpOrig:"Zeigt den Inhalt des aktuellen Ordners an"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDirHelp "Shows the content of the current directory"
+	/* ID:RemoteCommandsU_SRemoteCommandCDCurrentDirectoryOrig:"Aktueller Ordner: %s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandCDCurrentDirectory "Current folder: %s"
+	/* ID:RemoteCommandsU_SRemoteCommandCDInvalidParameterOrig:"Ungültiger Parameter"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandCDInvalidParameter "Invalid parameter"
+	/* ID:RemoteCommandsU_SRemoteCommandCDHelpOrig:"Wechselt den aktuellen Ordner"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandCDHelp "Changes the current directory"
+	/* ID:RemoteCommandsU_SRemoteCommandReadFolderAccessDeniedOrig:"Zugriff verweigert. Ordner: %s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandReadFolderAccessDenied "Access denied. Folder: %s"
+	/* ID:RemoteCommandsU_SRemoteCommandReadHelpOrig:"Lädt eine Datei herunter"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandReadHelp "Downloads a file"
+	/* ID:RemoteCommandsU_SRemoteCommandDeleteNoParamOrig:"Parameter erforderlich"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDeleteNoParam "Parameter required"
+	/* ID:RemoteCommandsU_SRemoteCommandDeleteNotFoundOrig:"Datei(en) nicht gefunden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDeleteNotFound "File(s) not found"
+	/* ID:RemoteCommandsU_SRemoteCommandDeleteFileDeletedOrig:"%s: gelöscht"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDeleteFileDeleted "%s: deleted"
+	/* ID:RemoteCommandsU_SRemoteCommandDeleteFileAccessDeniedOrig:"%s: Zugriff verweigert"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDeleteFileAccessDenied "%s: access denied"
+	/* ID:RemoteCommandsU_SRemoteCommandDeleteHelpOrig:"Löscht eine Datei"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDeleteHelp "Deletes a file"
+	/* ID:RemoteCommandsU_SRemoteCommandBinmodeHelpOrig:"Wählt ein Binärübertragungsprotokoll aus"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandBinmodeHelp "Chooses a transfer protocol"
+	/* ID:StationDatabasePasswordDlgU_SAddPasswordOrig:"Passwort hinzufügen..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabasePasswordDlgU_SAddPassword "Add Password..."
+	/* ID:StationDatabasePasswordDlgU_SEditPasswordOrig:"Passwort bearbeiten..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabasePasswordDlgU_SEditPassword "Edit Password..."
+	/* ID:StationDatabaseDlgU_SRemoveCaptionOrig:"Entfernen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  StationDatabaseDlgU_SRemoveCaption "Remove"
+	/* ID:RemoteCommandsU_SRemoteCommandRingHelpOrig:"Ruft den Benutzer"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandRingHelp "Calls the station operator"
+	/* ID:RemoteCommandsU_SNoInfoOrig:"Kein Info-Text vorhanden."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SNoInfo "No text available."
+	/* ID:RemoteCommandsU_SRemoteCommandInfoHelpOrig:"Zeigt Informationen über diese Station"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandInfoHelp "Shows informations about this station"
+	/* ID:RemoteCommandsU_SNameUnknownOrig:"Name unbekannt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SNameUnknown "Name unknown."
+	/* ID:RemoteCommandsU_SNameHelloOrig:"Hallo %s."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SNameHello "Hello %s."
+	/* ID:RemoteCommandsU_SNameErrorOrig:"Fehler."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SNameError "Error."
+	/* ID:RemoteCommandsU_SRemoteCommandNameHelpOrig:"Trägt den Namen in die Datenbank ein"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandNameHelp "Saves the name in the stations database"
+	/* ID:RemoteCommandsU_SNoNewsOrig:"Keine Neuigkeiten."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SNoNews "No news."
+	/* ID:RemoteCommandsU_SRemoteCommandNewsHelpOrig:"Zeigt aktuelle Informationen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandNewsHelp "Shows current news"
+	/* ID:RemoteCommandsU_SCStatusTitleOrig:"Verbindungs-Status:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SCStatusTitle "Connect status:"
+	/* ID:RemoteCommandsU_SRemoteCommandCStatusHelpOrig:"Zeigt die bestehenden Verbindungen an"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandCStatusHelp "Shows currently active connects"
+	/* ID:RemoteCommandsU_SRttErrorOrig:"Fehler."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRttError "Error."
+	/* ID:RemoteCommandsU_SRttResultOrig:"Laufzeit: %d sek."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRttResult "Round trip time: %d sec."
+	/* ID:RemoteCommandsU_SRemoteCommandRTTHelpOrig:"Misst die Laufzeit (hin und zurück)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandRTTHelp "Measures the round trip time"
+	/* ID:RemoteCommandsU_SRemoteCommandDirFolderAccessDeniedOrig:"Zugriff verweigert. Ordner: %s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDirFolderAccessDenied "Access denied. Folder: %s"
+	/* ID:RemoteCommandsU_SRemoteCommandDirHeaderOrig:"Inhalt von %s%s%s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDirHeader "Content of %s%s%s"
+	/* ID:TextsU_SDefaultConnectTextOrig:"\rHallo %n...\r"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TextsU_SDefaultConnectText "\rHello %n...\r"
+	/* ID:TextsU_SDefaultQuitTextOrig:"<Paxon>: Tschüss...\r"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TextsU_SDefaultQuitText "<Paxon>: Bye...\r"
+	/* ID:RemoteCommandsU_SInvalidRemoteCommandOrig:"Ungültiger Fernsteuerbefehl."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SInvalidRemoteCommand "Invalid remote command."
+	/* ID:RemoteCommandsU_SRemoteCommandDeniedOrig:"Fernsteuerbefehl gesperrt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDenied "Remote command disabled."
+	/* ID:RemoteCommandsU_SRemoteCommandErrorOrig:"Fehler bei der Ausführung des Fernsteuerbefehls."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandError "Error while executing remote command."
+	/* ID:RemoteCommandsU_SRemoteCommandEchoHelpOrig:"Sendet Text zurück"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandEchoHelp "Sends text back to sender"
+	/* ID:RemoteCommandsU_SHelpEnabledOrig:"Verfügbare Fernsteuerbefehle:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SHelpEnabled "Available remote commands:"
+	/* ID:RemoteCommandsU_SHelpDisabledOrig:"Gesperrte Fernsteuerbefehle:"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SHelpDisabled "Disabled remote commands:"
+	/* ID:RemoteCommandsU_SRemoteCommandHelpHelpOrig:"Zeigt diese Hilfe an"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandHelpHelp "Shows this help text"
+	/* ID:RemoteCommandsU_SRemoteCommandQuitHelpOrig:"Sendet Abschiedstext und trennt die Verbindung"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandQuitHelp "Sends quit-text and cuts the connection"
+	/* ID:RemoteCommandsU_SVersionOrig:"Version %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SVersion "Version %s"
+	/* ID:RemoteCommandsU_SRemoteCommandVersionHelpOrig:"Gibt die Version von Paxon aus"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandVersionHelp "Prints the current version number"
+	/* ID:RemoteCommandsU_SRemoteCommandDisconnectHelpOrig:"Trennt die Verbindung"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandDisconnectHelp "Cuts the connection"
+	/* ID:RemoteCommandsU_SRemoteCommandSIDHelpOrig:"Sendet die Terminal-Station-ID"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SRemoteCommandSIDHelp "Sends the terminal station ID"
+	/* ID:RemoteCommandsU_SDidRingOrig:"Es hat geklingelt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SDidRing "The bell rang."
+	/* ID:RemoteCommandsU_SDidntRingOrig:"Es hat nicht geklingelt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RemoteCommandsU_SDidntRing "The bell didn't ring."
+	/* ID:MessageboxU_SIgnoreOrig:"&Ignorieren"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MessageboxU_SIgnore "&Ignore"
+	/* ID:MessageboxU_SAllOrig:"&Alle"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MessageboxU_SAll "&All"
+	/* ID:MessageboxU_SHelpOrig:"&Hilfe"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MessageboxU_SHelp "&Help"
+	/* ID:SendFilePreprocessorU_SPartFileErrorOrig:"Die Teildatei \"%s\" kann nicht angelegt werden, das Senden wird abgebrochen:\r%s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFilePreprocessorU_SPartFileError "The part file \"%s\" cannot be created, sending is cancelled:\r%s"
+	/* ID:SendFilePreprocessorU_SPGPNotAvailableOrig:"PGP ist nicht verfügbar."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFilePreprocessorU_SPGPNotAvailable "PGP is not available."
+	/* ID:SendFilePreprocessorU_SNoPGPKeyOrig:"Es ist kein PGP-Schlüssel ausgewählt."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFilePreprocessorU_SNoPGPKey "No PGP key is selected."
+	/* ID:SendFilePreprocessorU_SNoResultOrig:"PGP hat keine signierte Nachricht geliefert."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFilePreprocessorU_SNoResult "PGP did not return a signed message."
+	/* ID:SendFilePreprocessorU_SPGPSignErrorOrig:"Die Nachricht konnte nicht mit PGP signiert werden und wurde nicht gesendet:\r%s"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SendFilePreprocessorU_SPGPSignError "The message could not be signed with PGP and was not sent:\r%s"
+	/* ID:MyCallsU_SIncomingConnectAcceptOrig:"annehmen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MyCallsU_SIncomingConnectAccept "accept"
+	/* ID:MyCallsU_SIncomingConnectIgnoreOrig:"ignorieren"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MyCallsU_SIncomingConnectIgnore "ignore"
+	/* ID:MyCallsU_SIncomingConnectBusyOrig:"abweisen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MyCallsU_SIncomingConnectBusy "reject"
+	/* ID:SoundsFormU_SLoadSaveDialogFilterOrig:"Paxon Soundschema (*.pxs)|*.pxs"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsFormU_SLoadSaveDialogFilter "Paxon Sound Scheme (*.pxs)|*.pxs"
+	/* ID:SoundsFormU_SOpenDialogFilterOrig:"Klang-Dateien (*.wav)|*.wav|Alle Dateien (*)|*.*"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsFormU_SOpenDialogFilter "Wave-File (*.wav)|*.wav|All Files (*.*)|*.*"
+	/* ID:SoundsFormU_SOpenDialogTitleOrig:"Klang auswählen..."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsFormU_SOpenDialogTitle "Select sound..."
+	/* ID:SoundsFormU_SLoadDialogTitleOrig:"Schema laden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsFormU_SLoadDialogTitle "Load scheme"
+	/* ID:SoundsFormU_SSaveDialogTitleOrig:"Schema speichern"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsFormU_SSaveDialogTitle "Save scheme"
+	/* ID:InterfacesU_SStationTypeClusterOrig:"Cluster"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  InterfacesU_SStationTypeCluster "Cluster"
+	/* ID:TBXConsts_STBXCannotInsertOwnParentOrig:"Cannot insert own parent"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TBXConsts_STBXCannotInsertOwnParent "Cannot insert own parent"
+	/* ID:TBXConsts_STBXCannotRegisterThemeOrig:"Cannot register theme"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TBXConsts_STBXCannotRegisterTheme "Cannot register theme"
+	/* ID:TBXConsts_STBXThemeAlreadyRegisteredOrig:"Theme %s is already registered"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TBXConsts_STBXThemeAlreadyRegistered "Theme %s is already registered"
+	/* ID:TBXConsts_STBXUnknownThemeOrig:"Unknown theme %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TBXConsts_STBXUnknownTheme "Unknown theme %s"
+	/* ID:TBXConsts_STBXCannotReleaseThemeOrig:"Cannot release theme %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TBXConsts_STBXCannotReleaseTheme "Cannot release theme %s"
+	/* ID:PGPApiU_SUnknownErrorOrig:"Unbekannter PGP-Fehler"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  PGPApiU_SUnknownError "Unknown PGP error"
+	/* ID:JConsts_sChangeJPGSizeOrig:"Cannot change the size of a JPEG image"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  JConsts_sChangeJPGSize "Cannot change the size of a JPEG image"
+	/* ID:JConsts_sJPEGErrorOrig:"JPEG error #%d"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  JConsts_sJPEGError "JPEG error #%d"
+	/* ID:JConsts_sJPEGImageFileOrig:"JPEG Image File"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  JConsts_sJPEGImageFile "JPEG Image File"
+	/* ID:MessageboxU_SYesOrig:"&Ja"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MessageboxU_SYes "&Yes"
+	/* ID:MessageboxU_SNoOrig:"&Nein"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MessageboxU_SNo "&No"
+	/* ID:MessageboxU_SOkOrig:"&Ok"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MessageboxU_SOk "&OK"
+	/* ID:MessageboxU_SCancelOrig:"Abbrechen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MessageboxU_SCancel "Cancel"
+	/* ID:MessageboxU_SAbortOrig:"Abbruch"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MessageboxU_SAbort "Abort"
+	/* ID:MessageboxU_SRetryOrig:"&Wiederholen"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  MessageboxU_SRetry "&Retry"
+	/* ID:SoundsConstsU_sen_pgp_wrongOrig:"PGP: Nachricht verändert"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_pgp_wrong "PGP: Signature bad"
+	/* ID:SoundsConstsU_sen_channelswitchOrig:"Kanalwechsel"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_channelswitch "Change channel"
+	/* ID:SoundsConstsU_sen_programstartOrig:"Programmstart"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_programstart "Program start"
+	/* ID:SoundsConstsU_sen_programendOrig:"Programmende"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_programend "Program end"
+	/* ID:TextsConstsU_ten_greetingOrig:"Begrüßung"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TextsConstsU_ten_greeting "Welcome"
+	/* ID:TextsConstsU_ten_endOrig:"Abschied (//Q)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TextsConstsU_ten_end "Quit (//Q)"
+	/* ID:TextsConstsU_ten_infoOrig:"Info über die Station (//I)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TextsConstsU_ten_info "Information about your station (//I)"
+	/* ID:TextsConstsU_ten_newsOrig:"Neuigkeiten (//NE)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TextsConstsU_ten_news "News (//NE)"
+	/* ID:TextsConstsU_ten_nOrig:"Textbaustein %d (Strg+%d)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  TextsConstsU_ten_n "Textmacro %d (Ctrl+%d)"
+	/* ID:InterfacesU_SPasswordTypeUserOrig:"Benutzer"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  InterfacesU_SPasswordTypeUser "User"
+	/* ID:InterfacesU_SPasswordTypeSysopOrig:"Sysop"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  InterfacesU_SPasswordTypeSysop "Sysop"
+	/* ID:InterfacesU_SStationTypeAutomaticOrig:"Automatisch"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  InterfacesU_SStationTypeAutomatic "Automatic"
+	/* ID:InterfacesU_SStationTypeNodeOrig:"Digi"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  InterfacesU_SStationTypeNode "Node"
+	/* ID:InterfacesU_SStationTypeMailboxOrig:"Mailbox"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  InterfacesU_SStationTypeMailbox "Mailbox"
+	/* ID:InterfacesU_SStationTypeConversOrig:"Convers"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  InterfacesU_SStationTypeConvers "Convers"
+	/* ID:InterfacesU_SStationTypeTerminalOrig:"Terminal"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  InterfacesU_SStationTypeTerminal "Terminal"
+	/* ID:SoundsConstsU_sen_connectingOrig:"Verbindung: Aufbau"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_connecting "Connection: Connecting"
+	/* ID:SoundsConstsU_sen_connected_outOrig:"Verbindung: Hergestellt (ausgehend)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_connected_out "Connection: Connected (outgoing)"
+	/* ID:SoundsConstsU_sen_connected_inOrig:"Verbindung: Hergestellt (ankommend)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_connected_in "Connection: Connected (incoming)"
+	/* ID:SoundsConstsU_sen_disconnectingOrig:"Verbindung: Abbau"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_disconnecting "Connection: Disconnecting"
+	/* ID:SoundsConstsU_sen_disconnectedOrig:"Verbindung: Getrennt"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_disconnected "Connection: Disconnected"
+	/* ID:SoundsConstsU_sen_linkfailureOrig:"Verbindung: Fehler"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_linkfailure "Connection: Link failure"
+	/* ID:SoundsConstsU_sen_ringOrig:"Fernsteuerung: //RING"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_ring "Remote: //RING"
+	/* ID:SoundsConstsU_sen_rx_activeOrig:"Zeile empfangen (aktiver Kanal)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_rx_active "Line received (active channel)"
+	/* ID:SoundsConstsU_sen_rx_inactiveOrig:"Zeile empfangen (inaktiver Kanal)"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_rx_inactive "Line received (inactive channel)"
+	/* ID:SoundsConstsU_sen_txOrig:"Zeile senden"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_tx "Line sent"
+	/* ID:SoundsConstsU_sen_transfer_startOrig:"Dateiübertragung: Start"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_transfer_start "File transfer: Start"
+	/* ID:SoundsConstsU_sen_transfer_successOrig:"Dateiübertragung: Erfolg"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_transfer_success "File transfer: Success"
+	/* ID:SoundsConstsU_sen_transfer_cancelOrig:"Dateiübertragung: Abbruch"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_transfer_cancel "File transfer: Cancel"
+	/* ID:SoundsConstsU_sen_transfer_errorOrig:"Dateiübertragung: Fehler"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_transfer_error "File transfer: Error"
+	/* ID:SoundsConstsU_sen_pgp_validOrig:"PGP: Signatur gültig"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_pgp_valid "PGP: Signature valid"
+	/* ID:SoundsConstsU_sen_pgp_unknownOrig:"PGP: Unterzeichner/Echtheit unbekannt"Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SoundsConstsU_sen_pgp_unknown "PGP: Signer/Validity unknown"
+	/* ID:ComStrs_sTabFailClearOrig:"Failed to clear tab control"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sTabFailClear "Failed to clear tab control"
+	/* ID:ComStrs_sTabFailDeleteOrig:"Failed to delete tab at index %d"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sTabFailDelete "Failed to delete tab at index %d"
+	/* ID:ComStrs_sTabFailRetrieveOrig:"Failed to retrieve tab at index %d"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sTabFailRetrieve "Failed to retrieve tab at index %d"
+	/* ID:ComStrs_sTabFailGetObjectOrig:"Failed to get object at index %d"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sTabFailGetObject "Failed to get object at index %d"
+	/* ID:ComStrs_sTabFailSetOrig:"Failed to set tab \"%s\" at index %d"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sTabFailSet "Failed to set tab \"%s\" at index %d"
+	/* ID:ComStrs_sTabFailSetObjectOrig:"Failed to set object at index %d"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sTabFailSetObject "Failed to set object at index %d"
+	/* ID:ComStrs_sTabMustBeMultiLineOrig:"MultiLine must be True when TabPosition is tpLeft or tpRight"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sTabMustBeMultiLine "MultiLine must be True when TabPosition is tpLeft or tpRight"
+	/* ID:ComStrs_sInvalidOwnerOrig:"Invalid owner"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sInvalidOwner "Invalid owner"
+	/* ID:ComStrs_sRichEditInsertErrorOrig:"RichEdit line insertion error"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sRichEditInsertError "RichEdit line insertion error"
+	/* ID:ComStrs_sRichEditLoadFailOrig:"Failed to Load Stream"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sRichEditLoadFail "Failed to Load Stream"
+	/* ID:ComStrs_sRichEditSaveFailOrig:"Failed to Save Stream"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sRichEditSaveFail "Failed to Save Stream"
+	/* ID:ComStrs_sUDAssociatedOrig:"%s is already associated with %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sUDAssociated "%s is already associated with %s"
+	/* ID:ComStrs_sPageIndexErrorOrig:"%d is an invalid PageIndex value.  PageIndex must be between 0 and %d"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sPageIndexError "%d is an invalid PageIndex value.  PageIndex must be between 0 and %d"
+	/* ID:ComStrs_sInvalidComCtl32Orig:"This control requires version 4.70 or greater of COMCTL32.DLL"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ComStrs_sInvalidComCtl32 "This control requires version 4.70 or greater of COMCTL32.DLL"
+	/* ID:WinHelpViewer_hNoKeywordOrig:"No help keyword specified."Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  WinHelpViewer_hNoKeyword "No help keyword specified."
+	/* ID:GlobalU_SApplicationDataPathErrorOrig:"Fehler beim Erstellen des Ordners Anwendungsdaten."Status:1Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  GlobalU_SApplicationDataPathError "Error creating folder application data."
+	/* ID:ExtCtrls_clNameHighlightOrig:"Highlight Background"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameHighlight "Highlight Background"
+	/* ID:ExtCtrls_clNameHighlightTextOrig:"Highlight Text"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameHighlightText "Highlight Text"
+	/* ID:ExtCtrls_clNameInactiveBorderOrig:"Inactive Border"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameInactiveBorder "Inactive Border"
+	/* ID:ExtCtrls_clNameInactiveCaptionOrig:"Inactive Caption"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameInactiveCaption "Inactive Caption"
+	/* ID:ExtCtrls_clNameInactiveCaptionTextOrig:"Inactive Caption Text"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameInactiveCaptionText "Inactive Caption Text"
+	/* ID:ExtCtrls_clNameInfoBkOrig:"Info Background"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameInfoBk "Info Background"
+	/* ID:ExtCtrls_clNameInfoTextOrig:"Info Text"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameInfoText "Info Text"
+	/* ID:ExtCtrls_clNameMenuOrig:"Menu Background"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameMenu "Menu Background"
+	/* ID:ExtCtrls_clNameMenuTextOrig:"Menu Text"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameMenuText "Menu Text"
+	/* ID:ExtCtrls_clNameNoneOrig:"None"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameNone "None"
+	/* ID:ExtCtrls_clNameScrollBarOrig:"Scroll Bar"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameScrollBar "Scroll Bar"
+	/* ID:ExtCtrls_clName3DDkShadowOrig:"3D Dark Shadow"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clName3DDkShadow "3D Dark Shadow"
+	/* ID:ExtCtrls_clName3DLightOrig:"3D Light"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clName3DLight "3D Light"
+	/* ID:ExtCtrls_clNameWindowOrig:"Window Background"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameWindow "Window Background"
+	/* ID:ExtCtrls_clNameWindowFrameOrig:"Window Frame"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameWindowFrame "Window Frame"
+	/* ID:ExtCtrls_clNameWindowTextOrig:"Window Text"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameWindowText "Window Text"
+	/* ID:ExtCtrls_clNameWhiteOrig:"White"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameWhite "White"
+	/* ID:ExtCtrls_clNameMoneyGreenOrig:"Money Green"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameMoneyGreen "Money Green"
+	/* ID:ExtCtrls_clNameSkyBlueOrig:"Sky Blue"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameSkyBlue "Sky Blue"
+	/* ID:ExtCtrls_clNameCreamOrig:"Cream"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameCream "Cream"
+	/* ID:ExtCtrls_clNameMedGrayOrig:"Medium Gray"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameMedGray "Medium Gray"
+	/* ID:ExtCtrls_clNameActiveBorderOrig:"Active Border"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameActiveBorder "Active Border"
+	/* ID:ExtCtrls_clNameActiveCaptionOrig:"Active Caption"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameActiveCaption "Active Caption"
+	/* ID:ExtCtrls_clNameAppWorkSpaceOrig:"Application Workspace"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameAppWorkSpace "Application Workspace"
+	/* ID:ExtCtrls_clNameBackgroundOrig:"Background"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameBackground "Background"
+	/* ID:ExtCtrls_clNameBtnFaceOrig:"Button Face"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameBtnFace "Button Face"
+	/* ID:ExtCtrls_clNameBtnHighlightOrig:"Button Highlight"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameBtnHighlight "Button Highlight"
+	/* ID:ExtCtrls_clNameBtnShadowOrig:"Button Shadow"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameBtnShadow "Button Shadow"
+	/* ID:ExtCtrls_clNameBtnTextOrig:"Button Text"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameBtnText "Button Text"
+	/* ID:ExtCtrls_clNameCaptionTextOrig:"Caption Text"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameCaptionText "Caption Text"
+	/* ID:ExtCtrls_clNameDefaultOrig:"Default"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameDefault "Default"
+	/* ID:ExtCtrls_clNameGrayTextOrig:"Gray Text"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameGrayText "Gray Text"
+	/* ID:HelpIntfs_hNoTopicsOrig:"No topic-based help system installed"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HelpIntfs_hNoTopics "No topic-based help system installed"
+	/* ID:ExtCtrls_clNameBlackOrig:"Black"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameBlack "Black"
+	/* ID:ExtCtrls_clNameMaroonOrig:"Maroon"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameMaroon "Maroon"
+	/* ID:ExtCtrls_clNameGreenOrig:"Green"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameGreen "Green"
+	/* ID:ExtCtrls_clNameOliveOrig:"Olive"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameOlive "Olive"
+	/* ID:ExtCtrls_clNameNavyOrig:"Navy"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameNavy "Navy"
+	/* ID:ExtCtrls_clNamePurpleOrig:"Purple"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNamePurple "Purple"
+	/* ID:ExtCtrls_clNameTealOrig:"Teal"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameTeal "Teal"
+	/* ID:ExtCtrls_clNameGrayOrig:"Gray"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameGray "Gray"
+	/* ID:ExtCtrls_clNameSilverOrig:"Silver"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameSilver "Silver"
+	/* ID:ExtCtrls_clNameRedOrig:"Red"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameRed "Red"
+	/* ID:ExtCtrls_clNameLimeOrig:"Lime"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameLime "Lime"
+	/* ID:ExtCtrls_clNameYellowOrig:"Yellow"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameYellow "Yellow"
+	/* ID:ExtCtrls_clNameBlueOrig:"Blue"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameBlue "Blue"
+	/* ID:ExtCtrls_clNameFuchsiaOrig:"Fuchsia"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameFuchsia "Fuchsia"
+	/* ID:ExtCtrls_clNameAquaOrig:"Aqua"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  ExtCtrls_clNameAqua "Aqua"
+	/* ID:Consts_SIconToClipboardOrig:"Clipboard does not support Icons"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SIconToClipboard "Clipboard does not support Icons"
+	/* ID:Consts_SCannotOpenClipboardOrig:"Cannot open clipboard"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SCannotOpenClipboard "Cannot open clipboard"
+	/* ID:Consts_SDefaultOrig:"Default"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SDefault "Default"
+	/* ID:Consts_SInvalidMemoSizeOrig:"Text exceeds memo capacity"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidMemoSize "Text exceeds memo capacity"
+	/* ID:Consts_SNoDefaultPrinterOrig:"There is no default printer currently selected"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SNoDefaultPrinter "There is no default printer currently selected"
+	/* ID:Consts_SDuplicateMenusOrig:"Menu '%s' is already being used by another form"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SDuplicateMenus "Menu '%s' is already being used by another form"
+	/* ID:Consts_SDockedCtlNeedsNameOrig:"Docked control must have a name"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SDockedCtlNeedsName "Docked control must have a name"
+	/* ID:Consts_SDockTreeRemoveErrorOrig:"Error removing control from dock tree"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SDockTreeRemoveError "Error removing control from dock tree"
+	/* ID:Consts_SDockZoneNotFoundOrig:" - Dock zone not found"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SDockZoneNotFound " - Dock zone not found"
+	/* ID:Consts_SDockZoneHasNoCtlOrig:" - Dock zone has no control"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SDockZoneHasNoCtl " - Dock zone has no control"
+	/* ID:Consts_SErrorSettingCountOrig:"Error setting %s.Count"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SErrorSettingCount "Error setting %s.Count"
+	/* ID:Consts_SListBoxMustBeVirtualOrig:"Listbox (%s) style must be virtual in order to set Count"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SListBoxMustBeVirtual "Listbox (%s) style must be virtual in order to set Count"
+	/* ID:Consts_SNoGetItemEventHandlerOrig:"No OnGetItem event handler assigned"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SNoGetItemEventHandler "No OnGetItem event handler assigned"
+	/* ID:HelpIntfs_hNoTableOfContentsOrig:"Unable to find a Table of Contents"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HelpIntfs_hNoTableOfContents "Unable to find a Table of Contents"
+	/* ID:HelpIntfs_hNothingFoundOrig:"No help found for %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HelpIntfs_hNothingFound "No help found for %s"
+	/* ID:HelpIntfs_hNoContextOrig:"No context-sensitive help installed"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  HelpIntfs_hNoContext "No context-sensitive help installed"
+	/* ID:Consts_SmkcPgUpOrig:"PgUp"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcPgUp "PgUp"
+	/* ID:Consts_SmkcPgDnOrig:"PgDn"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcPgDn "PgDn"
+	/* ID:Consts_SmkcEndOrig:"End"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcEnd "End"
+	/* ID:Consts_SmkcHomeOrig:"Home"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcHome "Home"
+	/* ID:Consts_SmkcLeftOrig:"Left"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcLeft "Left"
+	/* ID:Consts_SmkcUpOrig:"Up"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcUp "Up"
+	/* ID:Consts_SmkcRightOrig:"Right"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcRight "Right"
+	/* ID:Consts_SmkcDownOrig:"Down"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcDown "Down"
+	/* ID:Consts_SmkcInsOrig:"Ins"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcIns "Ins"
+	/* ID:Consts_SmkcDelOrig:"Del"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcDel "Del"
+	/* ID:Consts_SmkcShiftOrig:"Shift+"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcShift "Shift+"
+	/* ID:Consts_SmkcCtrlOrig:"Ctrl+"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcCtrl "Ctrl+"
+	/* ID:Consts_SmkcAltOrig:"Alt+"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcAlt "Alt+"
+	/* ID:Consts_SOutOfRangeOrig:"Value must be between %d and %d"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SOutOfRange "Value must be between %d and %d"
+	/* ID:Consts_SInsertLineErrorOrig:"Unable to insert a line"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInsertLineError "Unable to insert a line"
+	/* ID:Consts_SInvalidClipFmtOrig:"Invalid clipboard format"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidClipFmt "Invalid clipboard format"
+	/* ID:Consts_SMsgDlgYesOrig:"&Yes"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgYes "&Yes"
+	/* ID:Consts_SMsgDlgNoOrig:"&No"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgNo "&No"
+	/* ID:Consts_SMsgDlgOKOrig:"OK"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgOK "OK"
+	/* ID:Consts_SMsgDlgCancelOrig:"Cancel"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgCancel "Cancel"
+	/* ID:Consts_SMsgDlgHelpOrig:"&Help"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgHelp "&Help"
+	/* ID:Consts_SMsgDlgAbortOrig:"&Abort"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgAbort "&Abort"
+	/* ID:Consts_SMsgDlgRetryOrig:"&Retry"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgRetry "&Retry"
+	/* ID:Consts_SMsgDlgIgnoreOrig:"&Ignore"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgIgnore "&Ignore"
+	/* ID:Consts_SMsgDlgAllOrig:"&All"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgAll "&All"
+	/* ID:Consts_SMsgDlgNoToAllOrig:"N&o to All"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgNoToAll "N&o to All"
+	/* ID:Consts_SMsgDlgYesToAllOrig:"Yes to &All"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgYesToAll "Yes to &All"
+	/* ID:Consts_SmkcBkSpOrig:"BkSp"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcBkSp "BkSp"
+	/* ID:Consts_SmkcTabOrig:"Tab"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcTab "Tab"
+	/* ID:Consts_SmkcEscOrig:"Esc"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcEsc "Esc"
+	/* ID:Consts_SmkcEnterOrig:"Enter"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcEnter "Enter"
+	/* ID:Consts_SmkcSpaceOrig:"Space"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SmkcSpace "Space"
+	/* ID:Consts_SNoButtonOrig:"&No"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SNoButton "&No"
+	/* ID:Consts_SHelpButtonOrig:"&Help"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SHelpButton "&Help"
+	/* ID:Consts_SCloseButtonOrig:"&Close"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SCloseButton "&Close"
+	/* ID:Consts_SIgnoreButtonOrig:"&Ignore"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SIgnoreButton "&Ignore"
+	/* ID:Consts_SRetryButtonOrig:"&Retry"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SRetryButton "&Retry"
+	/* ID:Consts_SAbortButtonOrig:"Abort"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SAbortButton "Abort"
+	/* ID:Consts_SAllButtonOrig:"&All"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SAllButton "&All"
+	/* ID:Consts_SCannotDragFormOrig:"Cannot drag a form"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SCannotDragForm "Cannot drag a form"
+	/* ID:Consts_SVMetafilesOrig:"Metafiles"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SVMetafiles "Metafiles"
+	/* ID:Consts_SVEnhMetafilesOrig:"Enhanced Metafiles"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SVEnhMetafiles "Enhanced Metafiles"
+	/* ID:Consts_SVIconsOrig:"Icons"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SVIcons "Icons"
+	/* ID:Consts_SVBitmapsOrig:"Bitmaps"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SVBitmaps "Bitmaps"
+	/* ID:Consts_SMsgDlgWarningOrig:"Warning"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgWarning "Warning"
+	/* ID:Consts_SMsgDlgErrorOrig:"Error"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgError "Error"
+	/* ID:Consts_SMsgDlgInformationOrig:"Information"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgInformation "Information"
+	/* ID:Consts_SMsgDlgConfirmOrig:"Confirm"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMsgDlgConfirm "Confirm"
+	/* ID:Consts_SCannotShowModalOrig:"Cannot make a visible window modal"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SCannotShowModal "Cannot make a visible window modal"
+	/* ID:Consts_SPropertyOutOfRangeOrig:"%s property out of range"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SPropertyOutOfRange "%s property out of range"
+	/* ID:Consts_SMenuIndexErrorOrig:"Menu index out of range"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMenuIndexError "Menu index out of range"
+	/* ID:Consts_SMenuReinsertedOrig:"Menu inserted twice"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMenuReinserted "Menu inserted twice"
+	/* ID:Consts_SMenuNotFoundOrig:"Sub-menu is not in menu"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMenuNotFound "Sub-menu is not in menu"
+	/* ID:Consts_SNoTimersOrig:"Not enough timers available"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SNoTimers "Not enough timers available"
+	/* ID:Consts_SNotPrintingOrig:"Printer is not currently printing"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SNotPrinting "Printer is not currently printing"
+	/* ID:Consts_SPrintingOrig:"Printing in progress"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SPrinting "Printing in progress"
+	/* ID:Consts_SInvalidPrinterOrig:"Printer selected is not valid"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidPrinter "Printer selected is not valid"
+	/* ID:Consts_SDeviceOnPortOrig:"%s on %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SDeviceOnPort "%s on %s"
+	/* ID:Consts_SGroupIndexTooLowOrig:"GroupIndex cannot be less than a previous menu item's GroupIndex"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SGroupIndexTooLow "GroupIndex cannot be less than a previous menu item's GroupIndex"
+	/* ID:Consts_SNoMDIFormOrig:"Cannot create form. No MDI forms are currently active"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SNoMDIForm "Cannot create form. No MDI forms are currently active"
+	/* ID:Consts_SControlParentSetToSelfOrig:"A control cannot have itself as its parent"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SControlParentSetToSelf "A control cannot have itself as its parent"
+	/* ID:Consts_SOKButtonOrig:"OK"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SOKButton "OK"
+	/* ID:Consts_SCancelButtonOrig:"Cancel"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SCancelButton "Cancel"
+	/* ID:Consts_SYesButtonOrig:"&Yes"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SYesButton "&Yes"
+	/* ID:Consts_SChangeIconSizeOrig:"Cannot change the size of an icon"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SChangeIconSize "Cannot change the size of an icon"
+	/* ID:Consts_SUnknownClipboardFormatOrig:"Unsupported clipboard format"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SUnknownClipboardFormat "Unsupported clipboard format"
+	/* ID:Consts_SOutOfResourcesOrig:"Out of system resources"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SOutOfResources "Out of system resources"
+	/* ID:Consts_SNoCanvasHandleOrig:"Canvas does not allow drawing"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SNoCanvasHandle "Canvas does not allow drawing"
+	/* ID:Consts_SInvalidImageSizeOrig:"Invalid image size"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidImageSize "Invalid image size"
+	/* ID:Consts_SInvalidImageListOrig:"Invalid ImageList"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidImageList "Invalid ImageList"
+	/* ID:Consts_SReplaceImageOrig:"Unable to Replace Image"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SReplaceImage "Unable to Replace Image"
+	/* ID:Consts_SImageIndexErrorOrig:"Invalid ImageList Index"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SImageIndexError "Invalid ImageList Index"
+	/* ID:Consts_SImageReadFailOrig:"Failed to read ImageList data from stream"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SImageReadFail "Failed to read ImageList data from stream"
+	/* ID:Consts_SImageWriteFailOrig:"Failed to write ImageList data to stream"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SImageWriteFail "Failed to write ImageList data to stream"
+	/* ID:Consts_SWindowDCErrorOrig:"Error creating window device context"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SWindowDCError "Error creating window device context"
+	/* ID:Consts_SWindowClassOrig:"Error creating window class"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SWindowClass "Error creating window class"
+	/* ID:Consts_SCannotFocusOrig:"Cannot focus a disabled or invisible window"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SCannotFocus "Cannot focus a disabled or invisible window"
+	/* ID:Consts_SParentRequiredOrig:"Control '%s' has no parent window"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SParentRequired "Control '%s' has no parent window"
+	/* ID:Consts_SMDIChildNotVisibleOrig:"Cannot hide an MDI Child Form"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SMDIChildNotVisible "Cannot hide an MDI Child Form"
+	/* ID:Consts_SVisibleChangedOrig:"Cannot change Visible in OnShow or OnHide"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SVisibleChanged "Cannot change Visible in OnShow or OnHide"
+	/* ID:RTLConsts_SRegSetDataFailedOrig:"Failed to set data for '%s'"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SRegSetDataFailed "Failed to set data for '%s'"
+	/* ID:RTLConsts_SResNotFoundOrig:"Resource %s not found"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SResNotFound "Resource %s not found"
+	/* ID:RTLConsts_SSeekNotImplementedOrig:"%s.Seek not implemented"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SSeekNotImplemented "%s.Seek not implemented"
+	/* ID:RTLConsts_SSortedListErrorOrig:"Operation not allowed on sorted list"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SSortedListError "Operation not allowed on sorted list"
+	/* ID:RTLConsts_SUnknownGroupOrig:"%s not in a class registration group"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SUnknownGroup "%s not in a class registration group"
+	/* ID:RTLConsts_SUnknownPropertyOrig:"Property %s does not exist"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SUnknownProperty "Property %s does not exist"
+	/* ID:RTLConsts_SWriteErrorOrig:"Stream write error"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SWriteError "Stream write error"
+	/* ID:RTLConsts_SThreadCreateErrorOrig:"Thread creation error: %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SThreadCreateError "Thread creation error: %s"
+	/* ID:RTLConsts_SThreadErrorOrig:"Thread Error: %s (%d)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SThreadError "Thread Error: %s (%d)"
+	/* ID:Consts_SInvalidTabPositionOrig:"Tab position incompatible with current tab style"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidTabPosition "Tab position incompatible with current tab style"
+	/* ID:Consts_SInvalidTabStyleOrig:"Tab style incompatible with current tab position"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidTabStyle "Tab style incompatible with current tab position"
+	/* ID:Consts_SInvalidBitmapOrig:"Bitmap image is not valid"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidBitmap "Bitmap image is not valid"
+	/* ID:Consts_SInvalidIconOrig:"Icon image is not valid"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidIcon "Icon image is not valid"
+	/* ID:Consts_SInvalidMetafileOrig:"Metafile is not valid"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidMetafile "Metafile is not valid"
+	/* ID:Consts_SInvalidPixelFormatOrig:"Invalid pixel format"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SInvalidPixelFormat "Invalid pixel format"
+	/* ID:Consts_SScanLineOrig:"Scan line index out of range"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  Consts_SScanLine "Scan line index out of range"
+	/* ID:RTLConsts_SFOpenErrorExOrig:"Cannot open file \"%s\". %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SFOpenErrorEx "Cannot open file \"%s\". %s"
+	/* ID:RTLConsts_SIniFileWriteErrorOrig:"Unable to write to %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SIniFileWriteError "Unable to write to %s"
+	/* ID:RTLConsts_SInvalidImageOrig:"Invalid stream format"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SInvalidImage "Invalid stream format"
+	/* ID:RTLConsts_SInvalidNameOrig:"''%s'' is not a valid component name"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SInvalidName "''%s'' is not a valid component name"
+	/* ID:RTLConsts_SInvalidPropertyOrig:"Invalid property value"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SInvalidProperty "Invalid property value"
+	/* ID:RTLConsts_SInvalidPropertyPathOrig:"Invalid property path"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SInvalidPropertyPath "Invalid property path"
+	/* ID:RTLConsts_SInvalidPropertyValueOrig:"Invalid property value"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SInvalidPropertyValue "Invalid property value"
+	/* ID:RTLConsts_SInvalidRegTypeOrig:"Invalid data type for '%s'"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SInvalidRegType "Invalid data type for '%s'"
+	/* ID:RTLConsts_SListCapacityErrorOrig:"List capacity out of bounds (%d)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SListCapacityError "List capacity out of bounds (%d)"
+	/* ID:RTLConsts_SListCountErrorOrig:"List count out of bounds (%d)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SListCountError "List count out of bounds (%d)"
+	/* ID:RTLConsts_SListIndexErrorOrig:"List index out of bounds (%d)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SListIndexError "List index out of bounds (%d)"
+	/* ID:RTLConsts_SMemoryStreamErrorOrig:"Out of memory while expanding memory stream"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SMemoryStreamError "Out of memory while expanding memory stream"
+	/* ID:RTLConsts_SPropertyExceptionOrig:"Error reading %s%s%s: %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SPropertyException "Error reading %s%s%s: %s"
+	/* ID:RTLConsts_SReadErrorOrig:"Stream read error"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SReadError "Stream read error"
+	/* ID:RTLConsts_SReadOnlyPropertyOrig:"Property is read-only"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SReadOnlyProperty "Property is read-only"
+	/* ID:RTLConsts_SRegGetDataFailedOrig:"Failed to get data for '%s'"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SRegGetDataFailed "Failed to get data for '%s'"
+	/* ID:SysConst_SLongDayNameWedOrig:"Wednesday"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongDayNameWed "Wednesday"
+	/* ID:SysConst_SLongDayNameThuOrig:"Thursday"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongDayNameThu "Thursday"
+	/* ID:SysConst_SLongDayNameFriOrig:"Friday"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongDayNameFri "Friday"
+	/* ID:SysConst_SLongDayNameSatOrig:"Saturday"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongDayNameSat "Saturday"
+	/* ID:SysConst_SCannotCreateDirOrig:"Unable to create directory"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SCannotCreateDir "Unable to create directory"
+	/* ID:RTLConsts_SAncestorNotFoundOrig:"Ancestor for '%s' not found"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SAncestorNotFound "Ancestor for '%s' not found"
+	/* ID:RTLConsts_SAssignErrorOrig:"Cannot assign a %s to a %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SAssignError "Cannot assign a %s to a %s"
+	/* ID:RTLConsts_SBitsIndexErrorOrig:"Bits index out of range"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SBitsIndexError "Bits index out of range"
+	/* ID:RTLConsts_SCantWriteResourceStreamErrorOrig:"Can't write to a read-only resource stream"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SCantWriteResourceStreamError "Can't write to a read-only resource stream"
+	/* ID:RTLConsts_SCheckSynchronizeErrorOrig:"CheckSynchronize called from thread $%x, which is NOT the main thread"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SCheckSynchronizeError "CheckSynchronize called from thread $%x, which is NOT the main thread"
+	/* ID:RTLConsts_SClassNotFoundOrig:"Class %s not found"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SClassNotFound "Class %s not found"
+	/* ID:RTLConsts_SDuplicateClassOrig:"A class named %s already exists"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SDuplicateClass "A class named %s already exists"
+	/* ID:RTLConsts_SDuplicateItemOrig:"List does not allow duplicates ($0%x)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SDuplicateItem "List does not allow duplicates ($0%x)"
+	/* ID:RTLConsts_SDuplicateNameOrig:"A component named %s already exists"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SDuplicateName "A component named %s already exists"
+	/* ID:RTLConsts_SDuplicateStringOrig:"String list does not allow duplicates"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SDuplicateString "String list does not allow duplicates"
+	/* ID:RTLConsts_SFCreateErrorExOrig:"Cannot create file \"%s\". %s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  RTLConsts_SFCreateErrorEx "Cannot create file \"%s\". %s"
+	/* ID:SysConst_SLongMonthNameJulOrig:"July"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameJul "July"
+	/* ID:SysConst_SLongMonthNameAugOrig:"August"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameAug "August"
+	/* ID:SysConst_SLongMonthNameSepOrig:"September"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameSep "September"
+	/* ID:SysConst_SLongMonthNameOctOrig:"October"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameOct "October"
+	/* ID:SysConst_SLongMonthNameNovOrig:"November"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameNov "November"
+	/* ID:SysConst_SLongMonthNameDecOrig:"December"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameDec "December"
+	/* ID:SysConst_SShortDayNameSunOrig:"Sun"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortDayNameSun "Sun"
+	/* ID:SysConst_SShortDayNameMonOrig:"Mon"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortDayNameMon "Mon"
+	/* ID:SysConst_SShortDayNameTueOrig:"Tue"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortDayNameTue "Tue"
+	/* ID:SysConst_SShortDayNameWedOrig:"Wed"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortDayNameWed "Wed"
+	/* ID:SysConst_SShortDayNameThuOrig:"Thu"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortDayNameThu "Thu"
+	/* ID:SysConst_SShortDayNameFriOrig:"Fri"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortDayNameFri "Fri"
+	/* ID:SysConst_SShortDayNameSatOrig:"Sat"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortDayNameSat "Sat"
+	/* ID:SysConst_SLongDayNameSunOrig:"Sunday"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongDayNameSun "Sunday"
+	/* ID:SysConst_SLongDayNameMonOrig:"Monday"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongDayNameMon "Monday"
+	/* ID:SysConst_SLongDayNameTueOrig:"Tuesday"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongDayNameTue "Tuesday"
+	/* ID:SysConst_SShortMonthNameMarOrig:"Mar"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameMar "Mar"
+	/* ID:SysConst_SShortMonthNameAprOrig:"Apr"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameApr "Apr"
+	/* ID:SysConst_SShortMonthNameMayOrig:"May"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameMay "May"
+	/* ID:SysConst_SShortMonthNameJunOrig:"Jun"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameJun "Jun"
+	/* ID:SysConst_SShortMonthNameJulOrig:"Jul"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameJul "Jul"
+	/* ID:SysConst_SShortMonthNameAugOrig:"Aug"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameAug "Aug"
+	/* ID:SysConst_SShortMonthNameSepOrig:"Sep"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameSep "Sep"
+	/* ID:SysConst_SShortMonthNameOctOrig:"Oct"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameOct "Oct"
+	/* ID:SysConst_SShortMonthNameNovOrig:"Nov"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameNov "Nov"
+	/* ID:SysConst_SShortMonthNameDecOrig:"Dec"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameDec "Dec"
+	/* ID:SysConst_SLongMonthNameJanOrig:"January"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameJan "January"
+	/* ID:SysConst_SLongMonthNameFebOrig:"February"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameFeb "February"
+	/* ID:SysConst_SLongMonthNameMarOrig:"March"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameMar "March"
+	/* ID:SysConst_SLongMonthNameAprOrig:"April"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameApr "April"
+	/* ID:SysConst_SLongMonthNameMayOrig:"May"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameMay "May"
+	/* ID:SysConst_SLongMonthNameJunOrig:"June"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SLongMonthNameJun "June"
+	/* ID:SysConst_SVarOverflowOrig:"Variant overflow"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarOverflow "Variant overflow"
+	/* ID:SysConst_SVarInvalidOrig:"Invalid argument"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarInvalid "Invalid argument"
+	/* ID:SysConst_SVarBadTypeOrig:"Invalid variant type"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarBadType "Invalid variant type"
+	/* ID:SysConst_SVarNotImplementedOrig:"Operation not supported"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarNotImplemented "Operation not supported"
+	/* ID:SysConst_SVarUnexpectedOrig:"Unexpected variant error"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarUnexpected "Unexpected variant error"
+	/* ID:SysConst_SExternalExceptionOrig:"External exception %x"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SExternalException "External exception %x"
+	/* ID:SysConst_SAssertionFailedOrig:"Assertion failed"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SAssertionFailed "Assertion failed"
+	/* ID:SysConst_SIntfCastErrorOrig:"Interface not supported"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SIntfCastError "Interface not supported"
+	/* ID:SysConst_SSafecallExceptionOrig:"Exception in safecall method"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SSafecallException "Exception in safecall method"
+	/* ID:SysConst_SAssertErrorOrig:"%s (%s, line %d)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SAssertError "%s (%s, line %d)"
+	/* ID:SysConst_SAbstractErrorOrig:"Abstract Error"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SAbstractError "Abstract Error"
+	/* ID:SysConst_SModuleAccessViolationOrig:"Access violation at address %p in module '%s'. %s of address %p"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SModuleAccessViolation "Access violation at address %p in module '%s'. %s of address %p"
+	/* ID:SysConst_SOSErrorOrig:"System Error.  Code: %d.\r\n%s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SOSError "System Error.  Code: %d.\r\n%s"
+	/* ID:SysConst_SUnkOSErrorOrig:"A call to an OS function failed"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SUnkOSError "A call to an OS function failed"
+	/* ID:SysConst_SShortMonthNameJanOrig:"Jan"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameJan "Jan"
+	/* ID:SysConst_SShortMonthNameFebOrig:"Feb"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SShortMonthNameFeb "Feb"
+	/* ID:SysConst_SExceptionOrig:"Exception %s in module %s at %p.\r\n%s%s\r\n"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SException "Exception %s in module %s at %p.\r\n%s%s\r\n"
+	/* ID:SysConst_SExceptTitleOrig:"Application Error"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SExceptTitle "Application Error"
+	/* ID:SysConst_SInvalidFormatOrig:"Format '%s' invalid or incompatible with argument"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidFormat "Format '%s' invalid or incompatible with argument"
+	/* ID:SysConst_SArgumentMissingOrig:"No argument for format '%s'"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SArgumentMissing "No argument for format '%s'"
+	/* ID:SysConst_SDispatchErrorOrig:"Variant method calls not supported"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SDispatchError "Variant method calls not supported"
+	/* ID:SysConst_SReadAccessOrig:"Read"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SReadAccess "Read"
+	/* ID:SysConst_SWriteAccessOrig:"Write"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SWriteAccess "Write"
+	/* ID:SysConst_SVarArrayCreateOrig:"Error creating variant or safe array"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarArrayCreate "Error creating variant or safe array"
+	/* ID:SysConst_SVarArrayBoundsOrig:"Variant or safe array index out of bounds"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarArrayBounds "Variant or safe array index out of bounds"
+	/* ID:SysConst_SVarArrayLockedOrig:"Variant or safe array is locked"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarArrayLocked "Variant or safe array is locked"
+	/* ID:SysConst_SInvalidVarCastOrig:"Invalid variant type conversion"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidVarCast "Invalid variant type conversion"
+	/* ID:SysConst_SInvalidVarOpOrig:"Invalid variant operation"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidVarOp "Invalid variant operation"
+	/* ID:SysConst_SInvalidVarNullOpOrig:"Invalid NULL variant operation"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidVarNullOp "Invalid NULL variant operation"
+	/* ID:SysConst_SInvalidVarOpWithHResultWithPrefixOrig:"Invalid variant operation (%s%.8x)\n%s"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidVarOpWithHResultWithPrefix "Invalid variant operation (%s%.8x)\n%s"
+	/* ID:SysConst_SVarTypeCouldNotConvertOrig:"Could not convert variant of type (%s) into type (%s)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarTypeCouldNotConvert "Could not convert variant of type (%s) into type (%s)"
+	/* ID:SysConst_SVarTypeConvertOverflowOrig:"Overflow while converting variant of type (%s) into type (%s)"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SVarTypeConvertOverflow "Overflow while converting variant of type (%s) into type (%s)"
+	/* ID:SysConst_SInvalidInputOrig:"Invalid numeric input"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidInput "Invalid numeric input"
+	/* ID:SysConst_SDivByZeroOrig:"Division by zero"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SDivByZero "Division by zero"
+	/* ID:SysConst_SRangeErrorOrig:"Range check error"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SRangeError "Range check error"
+	/* ID:SysConst_SIntOverflowOrig:"Integer overflow"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SIntOverflow "Integer overflow"
+	/* ID:SysConst_SInvalidOpOrig:"Invalid floating point operation"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidOp "Invalid floating point operation"
+	/* ID:SysConst_SZeroDivideOrig:"Floating point division by zero"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SZeroDivide "Floating point division by zero"
+	/* ID:SysConst_SOverflowOrig:"Floating point overflow"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SOverflow "Floating point overflow"
+	/* ID:SysConst_SUnderflowOrig:"Floating point underflow"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SUnderflow "Floating point underflow"
+	/* ID:SysConst_SInvalidPointerOrig:"Invalid pointer operation"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidPointer "Invalid pointer operation"
+	/* ID:SysConst_SInvalidCastOrig:"Invalid class typecast"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidCast "Invalid class typecast"
+	/* ID:SysConst_SAccessViolationArg3Orig:"Access violation at address %p. %s of address %p"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SAccessViolationArg3 "Access violation at address %p. %s of address %p"
+	/* ID:SysConst_SAccessViolationNoArgOrig:"Access violation"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SAccessViolationNoArg "Access violation"
+	/* ID:SysConst_SStackOverflowOrig:"Stack overflow"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SStackOverflow "Stack overflow"
+	/* ID:SysConst_SControlCOrig:"Control-C hit"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SControlC "Control-C hit"
+	/* ID:SysConst_SPrivilegeOrig:"Privileged instruction"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SPrivilege "Privileged instruction"
+	/* ID:SysConst_SOperationAbortedOrig:"Operation aborted"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SOperationAborted "Operation aborted"
+	/* ID:SysConst_SInvalidIntegerOrig:"'%s' is not a valid integer value"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidInteger "'%s' is not a valid integer value"
+	/* ID:SysConst_SInvalidFloatOrig:"'%s' is not a valid floating point value"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidFloat "'%s' is not a valid floating point value"
+	/* ID:SysConst_SInvalidDateOrig:"'%s' is not a valid date"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidDate "'%s' is not a valid date"
+	/* ID:SysConst_SInvalidTimeOrig:"'%s' is not a valid time"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidTime "'%s' is not a valid time"
+	/* ID:SysConst_SInvalidDateTimeOrig:"'%s' is not a valid date and time"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidDateTime "'%s' is not a valid date and time"
+	/* ID:SysConst_SInvalidTimeStampOrig:"'%d.%d' is not a valid timestamp"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidTimeStamp "'%d.%d' is not a valid timestamp"
+	/* ID:SysConst_STimeEncodeErrorOrig:"Invalid argument to time encode"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_STimeEncodeError "Invalid argument to time encode"
+	/* ID:SysConst_SDateEncodeErrorOrig:"Invalid argument to date encode"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SDateEncodeError "Invalid argument to date encode"
+	/* ID:SysConst_SOutOfMemoryOrig:"Out of memory"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SOutOfMemory "Out of memory"
+	/* ID:SysConst_SInOutErrorOrig:"I/O error %d"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInOutError "I/O error %d"
+	/* ID:SysConst_SFileNotFoundOrig:"File not found"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SFileNotFound "File not found"
+	/* ID:SysConst_SInvalidFilenameOrig:"Invalid filename"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SInvalidFilename "Invalid filename"
+	/* ID:SysConst_STooManyOpenFilesOrig:"Too many open files"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_STooManyOpenFiles "Too many open files"
+	/* ID:SysConst_SAccessDeniedOrig:"File access denied"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SAccessDenied "File access denied"
+	/* ID:SysConst_SEndOfFileOrig:"Read beyond end of file"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SEndOfFile "Read beyond end of file"
+	/* ID:SysConst_SDiskFullOrig:"Disk full"Status:0Created:0Modified:0PrevOrig:PrevCurr:Comment: */
+  SysConst_SDiskFull "Disk full"
+END

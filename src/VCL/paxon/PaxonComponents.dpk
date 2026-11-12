@@ -1,0 +1,58 @@
+package PaxonComponents;
+
+{$R *.res}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DESCRIPTION 'Paxon Components'}
+{$IMPLICITBUILD ON}
+{$DEFINE DEBUG}
+
+requires
+  rtl,
+  vcl,
+  VclSmp,
+  vclx,
+  designide,
+  vclactnband;
+
+contains
+  ColorButtonUlfU in 'src\ColorButtonUlfU.pas',
+  ComboBoxUlfU in 'src\ComboBoxUlfU.pas',
+  ConsoleU in 'src\ConsoleU.pas',
+  DragTextU in 'src\DragTextU.pas',
+  ToolbarHelpU in 'src\ToolbarHelpU.pas',
+  ToolbarU in 'src\ToolbarU.pas',
+  ListView4StateCheckU in 'src\ListView4StateCheckU.pas',
+  MemoUlfU in 'src\MemoUlfU.pas',
+  MLCBRB in 'src\MLCBRB.PAS',
+  PageControlUlf in 'src\PageControlUlf.pas',
+  PanelUlfU in 'src\PanelUlfU.pas',
+  RicheditPaxonU in 'src\RicheditPaxonU.pas',
+  TBXConsts in '..\tbxthemes\TBXConsts.pas',
+  TBXCore in '..\tbxthemes\TBXCore.pas',
+  TBXOfficeXPTheme in '..\tbxthemes\TBXOfficeXPTheme.pas',
+  TBXStatusBars in '..\tbxthemes\TBXStatusBars.pas',
+  TBXThemes in '..\tbxthemes\TBXThemes.pas',
+  TBXUtils in '..\tbxthemes\TBXUtils.pas',
+  TBXUxThemes in '..\tbxthemes\TBXUxThemes.pas';
+
+end.

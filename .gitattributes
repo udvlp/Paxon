@@ -1,0 +1,26 @@
+# Line endings in the repository: LF. Text files are converted on check-in.
+* text=auto eol=lf
+
+# Windows batch files need CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Sources are Windows-1252, not UTF-8: do not force a text diff encoding
+*.pas text diff=pascal
+*.PAS text diff=pascal
+*.dpr text diff=pascal
+*.dpk text diff=pascal
+*.inc text diff=pascal
+
+# Binary files
+*.res binary
+*.RES binary
+*.dcr binary
+*.bmp binary
+*.ico binary
+*.jpg binary
+*.wav binary
+*.fon binary
+*.fnt binary
+*.chm binary
+*.exe binary

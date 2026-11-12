@@ -1,0 +1,21 @@
+# Compiler output (Build.cmd, see src\Paxon.dof): program, language DLLs and .dcu files
+/Bin/
+/Temp/
+*.exe
+
+# Delphi build artifacts
+*.dcu
+*.dcp
+*.bpl
+*.dsk
+*.identcache
+*.local
+*.drc
+*.map
+*.~*
+__history/
+__recovery/
+
+# Local folders that are not part of the project
+\# *
+/Tools/Language/

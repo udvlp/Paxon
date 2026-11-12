@@ -1,0 +1,47 @@
+//
+//  PAXON Packet Radio Terminal
+//
+//  Copyright 1996-2026 Ulf Haueisen <ulf@paxon.app>, Frankfurt, Germany
+//
+//  This file is part of PAXON.
+//
+//  SPDX-License-Identifier: MIT
+//  PAXON is licensed under the MIT License; see LICENSE.md in the project root.
+//
+
+
+unit LanguagesVersionFormU;
+
+
+interface
+
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ComCtrls, FormU;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+type
+  TLanguagesVersionForm = class (TFormUlf)
+    Label1: TLabel;
+    Label2: TLabel;
+    OkButton: TButton;
+  private
+  end;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+implementation
+
+{$R *.DFM}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+end.

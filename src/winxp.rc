@@ -1,0 +1,3 @@
+// Application manifest: Common Controls 6 and asInvoker (no registry/file virtualization)
+// Compile: brcc32 winxp.rc  ->  winxp.res (linked in MainU.pas)
+1 24 "Resources\\Paxon.manifest"

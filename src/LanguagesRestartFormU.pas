@@ -1,0 +1,48 @@
+//
+//  PAXON Packet Radio Terminal
+//
+//  Copyright 1996-2026 Ulf Haueisen <ulf@paxon.app>, Frankfurt, Germany
+//
+//  This file is part of PAXON.
+//
+//  SPDX-License-Identifier: MIT
+//  PAXON is licensed under the MIT License; see LICENSE.md in the project root.
+//
+
+
+unit LanguagesRestartFormU;
+
+
+interface
+
+
+uses
+  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
+  StdCtrls, ComCtrls, FormU;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+type
+  TLanguagesRestartForm = class (TFormUlf)
+    Label1: TLabel;
+    Label2: TLabel;
+    OkButton: TButton;
+    Label3: TLabel;
+  private
+  end;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+implementation
+
+{$R *.DFM}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+end.
