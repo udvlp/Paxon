@@ -446,6 +446,7 @@ var
   Frame: PFrame;
   SrcCall, DestCall, Digis: String;
   MyCall: TMyCall;
+  OwnCalls: TStringList;
   Count: Integer;
   ChannelRef: IChannelForConnection;
   DoReleaseConnection: Boolean;
@@ -657,105 +658,115 @@ begin
 
                 if (Count and $07) = 0 then begin
 
-                  MyCalls.BeginRead;
+                  // Eigene Rufzeichen unter der Sperre nur kopieren. Das Annehmen einer
+                  // Verbindung wartet per SendMessage auf den Hauptthread; hielte der
+                  // Gerätethread dabei MyCalls, verklemmten sich beide, sobald der
+                  // Hauptthread selbst auf MyCalls wartet.
+                  OwnCalls := TStringList.Create;
 
                   try
 
-                    for N := 0 to MyCalls.count - 1 do begin
+                    MyCalls.BeginRead;
+                    try
+                      for N := 0 to MyCalls.count - 1 do begin
+                        MyCall := MyCalls[N];
+                        for M := 0 to MyCall.SSIDCount - 1 do begin
+                          OwnCalls.Add (MyCall.CallWithSSID[M]);
+                        end;
+                      end;
+                    finally
+                      MyCalls.EndRead;
+                    end;
 
-                      MyCall := MyCalls[N];
+                    for N := 0 to OwnCalls.Count - 1 do begin
 
-                      for M := 0 to MyCall.SSIDCount - 1 do begin
+                      I := l2_get_sabm (PChar(OwnCalls[N]));
 
-                        I := l2_get_sabm (PChar(MyCall.CallWithSSID[M]));
+                      if (I <> 0) then begin
 
-                        if (I <> 0) then begin
+                        Frame := l2_get_f (I);
 
-                          Frame := l2_get_f (I);
+                        if (assigned (Frame)) then begin
 
-                          if (assigned (Frame)) then begin
+                          SetLength (SrcCall, STRCALLLEN);
+                          StrCall (PChar(SrcCall), PChar(@Frame^.source));
+                          SetLength (SrcCall, StrLen(PChar(SrcCall)));
 
-                            SetLength (SrcCall, STRCALLLEN);
-                            StrCall (PChar(SrcCall), PChar(@Frame^.source));
-                            SetLength (SrcCall, StrLen(PChar(SrcCall)));
+                          SetLength (DestCall, STRCALLLEN);
+                          StrCall (PChar(DestCall), PChar(@Frame^.dest));
+                          SetLength (DestCall, StrLen(PChar(DestCall)));
 
-                            SetLength (DestCall, STRCALLLEN);
-                            StrCall (PChar(DestCall), PChar(@Frame^.dest));
-                            SetLength (DestCall, StrLen(PChar(DestCall)));
+                          SetLength (Digis, STRPATHLEN);
+                          StrPath (PChar(Digis), Frame);
+                          SetLength (Digis, StrLen(PChar(Digis)));
 
-                            SetLength (Digis, STRPATHLEN);
-                            StrPath (PChar(Digis), Frame);
-                            SetLength (Digis, StrLen(PChar(Digis)));
+                          PacketConnection := TConnection.Create (self);
 
-                            PacketConnection := TConnection.Create (self);
+                          DoReleaseConnection := true;
 
-                            DoReleaseConnection := true;
+                          PacketConnection.MyCall := SrcCall;
+                          PacketConnection.Call := DestCall;
+                          PacketConnection.Digis := Digis;
+                          PacketConnection.RealPath := PacketConnection.Path;
+                          PacketConnection.Handle := I;
+                          PacketConnection.Outgoing := false;
 
-                            PacketConnection.MyCall := SrcCall;
-                            PacketConnection.Call := DestCall;
-                            PacketConnection.Digis := Digis;
-                            PacketConnection.RealPath := PacketConnection.Path;
-                            PacketConnection.Handle := I;
-                            PacketConnection.Outgoing := false;
+                          case PacketConnection.IsIncomingConnectAllowed of
 
-                            case PacketConnection.IsIncomingConnectAllowed of
+                            ic_accept: begin
 
-                              ic_accept: begin
+                              ChannelRef := ChannelList.NextFreeChannel as IChannelForConnection;
 
-                                ChannelRef := ChannelList.NextFreeChannel as IChannelForConnection;
+                              if (assigned (ChannelRef)) then begin
 
-                                if (assigned (ChannelRef)) then begin
+                                PacketConnection.ChannelRef := ChannelRef;
 
-                                  PacketConnection.ChannelRef := ChannelRef;
+                                PacketConnection.SendConnectText := true;
+                                PacketConnection.RemoteCommandsPossible := true;
 
-                                  PacketConnection.SendConnectText := true;
-                                  PacketConnection.RemoteCommandsPossible := true;
+                                PacketConnection.ConnectionEstablished;
 
-                                  PacketConnection.ConnectionEstablished;
+                                DebOut (self, MethodName, 'Verbindungswunsch von %s akzeptiert.', [PacketConnection.Call]);
 
-                                  DebOut (self, MethodName, 'Verbindungswunsch von %s akzeptiert.', [PacketConnection.Call]);
+                                l2_sabmresp (I);
+                                l2_pack (PacketConnection.Handle);
 
-                                  l2_sabmresp (I);
-                                  l2_pack (PacketConnection.Handle);
-
-                                  ConnectionsList.Lock;
-                                  try
-                                    FConnectionList.Add (PacketConnection);
-                                  finally
-                                    ConnectionsList.UnLock;
-                                  end;
-                                  DoReleaseConnection := false;
-
-                                end else begin
-
-                                  DebOut (self, MethodName, 'Verbindungswunsch von %s abgelehnt (kein freier Kanal).',
-                                          [PacketConnection.Call]);
-                                  l2_sabm_dm (I);
-
+                                ConnectionsList.Lock;
+                                try
+                                  FConnectionList.Add (PacketConnection);
+                                finally
+                                  ConnectionsList.UnLock;
                                 end;
+                                DoReleaseConnection := false;
 
-                              end;
+                              end else begin
 
-                              ic_ignore: begin
-
-                                DebOut (self, MethodName, 'Verbindungswunsch von %s ignoriert.', [PacketConnection.Call]);
-
-                              end;
-
-                              ic_busy: begin
-
-                                DebOut (self, MethodName, 'Verbindungswunsch von %s abgelehnt.', [PacketConnection.Call]);
+                                DebOut (self, MethodName, 'Verbindungswunsch von %s abgelehnt (kein freier Kanal).',
+                                        [PacketConnection.Call]);
                                 l2_sabm_dm (I);
 
                               end;
 
                             end;
 
-                            if (DoReleaseConnection) then begin
-                              PacketConnection.Release;
-                              PacketConnection := nil;
+                            ic_ignore: begin
+
+                              DebOut (self, MethodName, 'Verbindungswunsch von %s ignoriert.', [PacketConnection.Call]);
+
                             end;
 
+                            ic_busy: begin
+
+                              DebOut (self, MethodName, 'Verbindungswunsch von %s abgelehnt.', [PacketConnection.Call]);
+                              l2_sabm_dm (I);
+
+                            end;
+
+                          end;
+
+                          if (DoReleaseConnection) then begin
+                            PacketConnection.Release;
+                            PacketConnection := nil;
                           end;
 
                         end;
@@ -766,7 +777,7 @@ begin
 
                   finally
 
-                    MyCalls.EndRead;
+                    OwnCalls.Free;
 
                   end;
 

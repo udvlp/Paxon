@@ -1191,7 +1191,6 @@ begin
                             ConnectionsList.Lock;
                             try
                               PacketConnection.Release;
-                              PacketConnection := nil;
                               ConnectionsCriticalSection.Enter;
                               try
                                 FConnectionList[TNCChannel] := nil;
@@ -1201,6 +1200,9 @@ begin
                             finally
                               ConnectionsList.Unlock;
                             end;
+                            // Letzte Referenz erst ohne Sperren freigeben: Der Abbau schickt
+                            // per Synchronize an den Hauptthread (sonst Verklemmung).
+                            PacketConnection := nil;
                             SetOwnCallsigns (false);
                           end;
 
@@ -1275,7 +1277,6 @@ begin
                                 ConnectionsList.Lock;
                                 try
                                   PacketConnection.Release;
-                                  PacketConnection := nil;
                                   ConnectionsCriticalSection.Enter;
                                   try
                                     FConnectionList[TNCChannel] := nil;
@@ -1285,6 +1286,9 @@ begin
                                 finally
                                   ConnectionsList.Unlock;
                                 end;
+                                // Letzte Referenz erst ohne Sperren freigeben: Der Abbau schickt
+                                // per Synchronize an den Hauptthread (sonst Verklemmung).
+                                PacketConnection := nil;
                                 SetOwnCallsigns (false);
                               end;
                             end;
@@ -1310,7 +1314,6 @@ begin
                                 ConnectionsList.Lock;
                                 try
                                   PacketConnection.Release;
-                                  PacketConnection := nil;
                                   ConnectionsCriticalSection.Enter;
                                   try
                                     FConnectionList[TNCChannel] := nil;
@@ -1320,6 +1323,9 @@ begin
                                 finally
                                   ConnectionsList.Unlock;
                                 end;
+                                // Letzte Referenz erst ohne Sperren freigeben: Der Abbau schickt
+                                // per Synchronize an den Hauptthread (sonst Verklemmung).
+                                PacketConnection := nil;
                                 ConnectionEstablished (TNCChannel, GetConnectPath (S), true);
                               end;
                             end;
@@ -1335,7 +1341,6 @@ begin
                                 ConnectionsList.Lock;
                                 try
                                   PacketConnection.Release;
-                                  PacketConnection := nil;
                                   ConnectionsCriticalSection.Enter;
                                   try
                                     FConnectionList[TNCChannel] := nil;
@@ -1345,6 +1350,9 @@ begin
                                 finally
                                   ConnectionsList.Unlock;
                                 end;
+                                // Letzte Referenz erst ohne Sperren freigeben: Der Abbau schickt
+                                // per Synchronize an den Hauptthread (sonst Verklemmung).
+                                PacketConnection := nil;
                                 SetOwnCallsigns (false);
                               end;
                               DebOut (self, MethodName, 'DISCONNECTED fm: end.');
@@ -1358,7 +1366,6 @@ begin
                                 ConnectionsList.Lock;
                                 try
                                   PacketConnection.Release;
-                                  PacketConnection := nil;
                                   ConnectionsCriticalSection.Enter;
                                   try
                                     FConnectionList[TNCChannel] := nil;
@@ -1368,6 +1375,9 @@ begin
                                 finally
                                   ConnectionsList.Unlock;
                                 end;
+                                // Letzte Referenz erst ohne Sperren freigeben: Der Abbau schickt
+                                // per Synchronize an den Hauptthread (sonst Verklemmung).
+                                PacketConnection := nil;
                                 SetOwnCallsigns (false);
                               end;
                             end;
