@@ -94,12 +94,25 @@ begin
 end;
 
 
+var
+  // Hält die Instanz-Sperre bis zum Programmende.
+  InstanceMutex: THandle = 0;
+
+
 procedure   InitPrevInstance;
 var
   H: THandle;
+  AlreadyRunning: Boolean;
 begin
-  H := FindWindow (InstanceWindowClassName, nil);
-  if (H <> 0) then begin
+  // Ein benannter Mutex macht die Prüfung atomar. FindWindow allein ließ zwei
+  // kurz nacheinander gestartete Instanzen beide hochlaufen; die zweite
+  // scheiterte dann an der exklusiv geöffneten Stationsdatenbank.
+  InstanceMutex := CreateMutex (nil, false, 'Local\PaxonInstance');
+  AlreadyRunning := (InstanceMutex <> 0) and (GetLastError = ERROR_ALREADY_EXISTS);
+  if (not AlreadyRunning) then begin
+    AlreadyRunning := (FindWindow (InstanceWindowClassName, nil) <> 0);
+  end;
+  if (AlreadyRunning) then begin
     H := FindWindow (nil, WindowCaptionName);
     if (H <> 0) then begin
       SetForegroundWindow (H);
@@ -114,6 +127,10 @@ end;
 procedure   FinalizePrevInstance;
 begin
   DestroyInstanceWindow;
+  if (InstanceMutex <> 0) then begin
+    CloseHandle (InstanceMutex);
+    InstanceMutex := 0;
+  end;
 end;
 
 

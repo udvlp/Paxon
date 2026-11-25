@@ -247,6 +247,12 @@ begin
     Registry.RootKey := HKEY_CURRENT_USER;
     Registry.OpenKey (RootRegKey, true);
     Language := Registry.ReadString (ValueName);
+    // Erster Start nach einem Update von 2.x: Die Sprache steht noch unter dem
+    // alten Namen. TConfig übernimmt ihn erst später (ImportGermanRegistryNames),
+    // die Sprach-DLL wird aber schon hier geladen.
+    if (Language = '') and (Registry.ValueExists ('Sprache')) then begin
+      Language := Registry.ReadString ('Sprache');
+    end;
   finally
     Registry.free;
   end;

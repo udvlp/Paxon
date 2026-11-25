@@ -578,38 +578,59 @@ begin
 end;
 
 
+// Alle Registry-Zugriffe laufen über diese Grundfunktionen und teilen sich ein
+// TRegistry-Objekt (RootKey, CurrentKey). Sie sperren deshalb selbst: Lesen
+// Verbindungs- und Hauptthread gleichzeitig, schloss sonst der eine den
+// Schlüssel des anderen, und es kam der Standardwert statt der Einstellung
+// zurück. Die Sperre ist wiedereintrittsfähig (Getter, die schon sperren).
+
 function    TConfig.ValueExists (Root: DWord; const Key: string; const ValueName: string): boolean;
 begin
-  Registry.RootKey := Root;
-  Registry.OpenKey (RootRegKey + Key, true);
-  result := Registry.ValueExists (ValueName);
-  Registry.CloseKey;
+  FCriticalSection.Enter;
+  try
+    Registry.RootKey := Root;
+    Registry.OpenKey (RootRegKey + Key, true);
+    result := Registry.ValueExists (ValueName);
+    Registry.CloseKey;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 
 function    TConfig.ReadString (Root: DWord; const Key: string; const ValueName: string): string;
 begin
   result := '';
-  Registry.RootKey := Root;
-  if (Registry.OpenKey (RootRegKey + Key, true)) then begin
-    try
-      result := Registry.ReadString (ValueName);
-    except
+  FCriticalSection.Enter;
+  try
+    Registry.RootKey := Root;
+    if (Registry.OpenKey (RootRegKey + Key, true)) then begin
+      try
+        result := Registry.ReadString (ValueName);
+      except
+      end;
+      Registry.CloseKey;
     end;
-    Registry.CloseKey;
+  finally
+    FCriticalSection.Leave;
   end;
 end;
 
 
 procedure   TConfig.WriteString (Root: DWord; const Key: string; const ValueName: string; const Value: string);
 begin
-  Registry.RootKey := Root;
-  if (Registry.OpenKey (RootRegKey + Key, true)) then begin
-    try
-      Registry.WriteString (ValueName, Value);
-    except
+  FCriticalSection.Enter;
+  try
+    Registry.RootKey := Root;
+    if (Registry.OpenKey (RootRegKey + Key, true)) then begin
+      try
+        Registry.WriteString (ValueName, Value);
+      except
+      end;
+      Registry.CloseKey;
     end;
-    Registry.CloseKey;
+  finally
+    FCriticalSection.Leave;
   end;
 end;
 
@@ -648,24 +669,41 @@ end;
 
 function    TConfig.ReadInteger (Root: DWord; const Key: String; const ValueName: string): Integer;
 begin
-  Registry.RootKey := Root;
-  if (Registry.OpenKey (RootRegKey + Key, true)) then begin
-    result := Registry.ReadInteger (ValueName);
-    Registry.CloseKey;
-  end else begin
-    raise ERegistryException.Create ('Can not open key');
+  result := 0;
+  FCriticalSection.Enter;
+  try
+    Registry.RootKey := Root;
+    if (Registry.OpenKey (RootRegKey + Key, true)) then begin
+      try
+        result := Registry.ReadInteger (ValueName);
+      finally
+        Registry.CloseKey;
+      end;
+    end else begin
+      raise ERegistryException.Create ('Can not open key');
+    end;
+  finally
+    FCriticalSection.Leave;
   end;
 end;
 
 
 procedure   TConfig.WriteInteger (Root: DWord; const Key: String; const ValueName: string; Value: Integer);
 begin
-  Registry.RootKey := Root;
-  if (Registry.OpenKey (RootRegKey + Key, true)) then begin
-    Registry.WriteInteger (ValueName, Value);
-    Registry.CloseKey;
-  end else begin
-    raise ERegistryException.Create ('Can not open key');
+  FCriticalSection.Enter;
+  try
+    Registry.RootKey := Root;
+    if (Registry.OpenKey (RootRegKey + Key, true)) then begin
+      try
+        Registry.WriteInteger (ValueName, Value);
+      finally
+        Registry.CloseKey;
+      end;
+    end else begin
+      raise ERegistryException.Create ('Can not open key');
+    end;
+  finally
+    FCriticalSection.Leave;
   end;
 end;
 
