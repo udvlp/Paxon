@@ -1243,6 +1243,13 @@ begin
 
   S := RemoteCommands.WorkingDir + PathDelim + Params;
 
+  // Ein Ordnername wird nicht zu "alle Dateien darin" erweitert: read sendet
+  // nur ausdrücklich genannte Dateien oder Platzhalter (sonst bis zu 1000 Dateien).
+  if (DirectoryExists (ExpandFileName (RemoteFolder + S))) then begin
+    SendTextData (RemotePrompt + Format (SRemoteCommandReadFolderAccessDenied, [Params]) + #13);
+    exit;
+  end;
+
   if (Folders.FindRemoteFiles (S, true, Files, Folder, Wildcard)) then begin
 
     if (Length (Files) >= 1) then begin
@@ -1365,6 +1372,14 @@ begin
     S := RemoteCommands.WorkingDir + PathDelim + Params;
 
     B := false;
+
+    // Ein Ordnername wird nicht zu "alle Dateien darin" erweitert: delete löscht
+    // nur ausdrücklich genannte Dateien oder Platzhalter. Vorher löschte
+    // "//del ." oder "//del Ordner" alle Dateien des Ordners.
+    if (DirectoryExists (ExpandFileName (RemoteFolder + S))) then begin
+      SendTextData (RemotePrompt + SRemoteCommandDeleteNotFound + #13);
+      exit;
+    end;
 
     if (Folders.FindRemoteFiles (S, true, Files, Folder, Wildcard)) then begin
       for I := 0 to Length (Files) - 1 do begin

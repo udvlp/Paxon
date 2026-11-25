@@ -105,6 +105,10 @@ end;
 procedure   TSendFilePreprocessor.BeforeDestruction;
 begin
   FPacketConnection := nil;
+  // Der Stream gehört dem Präprozessor, bis er an einen FileSender übergeben
+  // ist. Wurde er nicht übergeben (z. B. Verbindung ohne Sendewarteschlange),
+  // bliebe die Datei sonst bis zum Programmende gesperrt.
+  FreeAndNil (FStream);
   inherited;
 end;
 
@@ -172,7 +176,14 @@ begin
 
   if FindFirst (FFileToSend, faAnyFile, SR) = 0 then begin
     FileByteSize := SR.Size;
-    DT := FileDateToDateTime(SR.Time);
+    // Zeitstempel, die DOS-Datumswerte nicht darstellen (vor 1980), werfen
+    // EConvertError; das darf FindClose und das Freigeben von FStream nicht
+    // überspringen.
+    try
+      DT := FileDateToDateTime(SR.Time);
+    except
+      on EConvertError do DT := 0;
+    end;
   end else begin
     FileByteSize := 0;
     DT := 0;
@@ -180,6 +191,14 @@ begin
   FindClose (SR);
 
   PartsCount := (FileByteSize - 1) div PartSizeBytes + 1;
+
+  // Die Teileauswahl im Dialog gilt nur für die Teilezahl, mit der sie
+  // getroffen wurde. Passt sie nicht mehr (Teilgröße geändert, Datei
+  // gewachsen), alle Teile senden, statt hinter der Auswahl zu lesen.
+  if (not FAllParts) and (Length (FSelectedParts) <> PartsCount) then begin
+    DebOut (self, MethodName, 'Teileauswahl passt nicht zur Teilezahl, sende alle Teile.');
+    FAllParts := true;
+  end;
 
   if (PartsCount > 1) then begin
 
@@ -417,6 +436,12 @@ begin
         '%': begin
           Result := Result + '%';
         end;
+        else begin
+          // Kein Platzhalter: "%" und das folgende Zeichen unverändert lassen
+          // (vorher fielen beide weg, aus "50% auf" wurde "50auf").
+          Result := Result + '%';
+          if (N <= L) and (Text[N] <> #10) then Result := Result + Text[N];
+        end;
       end;
     end else if (Text[N] <> #10) then begin
       Result := Result + Text[N];
@@ -434,6 +459,10 @@ var
   FileSender: ISendFile;
 
 begin
+
+  // Ohne Sendewarteschlange (Verbindung gerade getrennt) nichts senden; der
+  // Stream wird in BeforeDestruction freigegeben.
+  if (not assigned (FPacketConnection)) or (not assigned (FPacketConnection.SendFileQueue)) then exit;
 
   FileSender := TSendFile.create (FPacketConnection);
 

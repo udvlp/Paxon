@@ -185,6 +185,9 @@ begin
       KillTimer (0, TimerID1);
       TimerID1 := 0;
     end;
+    // Verlässt der Zeiger die Kanalknöpfe, beim nächsten Überfahren desselben
+    // Knopfs wieder umschalten.
+    ChannelButton := nil;
 
     if (Control is TConsole) then begin
       if (ChannelList.CurrentChannel.IsChannelConnected) then begin
@@ -205,6 +208,11 @@ end;
 function    TDropTarget.DragLeave: HResult; stdcall;
 begin
   DebOut (self, 'DragLeave', '');
+  if (TimerID1 <> 0) then begin
+    KillTimer (0, TimerID1);
+    TimerID1 := 0;
+  end;
+  ChannelButton := nil;
   result := S_OK;
 end;
 
@@ -225,6 +233,7 @@ begin
     KillTimer (0, TimerID1);
     TimerID1 := 0;
   end;
+  ChannelButton := nil;
 
   Forms.Application.Restore;
   SetForegroundWindow (MainWindow.Handle);

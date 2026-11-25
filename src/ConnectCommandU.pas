@@ -403,12 +403,20 @@ begin
 
     inherited;
 
+    // Eine ungültige SSID (nicht 0..15) wird nicht still entfernt: Das ergäbe
+    // ein anderes Rufzeichen. Ohne Rufzeichen wird nicht verbunden, der Dialog
+    // bleibt offen.
     MyCall := UpperCase (Trim (MycallCombo.Text));
     I := Pos ('-', MyCall);
     if (I > 0) then begin
       N := StrToIntDef (Copy (MyCall, I+1, MaxInt), -1);
       Delete (MyCall, I, MaxInt);
-      if (N >= 0) and (N <= 15) then MyCall := MyCall + '-' + IntToStr (N);
+      if (N >= 0) and (N <= 15) then begin
+        MyCall := MyCall + '-' + IntToStr (N);
+      end else begin
+        MyCall := '';
+        MessageBeep (MB_ICONEXCLAMATION);
+      end;
     end;
 
     Call := UpperCase (Trim (CallCombo.Text));
@@ -422,9 +430,14 @@ begin
 
     I := Pos ('-', Call);
     if (I > 0) then begin
-      N := StrToIntDef (Copy (Call, I + 1, MaxInt), 0);
+      N := StrToIntDef (Copy (Call, I + 1, MaxInt), -1);
       Delete (Call, I, MaxInt);
-      if (N > 0) then Call := Call + '-' + IntToStr (N);
+      if (N >= 0) and (N <= 15) then begin
+        if (N > 0) then Call := Call + '-' + IntToStr (N);
+      end else begin
+        Call := '';
+        MessageBeep (MB_ICONEXCLAMATION);
+      end;
     end;
 
     DebOut (self, MethodName, 'MyCall=''' + MyCall + ''' Call=''' + Call + ''' Digis=''' + Digis + '''');
