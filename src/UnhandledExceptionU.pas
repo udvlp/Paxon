@@ -64,12 +64,103 @@ uses
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-procedure   ShowUnhandledException (anException: Exception; aClassName: String = ''; aContext: String = '');
+type
+  // Zeigt Meldungen aus Nebenthreads im Hauptthread an (die VCL ist nicht
+  // threadsicher). PostMessage statt SendMessage: Der meldende Thread wartet
+  // nicht auf den Dialog und kann weiter aufräumen.
+  TExceptionNotifier = class
+  private
+    FWindow: HWND;
+    procedure   WndProc (var Msg: TMessage);
+  public
+    constructor Create;
+    destructor  Destroy; override;
+    procedure   Post (const aText: String);
+  end;
+
+const
+  wm_showexception = WM_USER + $4012;
+
+var
+  Notifier: TExceptionNotifier = nil;
+
+threadvar
+  // Die zuletzt gemeldete Ausnahme dieses Threads. Eine weitergeworfene
+  // Ausnahme durchläuft oft mehrere Handler; gemeldet wird sie nur einmal.
+  LastReported: Pointer;
+
+
+procedure   ShowDialog (const aText: String);
 var
   UE: TDlgUnhandledException;
+begin
+  try
+    UE := TDlgUnhandledException.Create (nil);
+    try
+      UE.Label2.Caption := aText;
+      UE.ShowModal;
+    finally
+      UE.Free;
+    end;
+  except;
+  end;
+end;
+
+
+constructor TExceptionNotifier.Create;
+begin
+  inherited;
+  FWindow := Classes.AllocateHWnd (WndProc);
+end;
+
+
+destructor  TExceptionNotifier.Destroy;
+begin
+  Classes.DeallocateHWnd (FWindow);
+  inherited;
+end;
+
+
+procedure   TExceptionNotifier.Post (const aText: String);
+var
+  P: PString;
+begin
+  New (P);
+  P^ := aText;
+  if (not PostMessage (FWindow, wm_showexception, 0, LongInt (P))) then begin
+    Dispose (P);
+  end;
+end;
+
+
+procedure   TExceptionNotifier.WndProc (var Msg: TMessage);
+var
+  P: PString;
+  S: String;
+begin
+  if (Msg.Msg = wm_showexception) then begin
+    P := PString (Msg.LParam);
+    S := P^;
+    Dispose (P);
+    ShowDialog (S);
+    Msg.Result := 0;
+  end else begin
+    Msg.Result := DefWindowProc (FWindow, Msg.Msg, Msg.WParam, Msg.LParam);
+  end;
+end;
+
+
+procedure   ShowUnhandledException (anException: Exception; aClassName: String = ''; aContext: String = '');
+var
   S, T: String;
 
 begin
+
+  if (assigned (anException)) and (Pointer (anException) = LastReported) then begin
+    DebOut ('EXCEPTION bereits gemeldet: ' + aClassName + ' (' + aContext + ')');
+    exit;
+  end;
+  LastReported := Pointer (anException);
 
   T := '';
   S := '';
@@ -98,14 +189,10 @@ begin
   except;
   end;
 
-  try
-    UE := TDlgUnhandledException.Create (nil);
-    if (assigned (UE)) then begin
-      UE.Label2.Caption := S + #13 + T;;
-      UE.ShowModal;
-      UE.Free;
-    end;
-  except;
+  if (GetCurrentThreadID = MainThreadID) then begin
+    ShowDialog (S + #13 + T);
+  end else if (assigned (Notifier)) then begin
+    Notifier.Post (S + #13 + T);
   end;
 
 end;
@@ -149,6 +236,14 @@ end;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+initialization
+
+  Notifier := TExceptionNotifier.Create;
+
+finalization
+
+  FreeAndNil (Notifier);
 
 end.
 

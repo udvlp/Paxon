@@ -501,7 +501,13 @@ begin
     flxdbg_        := GetProcAddress (FlexnetDLL, 'flxdbg');          if addr(flxdbg_)        = nil then
       FlexnetError := FlexnetError + 'flxdbg' + ' / ';
 
-    if (FlexnetError <> '') then FlexnetError := 'Nicht in DLL: ' + Copy (FlexnetError, 1, Length (FlexnetError) - 3);
+    if (FlexnetError <> '') then begin
+      FlexnetError := 'Nicht in DLL: ' + Copy (FlexnetError, 1, Length (FlexnetError) - 3);
+      // Eine unvollständige DLL nicht geladen lassen: FlexnetDeInit läuft nur nach
+      // Erfolg, und der nächste Versuch überschriebe das Handle.
+      FreeLibrary (FlexnetDLL);
+      FlexnetDLL := 0;
+    end;
 
   end else begin
 

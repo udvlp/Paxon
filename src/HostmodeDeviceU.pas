@@ -430,7 +430,8 @@ begin
             while Length (S) > 0 do begin
               N := Pos (#0, S);
               if (N = 0) then break;
-              FParam.TncInit.Add (Copy (S, 1, N - 1));
+              // Hostmode-Befehle haben höchstens 256 Zeichen (CommandStr prüft das per Assert)
+              FParam.TncInit.Add (Copy (Copy (S, 1, N - 1), 1, 256));
               S := Copy (S, N + 1, MaxInt);
             end;
           end;
@@ -446,7 +447,7 @@ begin
             while Length (S) > 0 do begin
               N := Pos (#0, S);
               if (N = 0) then break;
-              FParam.TncDeinit.Add (Copy (S, 1, N - 1));
+              FParam.TncDeinit.Add (Copy (Copy (S, 1, N - 1), 1, 256));
               S := Copy (S, N + 1, MaxInt);
             end;
           end;
@@ -819,6 +820,7 @@ const
 
 var
   K, I, N, Q, TNCChannel, J, M, R: Integer;
+  NewRadioChannel: array[0..7] of IRadioChannel;
   T: array[0..40] of Char;
   S, V, U, TNCChannelList, TNCChannelConnectedTo: string;
   Msg: TMsg;
@@ -902,7 +904,7 @@ begin
 
         B := false;
 
-        for N := Low (FRadioChannel) to High (FRadioChannel) do FRadioChannel[N] := nil;
+        for N := Low (NewRadioChannel) to High (NewRadioChannel) do NewRadioChannel[N] := nil;
 
         PactorChannel := -1;
 
@@ -933,10 +935,10 @@ begin
 
                 if (S <> '') then begin
 
-                  FRadioChannel[N] := TRadioChannel.Create (self);
-                  FRadioChannel[N].Name := FDeviceName + ' ' + S;
-                  FRadioChannel[N].Handle := N + 1;
-                  FRadioChannel[N].ID := Format ('HM%d%d', [FParam.DeviceID, N + 1]);
+                  NewRadioChannel[N] := TRadioChannel.Create (self);
+                  NewRadioChannel[N].Name := FDeviceName + ' ' + S;
+                  NewRadioChannel[N].Handle := N + 1;
+                  NewRadioChannel[N].ID := Format ('HM%d%d', [FParam.DeviceID, N + 1]);
 
                   B := true;
 
@@ -957,10 +959,10 @@ begin
             DebOut (self, MethodName, 'Gerätetyp: PTC-IIe');
 
             FDeviceName := 'PTC-IIe';
-            FRadioChannel[0] := TRadioChannel.Create (self);
-            FRadioChannel[0].Name := FDeviceName + ' ' + PTCPortName;
-            FRadioChannel[0].Handle := -1;
-            FRadioChannel[0].ID := Format ('HM%d%d', [FParam.DeviceID, 0]);
+            NewRadioChannel[0] := TRadioChannel.Create (self);
+            NewRadioChannel[0].Name := FDeviceName + ' ' + PTCPortName;
+            NewRadioChannel[0].Handle := -1;
+            NewRadioChannel[0].ID := Format ('HM%d%d', [FParam.DeviceID, 0]);
             B := true;
 
           end;
@@ -983,11 +985,11 @@ begin
 
             if (PactorChannel >= 1) then begin
 
-              N := High (FRadioChannel);
-              FRadioChannel[N] := TRadioChannel.Create (self);
-              FRadioChannel[N].Name := FDeviceName + ' PACTOR';
-              FRadioChannel[N].Handle := 255;
-              FRadioChannel[N].ID := Format ('HM%d%d', [FParam.DeviceID, 255]);
+              N := High (NewRadioChannel);
+              NewRadioChannel[N] := TRadioChannel.Create (self);
+              NewRadioChannel[N].Name := FDeviceName + ' PACTOR';
+              NewRadioChannel[N].Handle := 255;
+              NewRadioChannel[N].ID := Format ('HM%d%d', [FParam.DeviceID, 255]);
 
             end;
 
@@ -1003,11 +1005,11 @@ begin
             if (Terminated) then break;
 
             if (I >= 0) and (I <= 1) then begin
-              FRadioChannel[N] := TRadioChannel.Create (self);
+              NewRadioChannel[N] := TRadioChannel.Create (self);
               if (N = 0) then S := 'intern' else S := 'Port ' + IntToStr (N);
-              FRadioChannel[N].Name := FDeviceName + ' ' + S;
-              FRadioChannel[N].Handle := N;
-              FRadioChannel[N].ID := Format ('HM%d%d', [FParam.DeviceID, N]);
+              NewRadioChannel[N].Name := FDeviceName + ' ' + S;
+              NewRadioChannel[N].Handle := N;
+              NewRadioChannel[N].ID := Format ('HM%d%d', [FParam.DeviceID, N]);
               B := true;
             end;
 
@@ -1016,13 +1018,23 @@ begin
         end;
 
         if (not B) then begin
-          FRadioChannel[0] := TRadioChannel.Create (self);
-          FRadioChannel[0].Name := FDeviceName;
-          FRadioChannel[0].Handle := -1;
-          FRadioChannel[0].ID := Format ('HM%d', [FParam.DeviceID]);
+          NewRadioChannel[0] := TRadioChannel.Create (self);
+          NewRadioChannel[0].Name := FDeviceName;
+          NewRadioChannel[0].Handle := -1;
+          NewRadioChannel[0].ID := Format ('HM%d', [FParam.DeviceID]);
         end;
 
       end;
+
+      // Die Funkkanäle lokal aufbauen und erst fertig unter der Sperre
+      // übernehmen: RadioChannels kopiert sie im Hauptthread.
+      CriticalSection.Enter;
+      try
+        for N := Low (FRadioChannel) to High (FRadioChannel) do FRadioChannel[N] := NewRadioChannel[N];
+      finally
+        CriticalSection.Leave;
+      end;
+      for N := Low (NewRadioChannel) to High (NewRadioChannel) do NewRadioChannel[N] := nil;
 
       DebOut (self, MethodName, 'Pactor-Channel: %d', [PactorChannel]);
 
@@ -1451,19 +1463,29 @@ begin
 
                   7: begin // AX25 data
 
-                    PacketConnection := FConnectionList[TNCChannel];
-                    FullCheckChannel := false;
-                    if (not assigned (PacketConnection)) or (PacketConnection.ConnectionStatus < vs_connected) then begin
-                      DebOut (self, MethodName, 'WARNUNG: AX25-Daten ohne vs_connected');
-                      GetCommandC (TNCChannel, TNCChannelConnectedTo);
-                      ConnectionEstablished (TNCChannel, TNCChannelConnectedTo, false);
-                      PacketConnection := FConnectionList[TNCChannel];
-                    end;
+                    // Nur vollständig gelesene Daten weitergeben; nach einem Lesefehler
+                    // enthält S einen Rumpf oder nicht initialisierten Speicher.
+                    if (CommandOk) then begin
 
-                    if (assigned (PacketConnection)) then begin
-                      PacketConnection.ReceiveTextData (S);
-                    end else begin
-                      DebOut (self, MethodName, 'Fehler bei ReceiveTextData')
+                      PacketConnection := FConnectionList[TNCChannel];
+                      FullCheckChannel := false;
+                      if (not assigned (PacketConnection)) or (PacketConnection.ConnectionStatus < vs_connected) then begin
+                        DebOut (self, MethodName, 'WARNUNG: AX25-Daten ohne vs_connected');
+                        // Eine Verbindung nur übernehmen, wenn der TNC eine Gegenstation
+                        // meldet. Sonst (z. B. nach dl_kill) entstünde eine Verbindung mit
+                        // leerem Rufzeichen, die nie wieder abgebaut wird.
+                        if (GetCommandC (TNCChannel, TNCChannelConnectedTo)) and (TNCChannelConnectedTo <> '') then begin
+                          ConnectionEstablished (TNCChannel, TNCChannelConnectedTo, false);
+                          PacketConnection := FConnectionList[TNCChannel];
+                        end;
+                      end;
+
+                      if (assigned (PacketConnection)) then begin
+                        PacketConnection.ReceiveTextData (S);
+                      end else begin
+                        DebOut (self, MethodName, 'AX25-Daten ohne Verbindung verworfen');
+                      end;
+
                     end;
 
                   end;
@@ -1676,7 +1698,8 @@ begin
                 // released as soon as the job is done, unless the job is queued again.
                 Forwarded := false;
 
-                if (GetTickCount > Cardinal (Msg.wParam)) or (PRecConnect (Msg.lParam)^.IsExpired) then begin
+                // Vorzeichenbehafteter Abstand statt ">": übersteht den Überlauf von GetTickCount
+                if (Integer (GetTickCount - Cardinal (Msg.wParam)) > 0) or (PRecConnect (Msg.lParam)^.IsExpired) then begin
 
                   Debout (self, MethodName, 'msg_connect empfangen (abgelaufen)');
                   JobDone (msg_connect, Pointer (Msg.lParam));
@@ -2054,6 +2077,32 @@ begin
 
     on E: Exception do begin
       DiscardMessages;
+      // Abbruch nach einer Ausnahme: nicht mehr "bereit" melden, die Verbindungen
+      // trennen und die Schnittstelle schließen. Sonst bleiben die Verbindungen in
+      // ihren Kanälen stehen und die Schnittstelle bis zum Programmende belegt;
+      // ein Neustart des Geräts scheiterte dann am eigenen, offenen Handle.
+      SetStatus (gs_error, 'Abbruch nach Fehler');
+      for N := Low (FConnectionList) to High (FConnectionList) do begin
+        ConnectionsCriticalSection.Enter;
+        try
+          PacketConnection := FConnectionList[N];
+          FConnectionList[N] := nil;
+        finally
+          ConnectionsCriticalSection.Leave;
+        end;
+        if (assigned (PacketConnection)) then begin
+          try
+            PacketConnection.Disconnected (dr_linkfailure);
+            PacketConnection.Release;
+          except
+          end;
+          PacketConnection := nil;
+        end;
+      end;
+      try
+        CommClose;
+      except
+      end;
       ShowUnhandledException (E, ClassName, '2');
       raise;
     end;
@@ -2639,7 +2688,8 @@ begin
 
           wrTimeout: begin
             // If the device thread has already adopted the job, the event will arrive shortly.
-            if (GetTickCount > ExpiryDate) and (RecConnectGiveUp (RecConnect)) then begin
+            // Vorzeichenbehafteter Abstand statt ">": übersteht den Überlauf von GetTickCount
+            if (Integer (GetTickCount - ExpiryDate) > 0) and (RecConnectGiveUp (RecConnect)) then begin
               DebOut (self, MethodName, 'Event: Timeout');
               Result := vf_deviceTimeout;
               ConnectionsList.Lock;
@@ -2650,7 +2700,8 @@ begin
                 ConnectionsList.UnLock;
               end;
               break;
-            end else if (GetTickCount > ExpiryDate) and ((not assigned (FThread)) or (GetTickCount > ExpiryDate + 30000)) then begin
+            end else if (Integer (GetTickCount - ExpiryDate) > 0) and
+                        ((not assigned (FThread)) or (Integer (GetTickCount - ExpiryDate) > 30000)) then begin
               // Adopted, but no event: the device thread was terminated between adoption and
               // SetEvent (exception, DeInit) - do not wait forever. After
               // adoption it only needs a short time anyway, so the hard deadline suffices in other cases too.
@@ -2712,11 +2763,17 @@ var
 begin
   assert (Low (FRadioChannel) = 0);
   result := 0;
-  for N := Low (FRadioChannel) to High (FRadioChannel) do begin
-    if (assigned (FRadioChannel[N])) then begin
-      aRadioChannels[result] := FRadioChannel[N];
-      Inc (Result);
+  // Unter der Sperre kopieren: Der Gerätethread setzt FRadioChannel bei der Initialisierung neu.
+  CriticalSection.Enter;
+  try
+    for N := Low (FRadioChannel) to High (FRadioChannel) do begin
+      if (assigned (FRadioChannel[N])) then begin
+        aRadioChannels[result] := FRadioChannel[N];
+        Inc (Result);
+      end;
     end;
+  finally
+    CriticalSection.Leave;
   end;
 end;
 

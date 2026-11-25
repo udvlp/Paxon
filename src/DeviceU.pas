@@ -40,6 +40,7 @@ type
     FThread: TDeviceThread;
     FStatus: TDeviceStatus;
     FStatusText: string;
+    FPendingStatusText: string;
     FParameterText: string;
     FRegKey: string;
     FNo: Integer;
@@ -120,6 +121,7 @@ begin
   FThread := nil;
   FStatus := gs_inactive;
   FStatusText := DeviceStatusText(FStatus);
+  FPendingStatusText := FStatusText;
   FParameterText := '';
   CriticalSection := TCriticalSection.create;
 end;
@@ -171,6 +173,12 @@ const
   MethodName = 'Init';
 begin
   DebOut (self, MethodName, '...' + Copy (FRegKey, Length (FRegKey) - 14, MaxInt) + '''');
+  // Ein noch laufender Gerätethread (Status gs_init, oder gs_error während des
+  // Abbaus nach einer Ausnahme) muss erst enden: Zwei Threads teilten sich sonst
+  // DLL, Schnittstelle und Verbindungsliste.
+  if (assigned (FThread)) then begin
+    DeInit;
+  end;
   FThread := TDeviceThread.Create (true);
   FThread.FreeOnTerminate := true;
   FThread.OnTerminate := ThreadTerminate;
@@ -210,7 +218,9 @@ begin
       end;
       Forms.Application.ProcessMessages;
       if (GetCurrentThreadID = MainThreadID) then CheckSynchronize;
-    until (GetTickCount > DWord (L + 8000));
+    // Verstrichene Zeit statt Zeitpunkt vergleichen: GetTickCount läuft alle
+    // 49,7 Tage über.
+    until (GetTickCount - DWord (L) > 8000);
 
     if (B) then begin
       DebOut (self, MethodName, 'Geräte-Thread normal beendet.');
@@ -255,8 +265,10 @@ procedure   TDevice.SetStatus (aStatus: TDeviceStatus; aStatusText: string);
 const
   MethodName = 'SetStatus';
 begin
-  FStatusText := DeviceStatusText(aStatus);
-  if (aStatusText <> '') then FStatusText := FStatusText + ' - ' + aStatusText;
+  // FStatusText liest der Hauptthread (Einstellungen, Gerätestatus); er wird
+  // deshalb erst in SetStatusSync, also im Hauptthread, gesetzt.
+  FPendingStatusText := DeviceStatusText(aStatus);
+  if (aStatusText <> '') then FPendingStatusText := FPendingStatusText + ' - ' + aStatusText;
   FStatus := aStatus;
   Synchronize (SetStatusSync);
 end;
@@ -271,6 +283,7 @@ end;
 
 procedure   TDevice.SetStatusSync;
 begin
+  FStatusText := FPendingStatusText;
   if (assigned (DeviceList)) then begin
     DeviceList.StatusChange (self);
   end;

@@ -45,6 +45,7 @@ type
 
     procedure   SaveConnections;
     procedure   CheckRestored;
+    procedure   DropRestored;
     procedure   InitRadioChannels;
 
   protected
@@ -345,6 +346,41 @@ begin
 
   DebOut (self, MethodName, 'end.');
 
+end;
+
+
+procedure   TFlexnetDevice.DropRestored;
+// Restore hängt die gespeicherten Verbindungen schon vor dem Laden der DLL an
+// ihre Kanäle. Scheitert das Laden oder ax_init, prüft CheckRestored sie nie;
+// ohne diesen Abbau blieben sie als "verbunden" stehen, ließen sich nicht
+// trennen und belegten die Kanäle. Ruft keine DLL-Funktionen auf.
+const
+  MethodName = 'DropRestored';
+var
+  N: Integer;
+  PacketConnection: IConnection;
+begin
+  while (true) do begin
+    ConnectionsList.Lock;
+    try
+      N := FConnectionList.Count - 1;
+      if (N >= 0) then begin
+        PacketConnection := FConnectionList.Items[N] as IConnection;
+        FConnectionList.Items[N] := nil;
+        FConnectionList.Delete (N);
+      end;
+    finally
+      ConnectionsList.UnLock;
+    end;
+    if (N < 0) then break;
+    // Disconnected ruft in den Kanal (SendMessage an den Hauptthread), daher ohne Sperre.
+    try
+      PacketConnection.Disconnected (dr_linkfailure);
+    except
+    end;
+    PacketConnection.Release;
+    PacketConnection := nil;
+  end;
 end;
 
 
@@ -884,6 +920,7 @@ begin
         end else begin
 
           SetStatus (gs_error, 'Kernel nicht geladen');
+          DropRestored;
 
         end;
 
@@ -896,6 +933,7 @@ begin
     end else begin
 
       SetStatus (gs_error, FlexnetError);
+      DropRestored;
 
     end;
 
