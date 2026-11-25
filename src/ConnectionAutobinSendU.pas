@@ -79,6 +79,15 @@ begin
 
   Stream := FileSender.Stream;
 
+  // AutoBIN kündigt die Länge als Integer an. Größere Dateien würden mit
+  // abgeschnittener (ab 2 GiB negativer) Länge angekündigt; sie müssen geteilt
+  // gesendet werden. Abbruch, bevor etwas gesendet ist.
+  if (Stream.Size > MaxInt) then begin
+    DebOut (self, MethodName, 'Datei zu groß für AutoBIN: %d', [Stream.Size]);
+    AbortTransfer;
+    exit;
+  end;
+
   CanCancel := true;
 
   PacketConnection.SendTextData (FileSender.TextBefore, true, true, false, false);

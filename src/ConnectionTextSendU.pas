@@ -56,6 +56,7 @@ procedure   TConnectionTextSend.Init;
 begin
   UseEvent [e_receivedata] := true;
   UseEvent [e_sendingpossible] := true;
+  CanCancel := true;
   Stream := PacketConnection.FileSender.Stream;
   Stream.Position := 0;
   LastCR := false;

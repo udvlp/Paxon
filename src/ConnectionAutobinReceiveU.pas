@@ -234,27 +234,39 @@ var
 
 begin
 
-  L := PacketConnection.ReceiveQueue.dequeuePacket (S, BytesRemaining);
+  if (PacketConnection.ReceiveQueue.isEmpty) then exit;
 
-  if (L >= 1) then begin
+  // Steuerpakete (Abbruch, Text des Senders) am ganzen Paket erkennen. Erst
+  // danach wird auf die Restlänge gekürzt; sonst landete ein Textpaket am
+  // Dateiende zerteilt in der Datei, und ein #ABORT# würde übersehen.
+  S := PacketConnection.ReceiveQueue.current;
+  L := Length (S);
+  B := (L >= 1) and (S[L] = #13) and ((S = '#ABORT#'#13) or (copy (S, 1, 4) = 'SP\-'));
 
-    B := true;
-    if (S[L] = #13) then begin
-      if (S = '#ABORT#'#13) then begin
-        Abort := true;
-        B := false;
-      end else if (copy (S, 1, 4) = 'SP\-') then begin
-        if (assigned (PacketConnection.ChannelRef)) then PacketConnection.ChannelReceiveText (copy (S, 5, MaxInt));
-        B := false;
-      end;
+  if (B) then begin
+
+    PacketConnection.ReceiveQueue.dequeue;
+    if (S = '#ABORT#'#13) then begin
+      Abort := true;
+    end else begin
+      if (assigned (PacketConnection.ChannelRef)) then PacketConnection.ChannelReceiveText (copy (S, 5, MaxInt));
     end;
 
-    if (B) then begin
+  end else begin
+
+    L := PacketConnection.ReceiveQueue.dequeuePacket (S, BytesRemaining);
+
+    if (L >= 1) then begin
       CalcCRC16OfStringLen (S, L, MyCRC);
-      FileSender.Stream.write (S[1], L);
-      FileSender.Transfer (L);
-      Dec (BytesRemaining, L);
-      FileSender.Progress := FileLen - BytesRemaining;
+      // Schreibfehler (z. B. Datenträger voll) brechen ab. Der CRC läuft über die
+      // empfangenen Bytes und würde eine unvollständige Datei sonst als gut melden.
+      if (FileSender.Stream.write (S[1], L) <> L) then begin
+        Abort := true;
+      end else begin
+        FileSender.Transfer (L);
+        Dec (BytesRemaining, L);
+        FileSender.Progress := FileLen - BytesRemaining;
+      end;
     end;
 
   end;
@@ -349,7 +361,13 @@ begin
   if (FileSender.Stream is TFileStreamUlf) then begin
     (FileSender.Stream as TFileStreamUlf).Close;
     if (Why <> e_finish) or (Abort) then begin
-      (FileSender.Stream as TFileStreamUlf).Recycle;
+      // Recycle wirft, wenn der Papierkorb die Datei nicht nimmt (z. B. gesperrt).
+      // Das darf das Aufräumen unten nicht überspringen.
+      try
+        (FileSender.Stream as TFileStreamUlf).Recycle;
+      except
+        on E: Exception do DebOut (self, MethodName, 'Recycle: ' + E.Message);
+      end;
     end;
   end;
 

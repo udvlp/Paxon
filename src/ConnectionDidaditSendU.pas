@@ -113,6 +113,14 @@ begin
 
   CanCancel := true;
 
+  // Die Länge wird als Integer geführt; größere Dateien müssen geteilt gesendet
+  // werden. Abbruch, bevor etwas gesendet ist.
+  if (Stream.Size > MaxInt) then begin
+    DebOut (self, MethodName, 'Datei zu groß für DIDADIT: %d', [Stream.Size]);
+    AbortTransfer;
+    exit;
+  end;
+
   PacketConnection.SendTextData (FileSender.TextBefore, true, true, false, false);
 
   FileSender.TransferPrepare;

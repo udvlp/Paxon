@@ -49,6 +49,7 @@ type
     FCanCancel: Boolean;
     FinishEvent: TEvent;
     FWhyFinished: TWhyTerminated;
+    FTerminatedCalled: Boolean;
     UsedEventsSet: TEventSet;
     UsedEventHandleCount: Cardinal;
     UserEventStartIndex: Integer;
@@ -191,7 +192,17 @@ begin
   ConnectionModule := VClass.Create (self, aConnectionObj);
   aConnectionObj.ConnectionModule := ConnectionModule;
   try
-    ConnectionModule.EventLoop;
+    try
+      ConnectionModule.EventLoop;
+    except
+      // Eine Ausnahme im ‹bertragungsmodul (z. B. Datentr‰ger voll) ist schon
+      // gemeldet, und das Modul hat aufger‰umt (EventLoop). Sie beendet nur die
+      // ‹bertragung, nicht den Verbindungs-Thread: Die Verbindung l‰uft mit
+      // diesem Modul weiter.
+      on E: Exception do begin
+        DebOut (self, MethodName, '‹bertragung nach Ausnahme beendet: ' + E.Message);
+      end;
+    end;
   finally
     ConnectionModule.Release;
     ConnectionModule := nil;
@@ -275,16 +286,19 @@ begin
         case D of
 
           WAIT_OBJECT_0 + 0: begin // e_finish
+            FTerminatedCalled := true;
             Terminated (FWhyFinished);
             break;
           end;
 
           WAIT_OBJECT_0 + 1: begin // e_threaddied
+            FTerminatedCalled := true;
             Terminated (e_threaddied);
             break;
           end;
 
           WAIT_OBJECT_0 + 2: begin // e_threadterminated
+            FTerminatedCalled := true;
             Terminated (e_threadterminated);
             break;
           end;
@@ -321,6 +335,15 @@ begin
 
       on E: Exception do begin
         ShowUnhandledException (E, ClassName, MethodName);
+        // Aufr‰umen wie bei einem Abbruch: Dateien schlieﬂen, FileSender
+        // freigeben. Nicht erneut, wenn die Ausnahme aus Terminated selbst kam.
+        if (not FTerminatedCalled) then begin
+          FTerminatedCalled := true;
+          try
+            Terminated (e_abort);
+          except
+          end;
+        end;
         raise;
       end;
 

@@ -70,6 +70,10 @@ begin
   UseEvent [e_receivedata] := true;
   UseEvent [e_senddata] := true;
 
+  // Abbrechbar machen: Kommt das Ende nie, bliebe der Empfang sonst bis zum
+  // Disconnect aktiv.
+  CanCancel := true;
+
   FileOpened := false;
 
   Header := PacketConnection.ReceiveQueue.dequeueLine;
@@ -193,7 +197,7 @@ begin
 
   if (FileOpened) then CloseFile (FilePathName);
 
-  if (assigned (PacketConnection)) and (Why in [e_finish, e_abort]) then begin
+  if (assigned (PacketConnection)) and (Why in [e_finish, e_abort, e_cancel]) then begin
 
     if (Why = e_finish) then begin
       if (PacketConnection.StationType in [st_unknown, st_terminal]) then begin

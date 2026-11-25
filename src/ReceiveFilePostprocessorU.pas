@@ -32,7 +32,7 @@ type
     FSendFile: ISendFile;
     FPacketConnection: IConnectionForModule;
 
-    procedure   BinSplitCombine;
+    function    BinSplitCombine: Boolean;
 
   public
 
@@ -139,13 +139,17 @@ begin
     SetLength (S, FSendFile.Stream.read (S[1], 5));
   end;
 
-  if (not DontCombine) and (S = '>BS<'#10) then begin
+  // Eine Datei, die nur wie ein BinSplit-Teil beginnt, aber keinen gültigen
+  // Header hat, wird wie jede andere Datei gespeichert. Vorher blieb sie
+  // unbemerkt im Ordner für unvollständige Dateien liegen.
+  B := (not DontCombine) and (S = '>BS<'#10);
 
+  if (B) then begin
     DebOut (self, MethodName, 'ist BINSPLIT-Datei');
+    B := BinSplitCombine;
+  end;
 
-    BinSplitCombine;
-
-  end else begin
+  if (not B) then begin
 
     DebOut (self, MethodName, 'ist keine BINSPLIT-Datei');
 
@@ -179,7 +183,8 @@ begin
 end;
 
 
-procedure   TReceiveFilePostprocessor.BinSplitCombine;
+function    TReceiveFilePostprocessor.BinSplitCombine: Boolean;
+// false: kein gültiger BinSplit-Header; die Datei ist dann nicht angefasst.
 const
   MethodName = 'BinSplitCombine';
 
@@ -217,6 +222,8 @@ var
 begin
 
   DebOut (self, MethodName, 'begin...');
+
+  Result := true;
 
   DontDelete := false;
 
@@ -429,12 +436,14 @@ begin
       end else begin
 
         ChannelPrompt (SWrongDataInHeader + #13, dt_pgp);
+        Result := false;
 
       end;
 
     end else begin
 
       ChannelPrompt (SHeaderInvalidOrTooShort + #13, dt_pgp);
+      Result := false;
 
     end;
 

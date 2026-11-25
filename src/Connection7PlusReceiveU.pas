@@ -72,6 +72,10 @@ begin
   UseEvent [e_receivedata] := true;
   UseEvent [e_senddata] := true;
 
+  // Abbrechbar machen: Kommt das Ende nie (Gegenstation bricht ab), liefe sonst
+  // jeder weitere Text unsichtbar in die Datei, bis zum Disconnect.
+  CanCancel := true;
+
   Header := PacketConnection.ReceiveQueue.dequeueLine;
 
   L := Length (Header);
@@ -216,7 +220,7 @@ begin
     e_abort: Sounds.PlayEvent (se_transfer_error, PacketConnection);
   end;
 
-  if (assigned (PacketConnection)) and (Why in [e_finish, e_abort]) then begin
+  if (assigned (PacketConnection)) and (Why in [e_finish, e_abort, e_cancel]) then begin
     if (Why = e_finish) then begin
       if (PacketConnection.StationType in [st_unknown, st_terminal]) then begin
         PacketConnection.SendTextData (#13, true);
