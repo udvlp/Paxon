@@ -50,6 +50,8 @@ type
     FCommandList: TObjectList;
     procedure   DeleteCommand (aLineNo: Cardinal);
     procedure   ClearDots;
+    function    CommandLine (Cmd: TObject): Integer;
+    procedure   DropStaleCommands;
     procedure   ConsoleLineDown;
     procedure   ClipLines (var Y1, Y2: Integer);
     function    LineTypeAt (const Y: Integer): Integer;
@@ -172,6 +174,7 @@ var
 
 begin
 
+  DropStaleCommands;
   ClearDots;
   RegExpr := TRegex.create;
   Text := '';
@@ -278,16 +281,53 @@ begin
 end;
 
 
+function    TBoxList.CommandLine (Cmd: TObject): Integer;
+// Bildschirmzeile des Befehls oder -1. -1 auch, wenn die Zeile dort nicht mehr
+// die markierte ist: Nach "Ausgabefenster löschen" beginnt die Zeilennummer
+// (AbsNo) wieder bei 0, und eine neue Zeile könnte dieselbe Nummer tragen.
+// Die Markierung (R/E) hat nur die ursprüngliche Zeile.
+var
+  C: TBoxCommand;
+  T: TLineType;
+  LH: PLineHeader;
+begin
+  C := TBoxCommand (Cmd);
+  result := FConsole.CursorY - Integer(FConsole.LastAbsNo - C.FLineNo);
+  if (result < 0) or (result >= FConsole.Rows) then begin
+    result := -1;
+    exit;
+  end;
+  LH := FConsole.ScreenPtrH (result);
+  if (not assigned (LH)) or (LH.AbsNo <> C.FLineNo) then begin
+    result := -1;
+    exit;
+  end;
+  T := GetChecked (result);
+  if ((C.FCommand = bc_read) and (T <> lt_read)) or ((C.FCommand = bc_erase) and (T <> lt_erase)) then begin
+    result := -1;
+  end;
+end;
+
+
+procedure   TBoxList.DropStaleCommands;
+var
+  I: Integer;
+begin
+  for I := FCommandList.Count - 1 downto 0 do begin
+    if (CommandLine (FCommandList[I]) < 0) then FCommandList.Delete (I);
+  end;
+end;
+
+
 procedure   TBoxList.ClearDots;
 var
   I, Y: Integer;
-  Cmd: TBoxCommand;
 begin
   for I := FCommandList.Count - 1 downto 0 do begin
-    Cmd := TBoxCommand(FCommandList[I]);
-    Y := FConsole.CursorY - Integer(FConsole.LastAbsNo - Cmd.FLineNo);
-    // lines scrolled out of the buffer no longer get a dot
-    if (Y >= 0) and (Y < FConsole.Rows) then FConsole.SetGutterImageIndex (4, Y);
+    // Zeilen, die aus dem Puffer gelaufen oder nicht mehr die markierten sind,
+    // bekommen keinen Punkt.
+    Y := CommandLine (FCommandList[I]);
+    if (Y >= 0) then FConsole.SetGutterImageIndex (4, Y);
   end;
 end;
 

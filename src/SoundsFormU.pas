@@ -572,13 +572,16 @@ begin
             end;
 
             E.SignalWavFile := S;
+            // Im Stationsmodus gilt nur ein angehakter Klang; ein geladenes
+            // Schema soll die Station tatsächlich einstellen. (Global ohne Wirkung.)
+            E.SignalChecked := true;
 
           end else begin
 
             S := IncludeTrailingPathDelimiter (FilePath) + S;
             S := ExpandFileName (S);
 
-            E.SignalChecked := false;
+            E.SignalChecked := true;
             E.Signal := st_wave;
             E.SignalWavFile := S;
 

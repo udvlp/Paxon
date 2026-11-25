@@ -123,9 +123,17 @@ end;
 
 
 procedure   TDeviceSettings.FormDestroy (Sender: TObject);
+var
+  N: Integer;
 begin
   if (assigned (DeviceList)) then DeviceList.Unsubscribe (Subscriber);
   DeletedDevices.Free;
+  // Nach "Übernehmen" ist die Liste leer (die Geräte gehören dann der
+  // Geräteliste). Nach "Abbrechen" stehen hier neu angelegte, nie übernommene
+  // Geräte, die sonst niemand freigibt.
+  for N := 0 to AddedDevices.Count - 1 do begin
+    TDevice (AddedDevices[N]).Free;
+  end;
   AddedDevices.Free;
 end;
 

@@ -39,6 +39,7 @@ type
   private
     FWidth: Integer;
     Subscriber: ISubscriber;
+    procedure    FormClose (Sender: TObject; var Action: TCloseAction);
     procedure    wmGetMinMaxInfo   (var Msg: TMessage); message wm_getminmaxinfo;
     procedure    Notify (DeviceItem: TDevice); virtual;
   end;
@@ -95,6 +96,18 @@ begin
 
   Subscriber := TDevicesStatusSubscriber.Create;
 
+  // Im Code statt in den DFMs (auch die der Sprach-DLLs) zugewiesen.
+  OnClose := FormClose;
+
+end;
+
+
+procedure   TDevicesStatus.FormClose (Sender: TObject; var Action: TCloseAction);
+begin
+  // Mit [X] geschlossen wurde das Fenster vorher nur versteckt, FormHide setzte
+  // aber DevicesStatus auf nil: Jedes Öffnen legte eine neue Instanz an, und
+  // die Position wurde erst beim Programmende (aus der ältesten) gespeichert.
+  Action := caFree;
 end;
 
 

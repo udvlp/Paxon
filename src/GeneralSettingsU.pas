@@ -235,16 +235,22 @@ procedure   TGeneralSettings.EditCallsignClick (Sender: TObject);
 var
   LI: TListItem;
   MC: TMyCall;
+  F: TCallsignSettingsForm;
 begin
-  with TCallsignSettingsForm.Create (Parent) do begin
+  // Das Formular nach Gebrauch freigeben; vorher blieb bei jedem Bearbeiten
+  // eine versteckte Instanz bis zum Schlieﬂen der Einstellungen stehen.
+  F := TCallsignSettingsForm.Create (Parent);
+  try
     LI := CallsignListView.Selected;
     if (LI <> nil) then begin
       MC := TMyCall (LI.Data);
-      if (Run (MC)) then begin
+      if (F.Run (MC)) then begin
         LI.Caption := MC.Call;
         LI.SubItems.Strings[0] := MC.SsidsAsString;
       end;
     end;
+  finally
+    F.Free;
   end;
   if (CallsignListView.CanFocus) then CallsignListView.SetFocus;
 end;
@@ -256,6 +262,7 @@ const
 var
   R: TMyCall;
   LI: TListItem;
+  F: TCallsignSettingsForm;
 begin
   DebOut (self, MethodName, 'begin...');
   R := TMyCall.create;
@@ -265,8 +272,9 @@ begin
     SSID[0] := 0;
   end;
   DebOut (self, MethodName, 'TCallsignSettingsForm.Create...');
-  with TCallsignSettingsForm.Create (Parent) do begin
-    if (Run (R)) then begin
+  F := TCallsignSettingsForm.Create (Parent);
+  try
+    if (F.Run (R)) then begin
       LI := CallsignListView.Items.Add;
       with LI do begin
         Data := R;
@@ -277,6 +285,8 @@ begin
     end else begin
       R.Free;
     end;
+  finally
+    F.Free;
   end;
   DebOut (self, MethodName, 'end.');
 end;
