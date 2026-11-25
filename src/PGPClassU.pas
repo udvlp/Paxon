@@ -180,7 +180,13 @@ begin
 
       PGPCheckResult (PGPOrderKeyset (DefaultKeyset, kPGPAnyOrdering, KeyList), 'PGPOrderKeyset');
 
-      PGPCheckResult (PGPNewKeyIter (Keylist, Iter), 'PGPNewKeyIter');
+      // Fehler zwischen dem Anlegen und dem Freigeben von KeyList und Iter
+      // dürfen keine Ausnahme werfen, sonst blieben beide belegt.
+      E := PGPNewKeyIter (Keylist, Iter);
+      if (E <> kPGPError_NoError) then begin
+        PGPFreeKeyList (KeyList);
+        PGPCheckResult (E, 'PGPNewKeyIter');
+      end;
 
       while true do begin
 
@@ -189,11 +195,11 @@ begin
 
         if (E <> kPGPError_NoError) or (not assigned (Key)) then break;
 
-        PGPCheckResult (PGPGetKeyBoolean(Key, kPGPKeyPropIsSecret, B), 'PGPGetKeyBoolean');
-
+        // Einen Schlüssel, dessen Eigenschaften nicht lesbar sind, überspringen
+        if (PGPGetKeyBoolean (Key, kPGPKeyPropIsSecret, B) <> kPGPError_NoError) then continue;
 
         M := 0;
-        PGPCheckResult (PGPGetKeyNumber (Key, kPGPKeyPropAlgID, M), 'PGPGetKeyNumber');
+        if (PGPGetKeyNumber (Key, kPGPKeyPropAlgID, M) <> kPGPError_NoError) then M := 0;
 
         if B <> 0 then begin
 
@@ -466,7 +472,11 @@ begin
 
   end;
 
-  if (SignatureData.Verified = PGPTrue) then begin
+  // Nicht geprüft (Schlüssel unbekannt) ist nicht "falsch": Der Text meldet
+  // dann "nicht überprüft", der Klang darf nicht "ungültig" melden.
+  if (SignatureData.Checked <> PGPTrue) then begin
+    Sounds.PlayEvent (se_pgp_unknown, nil);
+  end else if (SignatureData.Verified = PGPTrue) then begin
     if (assigned (SignatureData.SigningKey)) and (SignatureData.KeyValidity >= kPGPValidity_Marginal) then begin
       Sounds.PlayEvent (se_pgp_valid, nil);
     end else begin
@@ -673,7 +683,11 @@ begin
 
                   PGPCheckResult (PGPOrderKeyset (NewKeyset, kPGPAnyOrdering, KeyList), 'PGPOrderKeyset');
 
-                  PGPCheckResult (PGPNewKeyIter (Keylist, Iter), 'PGPNewKeyIter');
+                  E := PGPNewKeyIter (Keylist, Iter);
+                  if (E <> kPGPError_NoError) then begin
+                    PGPFreeKeyList (KeyList);
+                    PGPCheckResult (E, 'PGPNewKeyIter');
+                  end;
 
                   FCheckResult := FCheckResult + SKeysAdded + #13;
 
