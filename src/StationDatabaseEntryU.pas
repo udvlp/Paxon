@@ -213,7 +213,7 @@ begin
   inherited;
   FCriticalSection := TCriticalSection.create;
   FIncomingConnect := Low(TIncomingConnect);
-  FEntryType := st_first;
+  FEntryType := st_unknown;
   FRemoteCommands := nil;
 end;
 
@@ -390,14 +390,18 @@ begin
   FCriticalSection.Enter;
   try
 
-    FEntryType := st_first;
+    FEntryType := st_unknown;
     R := FStorage.OpenStream (PWideChar(StreamName), nil, StreamMode, 0, Stream);
 
     if (R = S_OK) then begin
 
       R := Stream.Read (@B, 1, @L);
       if (R <> S_OK) or (L <> 1) then B := 0;
-      FEntryType := TStationType(B);
+      // Ältere Versionen speicherten die Grenzwerte st_first/st_last als Typ;
+      // alles außerhalb der echten Typen gilt als "automatisch".
+      if (Integer (B) > Ord (st_unknown)) and (Integer (B) < Ord (st_last)) then begin
+        FEntryType := TStationType(B);
+      end;
 
       R := Stream.Read (@B, 1, @L);
       if (R <> S_OK) or (L <> 1) then B := 0;
@@ -642,10 +646,25 @@ end;
 
 
 function    TStationDatabaseEntry._release: Integer;
+// Herunterzählen und Austragen aus dem Cache geschehen unter der Cache-Sperre.
+// Sonst könnte Open oder Add eines anderen Threads zwischen dem Zähler 0 und
+// RemoveFromCache das sterbende Objekt im Cache finden und weiterverwenden.
 begin
-  result := inherited _release;
-  if (result = 0) and (assigned (StationDatabase)) then begin
-    StationDatabase.RemoveFromCache (self);
+  if (assigned (StationDatabase)) then begin
+    StationDatabase.LockCache;
+    try
+      result := InterlockedDecrement (FRefCount);
+      if (result = 0) then begin
+        StationDatabase.RemoveFromCache (self);
+      end;
+    finally
+      StationDatabase.UnlockCache;
+    end;
+  end else begin
+    result := InterlockedDecrement (FRefCount);
+  end;
+  if (result = 0) then begin
+    Destroy;
   end;
 end;
 
@@ -705,10 +724,14 @@ begin
     if (R = S_OK) then begin
       assert (assigned (Stream));
       SL := TStringlist.create;
-      SL.Add (IntToStr (Ord (Signal)));
-      SL.Add (SignalWavFile);
-      SL.Add (IntToStr (Ord (Announcement)));
-      S := SL.CommaText;
+      try
+        SL.Add (IntToStr (Ord (Signal)));
+        SL.Add (SignalWavFile);
+        SL.Add (IntToStr (Ord (Announcement)));
+        S := SL.CommaText;
+      finally
+        SL.free;
+      end;
       assert (Length (S) > 0);
       Stream.Write (PChar(S), Length (S), @L);
       result := true;
@@ -792,10 +815,14 @@ begin
     if (R = S_OK) then begin
       assert (assigned (Stream));
       SL := TStringlist.create;
-      if (DefaultTextBefore) then S := '1' else S := '0';
-      SL.Add (S);
-      SL.Add (Text);
-      S := SL.CommaText;
+      try
+        if (DefaultTextBefore) then S := '1' else S := '0';
+        SL.Add (S);
+        SL.Add (Text);
+        S := SL.CommaText;
+      finally
+        SL.free;
+      end;
       assert (Length (S) > 0);
       Stream.Write (PChar(S), Length (S), @L);
       result := true;

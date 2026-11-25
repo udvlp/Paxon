@@ -49,6 +49,8 @@ type
     function    Open (const Call: String; TryWithoutSSID: Boolean): IStationDatabaseEntry; overload;
     function    Add  (Call: String): IStationDatabaseEntry;
     procedure   RemoveFromCache (P: TObject);
+    procedure   LockCache;
+    procedure   UnlockCache;
   end;
 
 
@@ -418,6 +420,19 @@ begin
 end;
 
 
+procedure   TStationDatabase.LockCache;
+// Dieselbe Sperre wie Open, Add und RemoveFromCache (wiedereintrittsfähig).
+begin
+  FCriticalSection.Enter;
+end;
+
+
+procedure   TStationDatabase.UnlockCache;
+begin
+  FCriticalSection.Leave;
+end;
+
+
 function    TStationDatabase.EnumPwds (StationDatabaseEntry: IStationDatabaseEntry; List: TStringList): Boolean;
 const
   MethodName = 'EnumPwds';
@@ -610,10 +625,15 @@ begin
             N := High (TStatArray) + 1;
             repeat
               L := 0;
-              Enum.Next (N, Stats, @L);
+              HR := Enum.Next (N, Stats, @L);
               for I := 0 to L - 1 do begin
                 Calls.Add (String (Stats[I].pwcsName));
                 Malloc.Free (Stats[I].pwcsName);
+              end;
+              // Ein Fehler (statt S_FALSE am Ende) bricht die Aufzählung ab: Dann
+              // fehlen Stationen, und die Kopie darf das Original nicht ersetzen.
+              if (HR <> S_OK) and (HR <> S_FALSE) then begin
+                Completed := false;
               end;
               Application.ProcessMessages;
             until (L <> N);
@@ -645,13 +665,16 @@ begin
                 N := High (TStatArray) + 1;
                 repeat
                   L := 0;
-                  Enum.Next (N, Stats, @L);
+                  R := Enum.Next (N, Stats, @L);
                   for I := 0 to L - 1 do begin
                     P := Stats[I].pwcsName;
                     if (assigned (P)) and (P[0] <> #0) then begin
                       Values.Add (string (widestring (P)));
                     end;
                     Malloc.Free (Stats[I].pwcsName);
+                  end;
+                  if (R <> S_OK) and (R <> S_FALSE) then begin
+                    Completed := false;
                   end;
                   Application.ProcessMessages;
                 until (L <> N);

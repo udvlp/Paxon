@@ -780,7 +780,7 @@ begin
   E := StationDatabase.Open (PacketConnection.Call, true);
 
   if (assigned (E)) then begin
-    if (E.StationType <> st_unknown) then begin
+    if (E.StationType > st_unknown) and (E.StationType < st_last) then begin
       LastStationType := PacketConnection.StationType;
       PacketConnection.StationType := E.StationType;
     end;

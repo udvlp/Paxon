@@ -122,7 +122,6 @@ uses
 
 procedure   TStationDatabaseDlg.CloseDlgBtnClick (Sender: TObject);
 begin
-  CallsignListViewSelectItem (CallsignListView, nil, false);
   Close;
 end;
 
@@ -181,7 +180,7 @@ begin
   inherited;
 
   CallsignImageList.Handle := ImageList_Create (12, 13, ILC_COLOR8 or ILC_MASK, 4, 4);
-  bmp := LoadImage (HInstance, 'Stationendatenbank', IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
+  bmp := LoadImage (HInstance, 'StationDatabase', IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
   ImageList_AddMasked (CallsignImageList.Handle, bmp, RGB (255, 0, 255));
   DeleteObject (bmp);
 
@@ -203,7 +202,8 @@ begin
 
   PageControl.ActivePage := PageControl.Pages[0];
 
-  for T := st_first to st_last do begin
+  // st_first und st_last sind nur Grenzwerte und keine wählbaren Typen.
+  for T := st_unknown to Pred (st_last) do begin
     StationTypeCombobox.Items.Add (StationTypeText(T));
   end;
 
@@ -488,8 +488,8 @@ begin
 
     StationEntry.Notes := copy (NotesMemo.Text, 1, 16384);
 
-    I := StationTypeCombobox.ItemIndex;
-    if (I < Integer(st_first)) or (I > Integer(st_last)) then I := Integer(st_first);
+    I := StationTypeCombobox.ItemIndex + Ord (st_unknown);
+    if (I <= Ord (st_unknown)) or (I >= Ord (st_last)) then I := Ord (st_unknown);
     StationEntry.StationType := TStationType(I);
 
     if (FirewallCheckbox.Checked) then begin
@@ -526,7 +526,11 @@ begin
 
         NotesMemo.Text := E.Notes;
 
-        StationTypeCombobox.ItemIndex := Ord (E.StationType);
+        if (E.StationType > st_unknown) and (E.StationType < st_last) then begin
+          StationTypeCombobox.ItemIndex := Ord (E.StationType) - Ord (st_unknown);
+        end else begin
+          StationTypeCombobox.ItemIndex := 0;
+        end;
 
         if (E.IncomingConnect = ic_default) then begin
           FirewallCheckbox.Checked := false;
@@ -773,6 +777,9 @@ end;
 
 procedure   TStationDatabaseDlg.FormClose (Sender: TObject; var Action: TCloseAction);
 begin
+  // Änderungen an der gewählten Station speichern, auch beim Schließen mit
+  // [X] oder Alt+F4 und nicht nur über "Schließen".
+  CallsignListViewSelectItem (CallsignListView, nil, false);
   Action := caFree;
   StationDatabaseDlg := nil;
 end;

@@ -1055,7 +1055,7 @@ begin
         StationType := st_unknown;
         if (Reg.ValueExists ('T')) then begin
           I := Reg.ReadInteger ('T');
-          if (I in [Integer(st_first)..Integer(st_last)]) then begin
+          if (I > Integer(st_first)) and (I < Integer(st_last)) then begin
             StationType := TStationType (I);
           end;
         end;
