@@ -271,8 +271,14 @@ begin
 
     WM_SYNC_SETBOXLISTLINE: begin
       with K.FConsole do begin
-        SetGutterImageIndex (4, LoWord (wParam));
-        ScreenPtrH (LoWord (wParam)).LineType := 1;
+        // The line was determined in the connection thread: the console may have
+        // been made smaller meanwhile, and -1 means "unknown".
+        if (Integer (wParam) >= 0) and (Integer (wParam) < Rows) then begin
+          SetGutterImageIndex (4, Integer (wParam));
+          if (assigned (ScreenPtrH (Integer (wParam)))) then begin
+            ScreenPtrH (Integer (wParam)).LineType := 1;
+          end;
+        end;
         Result := 0;
       end;
     end;
@@ -1675,6 +1681,8 @@ begin
     FSendFileDialog := TSendFileDlg.create (Forms.Application.MainForm);
     FSendFileDialog.Execute (self, aText);
   end else begin
+    // dropped on a channel whose dialog is already open: add instead of dropping it
+    FSendFileDialog.AddText (aText);
     try
       FSendFileDialog.SetFocus;
     except
@@ -1689,6 +1697,8 @@ begin
     FSendFileDialog := TSendFileDlg.create (Forms.Application.MainForm);
     FSendFileDialog.Execute (self, aFiles);
   end else begin
+    // dropped on a channel whose dialog is already open: add instead of dropping them
+    FSendFileDialog.AddFiles (aFiles);
     try
       FSendFileDialog.SetFocus;
     except

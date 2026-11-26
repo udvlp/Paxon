@@ -56,7 +56,7 @@ implementation
 
 uses
   DebOutU, FolderU, ReceiveFilePostprocessorU, CrcU,
-  SoundsU, SoundsConstsU;
+  SoundsU, SoundsConstsU, UnhandledExceptionU;
 
 
 {$I+}
@@ -221,6 +221,9 @@ begin
 
     FileSender.TransferBegin;
 
+    // #BIN#0: no data packet follows, so the transfer is complete right away.
+    if (FileLen = 0) then Finish;
+
   end;
 
 end;
@@ -336,7 +339,12 @@ begin
       if (not Abort) then begin
         ReceiveFilePostprocessor := TReceiveFilePostprocessor.create (PacketConnection);
         try
-          ReceiveFilePostprocessor.Execute (FileSender);
+          // report an error, but finish cleaning up below (stream, TransferEnd)
+          try
+            ReceiveFilePostprocessor.Execute (FileSender);
+          except
+            on E: Exception do ShowUnhandledException (E, ClassName, 'ReceiveFilePostprocessor');
+          end;
         finally
           ReceiveFilePostprocessor.free;
         end;

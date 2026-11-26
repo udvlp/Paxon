@@ -267,7 +267,6 @@ var
   IniFile: TIniFile;
   E: PListElem;
   N: Integer;
-  F: File;
   FileName: String;
 
 begin
@@ -298,12 +297,9 @@ begin
 
   end else begin
 
-    if (FileExists (FileName)) then begin
-      AssignFile (F, FileName);
-      try
-        Erase (F);
-      finally
-      end;
+    // DeleteFile instead of Erase: an error must not raise in Terminated.
+    if (FileExists (FileName)) and (not DeleteFile (FileName)) then begin
+      DebOut (self, MethodName, 'Löschen fehlgeschlagen: ' + FileName);
     end;
 
   end;

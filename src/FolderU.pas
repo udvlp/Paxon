@@ -64,10 +64,44 @@ var
   Folders: TFolder;
 
 
+const
+  // Not declared in the Windows unit of Delphi 7
+  FILE_ATTRIBUTE_REPARSE_POINT = $00000400;
+
+
+function    ContainsReparsePoint (const BaseFolder, Path: String): Boolean;
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 implementation
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function    ContainsReparsePoint (const BaseFolder, Path: String): Boolean;
+// True if Path itself or one of its parent folders below BaseFolder is a junction or symbolic link.
+// Both are expanded; BaseFolder itself is not checked. Parts that do not exist are ignored.
+var
+  S, Base, Parent: String;
+  A: DWORD;
+begin
+  result := false;
+  Base := ExcludeTrailingPathDelimiter (BaseFolder);
+  S := ExcludeTrailingPathDelimiter (Path);
+  while (Length (S) > Length (Base)) do begin
+    A := GetFileAttributes (PChar(S));
+    if (A <> DWORD($FFFFFFFF)) and (A and FILE_ATTRIBUTE_REPARSE_POINT <> 0) then begin
+      result := true;
+      exit;
+    end;
+    Parent := ExtractFileDir (S);
+    if (Parent = S) then break;
+    S := Parent;
+  end;
+end;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,7 +233,9 @@ begin
 
   aFolder := ExcludeTrailingPathDelimiter (ExtractRelativePath (RemoteFolder, IncludeTrailingPathDelimiter (Folder)));
 
-  if (AnsiStartsText (RemoteFolder, IncludeTrailingPathDelimiter (Folder))) then begin
+  // Junctions and symbolic links inside the remote folder are not followed.
+  if (AnsiStartsText (RemoteFolder, IncludeTrailingPathDelimiter (Folder))) and
+     (not ContainsReparsePoint (RemoteFolder, Folder)) then begin
 
     N := 0;
     I := FindFirst (Folder + Wildcard, faAnyFile, SR);
@@ -209,7 +245,8 @@ begin
 
         // FindFirst returns device names such as NUL or CON with date 0: not a valid
         // timestamp, not a file - do not include (otherwise EConvertError).
-        if ((not UseAutoWildcards) or ((SR.Name <> '.') and (SR.Name <> '..'))) and (SR.Time <> 0) then begin
+        if ((not UseAutoWildcards) or ((SR.Name <> '.') and (SR.Name <> '..'))) and (SR.Time <> 0) and
+           (SR.Attr and FILE_ATTRIBUTE_REPARSE_POINT = 0) then begin
 
           with Files[N] do begin
             Name := SR.Name;
@@ -243,6 +280,11 @@ begin
   end else begin
 
     SetLength (Files, 0);
+
+    // Report the requested path, not the resolved one: otherwise the message
+    // would tell whether a folder outside the remote folder exists.
+    aFolder := ExcludeTrailingPathDelimiter (Params);
+    while (Length (aFolder) > 0) and (aFolder[1] = PathDelim) do Delete (aFolder, 1, 1);
 
     result := false;
 

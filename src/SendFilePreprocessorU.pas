@@ -81,6 +81,9 @@ type
   end;
 
 
+function    GetFileSize64 (const FileName: String): Int64;
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -88,6 +91,23 @@ implementation
 
 uses
   DebOutU, SendFileU, CrcU, RTLConsts;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function    GetFileSize64 (const FileName: String): Int64;
+// Size of a file as Int64 (TSearchRec.Size is only an Integer); -1 if not found.
+var
+  SR: TSearchRec;
+begin
+  if (FindFirst (FileName, faAnyFile, SR) = 0) then begin
+    result := Int64 (SR.FindData.nFileSizeHigh) * $100000000 + SR.FindData.nFileSizeLow;
+    FindClose (SR);
+  end else begin
+    result := -1;
+  end;
+end;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -170,13 +190,14 @@ var
   PartItems: TInterfaceList;
   Queue: ISendFileQueue;
   ExpectedBytes: Integer;
+  Size64: Int64;
 
 begin
 
   PartSizeBytes := FSizePerPart * 1024;
 
   if FindFirst (FFileToSend, faAnyFile, SR) = 0 then begin
-    FileByteSize := SR.Size;
+    Size64 := Int64 (SR.FindData.nFileSizeHigh) * $100000000 + SR.FindData.nFileSizeLow;
     // Zeitstempel, die DOS-Datumswerte nicht darstellen (vor 1980), werfen
     // EConvertError; das darf FindClose und das Freigeben von FStream nicht
     // ¸berspringen.
@@ -186,10 +207,18 @@ begin
       on EConvertError do DT := 0;
     end;
   end else begin
-    FileByteSize := 0;
+    Size64 := 0;
     DT := 0;
   end;
   FindClose (SR);
+
+  // The BinSplit header and the receiver handle the size as Integer only.
+  // FStream is freed in BeforeDestruction.
+  if (Size64 > MaxInt) then begin
+    DebOut (self, MethodName, 'Datei zu groﬂ, nicht gesendet: %d', [Size64]);
+    exit;
+  end;
+  FileByteSize := Size64;
 
   PartsCount := (FileByteSize - 1) div PartSizeBytes + 1;
 

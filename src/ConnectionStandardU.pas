@@ -75,6 +75,11 @@ uses
 
 const
   MaxDieboxLoginLines = 4;
+  // Longest unfinished line kept: the remote station decides when a CR comes.
+  // Without a limit, data without CR would grow memory and copying time.
+  MaxTextLineLength = 8192;
+  // A SID is at most 78 characters long (see the check in ReceiveData).
+  MaxSIDLength = 78;
   MaxCTextLines = 3;
   MaxPasswordLinesLogin = 20;  // received lines after connection setup in which a password prompt counts
   MaxPasswordLinesCommand = 3;  // received lines after a line of our own (e.g. a password command)
@@ -100,6 +105,10 @@ begin
     if (assigned (OwnResponses)) then begin
       OwnResponses.free;
       OwnResponses := nil;
+    end;
+    if (assigned (BoxRegExpr)) then begin
+      BoxRegExpr.free;
+      BoxRegExpr := nil;
     end;
     inherited;
   end;
@@ -176,6 +185,8 @@ begin
           end else begin
             SID := SID + T;
             if (HideReceivedSID) then T := '';
+            // too long for a SID: end SID detection, the text is shown below
+            if (Length (SID) > MaxSIDLength) then InSID := false;
           end;
           if (not InSID) then begin
             I := Length (SID);
@@ -202,15 +213,16 @@ begin
                   end;
 
                   RegExpr := TRegex.create;
-
-                  RegExpr.Expression := '\{.+-.+-(.*)\}';
-                  if (RegExpr.Exec (SID)) then begin
-                    if (Pos ('D', RegExpr.Match[1]) >= 1) then begin
-                      PacketConnection.BinMode := prot_didadit;
+                  try
+                    RegExpr.Expression := '\{.+-.+-(.*)\}';
+                    if (RegExpr.Exec (SID)) then begin
+                      if (Pos ('D', RegExpr.Match[1]) >= 1) then begin
+                        PacketConnection.BinMode := prot_didadit;
+                      end;
                     end;
+                  finally
+                    RegExpr.Free;
                   end;
-
-                  RegExpr.Free;
 
                   T := '';
                   if (Config.SendSID) and (PacketConnection.Outgoing) then begin
@@ -234,6 +246,11 @@ begin
 
       TextLine := TextLine + T;
       SpaceAdded := Length (TextLine);
+      if (SpaceAdded > MaxTextLineLength) and (TextLine[SpaceAdded] <> #13) then begin
+        // keep only the end of an overlong unfinished line
+        Delete (TextLine, 1, SpaceAdded - MaxTextLineLength);
+        SpaceAdded := Length (TextLine);
+      end;
 
       CursorY := PacketConnection.ChannelReceiveText (T) - 1;
 
@@ -367,7 +384,7 @@ begin
             if (BoxRegExpr.Exec (TextLine)) then begin
 
               ChannelRef := PacketConnection.ChannelRef;
-              if (assigned (ChannelRef)) then ChannelRef.SetBoxListLine (CursorY);
+              if (assigned (ChannelRef)) and (CursorY >= 0) then ChannelRef.SetBoxListLine (CursorY);
 
             end;
 

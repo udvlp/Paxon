@@ -140,6 +140,7 @@ type
     procedure   CreateThread;
     procedure   StopThread;
     function    InOwnThread: Boolean;
+    procedure   ClearStationDatabaseEntry;
     function    GetSendFileQueue: ISendFileQueue;
     procedure   ChannelSendText (const Text: String);
 
@@ -425,7 +426,7 @@ begin
 
     ConnectionsList.Remove (self as IConnection);
 
-    FStationDatabaseEntry := nil;
+    ClearStationDatabaseEntry;
 
     FCriticalSection.Enter;
     try
@@ -488,9 +489,12 @@ end;
 
 
 function    TConnection.IsIncomingConnectAllowed: TIncomingConnect;
+var
+  E: IStationDatabaseEntry;
 begin
-  if (assigned (FStationDatabaseEntry)) then begin
-    result := FStationDatabaseEntry.IncomingConnect;
+  E := StationDatabaseEntry;
+  if (assigned (E)) then begin
+    result := E.IncomingConnect;
   end else begin
     result := ic_default;
   end;
@@ -632,7 +636,7 @@ begin
     ChannelRef := nil;
   end;
 
-  FStationDatabaseEntry := nil;
+  ClearStationDatabaseEntry;
 
 end;
 
@@ -884,7 +888,7 @@ var
 begin
 
   Capabilities := 'D'; // DIDADIT
-  if (not assigned (FStationDatabaseEntry)) then Capabilities := Capabilities + '?';
+  if (not assigned (StationDatabaseEntry)) then Capabilities := Capabilities + '?';
 
   I := Pos (' ', Version);
   J := Pos ('-', Version);
@@ -1152,26 +1156,73 @@ begin
 end;
 
 
+// FCall, FDigis and FStationDatabaseEntry are set in the device thread (connect)
+// and the connection thread ("CONNECTED TO" from a digipeater) and read in the main
+// thread: strings and interfaces are reference counted, so only under FCriticalSection.
+
 function    TConnection.GetCall: String;
 begin
-  Result := FCall;
+  FCriticalSection.Enter;
+  try
+    Result := FCall;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 
 procedure   TConnection.SetCall (const Value: String);
 var
   S: String;
+  E, Old: IStationDatabaseEntry;
+  Same: Boolean;
 begin
   S := Uppercase (Trim (Value));
-  FCall := S;
-  FStationDatabaseEntry := StationDatabase.Open (FCall, true);
+  FCriticalSection.Enter;
+  try
+    Same := (FCall = S) and (assigned (FStationDatabaseEntry));
+  finally
+    FCriticalSection.Leave;
+  end;
+  if (Same) then exit;
+  // open outside the lock: the station database has locks of its own
+  E := StationDatabase.Open (S, true);
+  FCriticalSection.Enter;
+  try
+    FCall := S;
+    Old := FStationDatabaseEntry;
+    FStationDatabaseEntry := E;
+  finally
+    FCriticalSection.Leave;
+  end;
+  Old := nil; // released outside the lock
+end;
+
+
+procedure   TConnection.ClearStationDatabaseEntry;
+var
+  Old: IStationDatabaseEntry;
+begin
+  FCriticalSection.Enter;
+  try
+    Old := FStationDatabaseEntry;
+    FStationDatabaseEntry := nil;
+  finally
+    FCriticalSection.Leave;
+  end;
+  Old := nil; // released outside the lock (saves the entry)
 end;
 
 
 function    TConnection.GetPath: String;
 begin
-  Result := FCall;
-  if (FDigis <> '') then Result := Result + ' ' + FDigis;
+  FCriticalSection.Enter;
+  try
+    Result := FCall;
+    if (FDigis <> '') then Result := Result + ' ' + FDigis;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 
@@ -1199,10 +1250,10 @@ begin
   N := Pos (' ', S);
   if (N = 0) then begin
     Call := S;
-    FDigis := '';
+    Digis := '';
   end else begin
     Call := Copy (S, 1, N - 1);
-    FDigis := Copy (S, N + 1, MaxInt);
+    Digis := Copy (S, N + 1, MaxInt);
   end;
 
 end;
@@ -1257,13 +1308,23 @@ end;
 
 function    TConnection.GetDigis: String;
 begin
-  Result := FDigis;
+  FCriticalSection.Enter;
+  try
+    Result := FDigis;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 
 procedure   TConnection.SetDigis (const Value: String);
 begin
-  FDigis := Value;
+  FCriticalSection.Enter;
+  try
+    FDigis := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 
@@ -1606,7 +1667,12 @@ end;
 
 function    TConnection.GetStationDatabaseEntry: IStationDatabaseEntry;
 begin
-  result := FStationDatabaseEntry;
+  FCriticalSection.Enter;
+  try
+    result := FStationDatabaseEntry;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 

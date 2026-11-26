@@ -427,9 +427,9 @@ begin
 
       Sounds.Load ('', E.Event, Signal, SignalWavFile, Announcement);
 
-      if (E.Announcement = at_voice) then begin
+      if (Announcement = at_voice) then begin
         AnnouncementVoiceRadioButton.Checked := true;
-      end else if (E.Announcement = at_cw) then begin
+      end else if (Announcement = at_cw) then begin
         AnnouncementTelegraphyRadioButton.Checked := true;
       end else begin
         AnnouncementNoneRadioButton.Checked := true;
@@ -503,6 +503,20 @@ var
   S: String;
   SL: TStringList;
 
+  // Saving stores paths relative to the scheme file where possible; a path on
+  // another drive or share stays absolute and must not be prefixed.
+  function    SchemeFileName (const aName: String): String;
+  begin
+    if (ExtractFileDrive (aName) <> '') then begin
+      Result := aName;
+    end else if (aName[1] = '\') then begin
+      Result := ExtractFileDrive (FilePath) + aName;
+    end else begin
+      Result := IncludeTrailingPathDelimiter (FilePath) + aName;
+    end;
+    Result := ExpandFileName (Result);
+  end;
+
 begin
 
   OpenDialog := TOpenDialog.create (MainWindow);
@@ -565,8 +579,7 @@ begin
             end;
 
             if (Length (SL[1]) > 0) then begin
-              S := IncludeTrailingPathDelimiter (FilePath) + SL[1];
-              S := ExpandFileName (S);
+              S := SchemeFileName (SL[1]);
             end else begin
               S := '';
             end;
@@ -578,8 +591,7 @@ begin
 
           end else begin
 
-            S := IncludeTrailingPathDelimiter (FilePath) + S;
-            S := ExpandFileName (S);
+            S := SchemeFileName (S);
 
             E.SignalChecked := true;
             E.Signal := st_wave;

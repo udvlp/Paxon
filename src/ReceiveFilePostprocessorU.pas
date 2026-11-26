@@ -66,7 +66,7 @@ function    ReceiveFilename (const Name, ReplacementName: String): String;
 // TSendFile.SetTargetFilename, it replaces invalid characters and additionally catches empty names, '.', '..'
 // and device names (CON, NUL, COM1 ...). ReplacementName is used for an empty name.
 var
-  I, L: Integer;
+  I, L, MaxLen: Integer;
   S: String;
 begin
   result := ExtractFileName (Name);
@@ -80,6 +80,20 @@ begin
   while (L > 0) and (result[L] in ['.', ' ']) do Dec (L);
   SetLength (result, L);
   if (result = '') then result := ReplacementName;
+  // Keep the full path below MAX_PATH, with room for a ' (n)' suffix of UniqueFilename
+  // and a '_' prefix below: shorten the name, keep a sensible extension.
+  MaxLen := MAX_PATH - 1 - Length (Folders.Reception) - 12;
+  if (MaxLen > 200) then MaxLen := 200;
+  if (MaxLen < 16) then MaxLen := 16;
+  if (Length (result) > MaxLen) then begin
+    S := ExtractFileExt (result);
+    if (Length (S) > 16) then S := '';
+    result := Copy (result, 1, MaxLen - Length (S));
+    L := Length (result);
+    while (L > 0) and (result[L] in ['.', ' ']) do Dec (L);
+    SetLength (result, L);
+    result := result + S;
+  end;
   // Device names apply with an extension too ('COM1.txt' writes to the port).
   I := Pos ('.', result);
   if (I > 0) then S := Copy (result, 1, I - 1) else S := result;
@@ -184,7 +198,7 @@ end;
 
 
 function    TReceiveFilePostprocessor.BinSplitCombine: Boolean;
-// false: kein gültiger BinSplit-Header; die Datei ist dann nicht angefasst.
+// false: kein gültiger BinSplit-Header oder CRC-Fehler im Teil; die Datei ist dann nicht angefasst.
 const
   MethodName = 'BinSplitCombine';
 
@@ -271,8 +285,13 @@ begin
                         DebOut (self, MethodName,
                                 Format ('Ist Teil %3.3d von %3.3d', [AnotherPart.PartNumber, AnotherPart.PartCount]));
                         if (Parts [AnotherPart.PartNumber - 1] = nil) then begin
-                          Parts [AnotherPart.PartNumber - 1] := AnotherPart;
-                          AnotherPart := nil;
+                          // A defective copy must not take the place of a good one for good.
+                          if (AnotherPart.CheckPartCRC) then begin
+                            Parts [AnotherPart.PartNumber - 1] := AnotherPart;
+                            AnotherPart := nil;
+                          end else begin
+                            DebOut (self, MethodName, 'CRC-Fehler: übergangen.');
+                          end;
                         end;
                       end else begin
                         DebOut (self, MethodName, 'Passt nicht zu diesem Set.');
@@ -430,6 +449,9 @@ begin
         end else begin
 
           ChannelPrompt (Format (SCRCError + #13, [ActualPart.FileName, ActualPart.PartNumber, ActualPart.PartCount]), dt_pgp);
+          // Not combined: Execute stores the file like any other instead of leaving
+          // it in the folder for incomplete files.
+          Result := false;
 
         end;
 

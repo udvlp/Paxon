@@ -226,7 +226,7 @@ var
   EnumFormat: IEnumFORMATETC;
   S: String;
   P: PChar;
-  N, I: Integer;
+  N, I, L: Integer;
   Item: TToolbarElement;
 
 begin
@@ -303,8 +303,10 @@ begin
     DebOut (self, 'Drop', 'Anzahl = ' + IntToStr (N) + #13);
     SetLength (DropFileArray, N);
     for I := 0 to N - 1 do begin
-      SetLength (S, MAX_PATH);
-      SetLength (S, DragQueryFile (StgMedium.hGlobal, I, PChar(S), MAX_PATH));
+      // Ask for the length first: names can be longer than MAX_PATH.
+      L := DragQueryFile (StgMedium.hGlobal, I, nil, 0);
+      SetLength (S, L);
+      if (L > 0) then SetLength (S, DragQueryFile (StgMedium.hGlobal, I, PChar(S), L + 1));
       DebOut (self, 'Drop', 'Datei = ''' + S + '''' + #13);
       DropFileArray[I] := S;
     end;

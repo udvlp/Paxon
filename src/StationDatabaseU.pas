@@ -588,237 +588,254 @@ begin
     StationDatabaseProgressForm := TStationDatabaseProgressForm.create (MainWindow);
     try
 
-      StationDatabaseProgressForm.Show;
-      StationDatabaseProgressForm.Update;
-
-      ChkFileName := ChangeFileExt (FileName, '.pxdchk');
-
-      // Check disk space
-
-      Assign (F, FileName);
       try
-        Reset (F, 1);
+        StationDatabaseProgressForm.Show;
+        StationDatabaseProgressForm.Update;
+
+        ChkFileName := ChangeFileExt (FileName, '.pxdchk');
+
+        // Check disk space
+
+        Assign (F, FileName);
         try
-          N := FileSize (F);
-        finally
-          CloseFile (F);
-        end;
-      except
-        raise;
-      end;
-
-      // GetDiskFreeSpaceEx with the directory also works with UNC paths;
-      // if the free space cannot be determined, the check is skipped
-
-      if (Windows.GetDiskFreeSpaceEx (PChar(ExtractFilePath (FileName)), B, Total, nil)) then begin
-        DebOut (self, MethodName, 'Size of Database: ' + IntToStr (N));
-        DebOut (self, MethodName, 'Free Disk Space: ' + IntToStr (B));
-        if (B < N + 524288) then begin
-          raise Exception.create (SErrorDiskFull);
-        end;
-      end else begin
-        DebOut (self, MethodName, 'Free Disk Space unknown: ' + GetLastErrorText);
-      end;
-
-      // Open old file
-
-      R := StgIsStorageFile (PWideChar(WideString(FileName)));
-      if (R = S_OK) then begin
-        R := StgOpenStorage (PWideChar(WideString(FileName)), nil, StorageMode, nil, 0, RootStorage);
-      end;
-
-      if (R <> S_OK) then begin
-
-        RootStorage := nil;
-
-        if (not FileDamaged (R)) then begin
-          raise Exception.CreateFmt (SErrorCannotOpenDatabase, [FileName, R]);
+          Reset (F, 1);
+          try
+            N := FileSize (F);
+          finally
+            CloseFile (F);
+          end;
+        except
+          raise;
         end;
 
-        // Old file damaged: do not replace it, rename it unchanged as a backup instead
+        // GetDiskFreeSpaceEx with the directory also works with UNC paths;
+        // if the free space cannot be determined, the check is skipped
 
-        S := BackupFile (FileName);
-        HintText := Format (SDatabaseSaved, [FileName, S]);
+        if (Windows.GetDiskFreeSpaceEx (PChar(ExtractFilePath (FileName)), B, Total, nil)) then begin
+          DebOut (self, MethodName, 'Size of Database: ' + IntToStr (N));
+          DebOut (self, MethodName, 'Free Disk Space: ' + IntToStr (B));
+          if (B < N + 524288) then begin
+            raise Exception.create (SErrorDiskFull);
+          end;
+        end else begin
+          DebOut (self, MethodName, 'Free Disk Space unknown: ' + GetLastErrorText);
+        end;
 
-      end else begin
+        // Open old file
 
-        // Create new file
-
-        DeleteFile (ChkFileName);
-
-        R := StgCreateDocfile (PWideChar(WideString(ChkFileName)), StorageMode or STGM_CREATE, 0, ChkRootStorage);
+        R := StgIsStorageFile (PWideChar(WideString(FileName)));
+        if (R = S_OK) then begin
+          R := StgOpenStorage (PWideChar(WideString(FileName)), nil, StorageMode, nil, 0, RootStorage);
+        end;
 
         if (R <> S_OK) then begin
-          raise Exception.create (SErrorCannotCreateNewFile);
-        end;
 
-        Completed := true;
+          RootStorage := nil;
 
-        // Read callsigns...
-
-        CoGetMalloc (1, Malloc);
-
-        Calls := TStringList.create;
-        Values := TStringList.create;
-        try
-
-          HR := RootStorage.EnumElements (0, nil, 0, Enum);
-          if (HR = S_OK) and (assigned (Enum)) then begin
-            Enum.Reset;
-            N := High (TStatArray) + 1;
-            repeat
-              L := 0;
-              HR := Enum.Next (N, Stats, @L);
-              for I := 0 to L - 1 do begin
-                Calls.Add (String (Stats[I].pwcsName));
-                Malloc.Free (Stats[I].pwcsName);
-              end;
-              // Ein Fehler (statt S_FALSE am Ende) bricht die Aufzählung ab: Dann
-              // fehlen Stationen, und die Kopie darf das Original nicht ersetzen.
-              if (HR <> S_OK) and (HR <> S_FALSE) then begin
-                Completed := false;
-              end;
-              Application.ProcessMessages;
-            until (L <> N);
-          end else begin
-            Completed := false;
+          if (not FileDamaged (R)) then begin
+            raise Exception.CreateFmt (SErrorCannotOpenDatabase, [FileName, R]);
           end;
-          Enum := nil;
 
-          Calls.Sort;
+          // Old file damaged: do not replace it, rename it unchanged as a backup instead
 
-          // Write callsigns...
+          S := BackupFile (FileName);
+          HintText := Format (SDatabaseSaved, [FileName, S]);
 
-          for K := 0 to Calls.Count - 1 do begin
+        end else begin
 
-            Call := Calls[K];
+          // Create new file
 
-            DebOut (self, MethodName, Call);
+          DeleteFile (ChkFileName);
 
-            // Enumerate values...
+          R := StgCreateDocfile (PWideChar(WideString(ChkFileName)), StorageMode or STGM_CREATE, 0, ChkRootStorage);
 
-            R := RootStorage.OpenStorage (PWideChar(Call), nil, StorageMode, nil, 0, Storage);
-            if (R = S_OK) and (assigned (Storage)) then begin
+          if (R <> S_OK) then begin
+            raise Exception.create (SErrorCannotCreateNewFile);
+          end;
 
-              Values.Clear;
+          Completed := true;
 
-              R := Storage.EnumElements (0, nil, 0, Enum);
-              if (R = S_OK) and (assigned (Enum)) then begin
-                Enum.Reset;
-                N := High (TStatArray) + 1;
-                repeat
-                  L := 0;
-                  R := Enum.Next (N, Stats, @L);
-                  for I := 0 to L - 1 do begin
-                    P := Stats[I].pwcsName;
-                    if (assigned (P)) and (P[0] <> #0) then begin
-                      Values.Add (string (widestring (P)));
+          // Read callsigns...
+
+          CoGetMalloc (1, Malloc);
+
+          Calls := TStringList.create;
+          Values := TStringList.create;
+          try
+
+            HR := RootStorage.EnumElements (0, nil, 0, Enum);
+            if (HR = S_OK) and (assigned (Enum)) then begin
+              Enum.Reset;
+              N := High (TStatArray) + 1;
+              repeat
+                L := 0;
+                HR := Enum.Next (N, Stats, @L);
+                for I := 0 to L - 1 do begin
+                  Calls.Add (String (Stats[I].pwcsName));
+                  Malloc.Free (Stats[I].pwcsName);
+                end;
+                // Ein Fehler (statt S_FALSE am Ende) bricht die Aufzählung ab: Dann
+                // fehlen Stationen, und die Kopie darf das Original nicht ersetzen.
+                if (HR <> S_OK) and (HR <> S_FALSE) then begin
+                  Completed := false;
+                end;
+                Application.ProcessMessages;
+              until (L <> N);
+            end else begin
+              Completed := false;
+            end;
+            Enum := nil;
+
+            Calls.Sort;
+
+            // Write callsigns...
+
+            for K := 0 to Calls.Count - 1 do begin
+
+              Call := Calls[K];
+
+              DebOut (self, MethodName, Call);
+
+              // Enumerate values...
+
+              R := RootStorage.OpenStorage (PWideChar(Call), nil, StorageMode, nil, 0, Storage);
+              if (R = S_OK) and (assigned (Storage)) then begin
+
+                Values.Clear;
+
+                R := Storage.EnumElements (0, nil, 0, Enum);
+                if (R = S_OK) and (assigned (Enum)) then begin
+                  Enum.Reset;
+                  N := High (TStatArray) + 1;
+                  repeat
+                    L := 0;
+                    R := Enum.Next (N, Stats, @L);
+                    for I := 0 to L - 1 do begin
+                      P := Stats[I].pwcsName;
+                      if (assigned (P)) and (P[0] <> #0) then begin
+                        Values.Add (string (widestring (P)));
+                      end;
+                      Malloc.Free (Stats[I].pwcsName);
                     end;
-                    Malloc.Free (Stats[I].pwcsName);
-                  end;
-                  if (R <> S_OK) and (R <> S_FALSE) then begin
-                    Completed := false;
-                  end;
-                  Application.ProcessMessages;
-                until (L <> N);
-              end else begin
-                Completed := false;
-              end;
-              Enum := nil;
-
-              // Create callsign in the new file
-
-              R := ChkRootStorage.CreateStorage (PWideChar(Call), StorageMode or STGM_CREATE, 0, 0, ChkStorage);
-              if (R = S_OK) then begin
-
-                // Copy values completely
-
-                for I := 0 to Values.Count - 1 do begin
-
-                  Stream := nil;
-                  R := Storage.OpenStream (PWideChar(WideString (Values[I])), nil, StreamMode, 0, Stream);
-
-                  if (R = S_OK) and (assigned (Stream)) then begin
-
-                    if (not ReadStreamComplete (Stream, S)) then begin
+                    if (R <> S_OK) and (R <> S_FALSE) then begin
                       Completed := false;
                     end;
+                    Application.ProcessMessages;
+                  until (L <> N);
+                end else begin
+                  Completed := false;
+                end;
+                Enum := nil;
+
+                // Create callsign in the new file
+
+                R := ChkRootStorage.CreateStorage (PWideChar(Call), StorageMode or STGM_CREATE, 0, 0, ChkStorage);
+                if (R = S_OK) then begin
+
+                  // Copy values completely
+
+                  for I := 0 to Values.Count - 1 do begin
 
                     Stream := nil;
+                    R := Storage.OpenStream (PWideChar(WideString (Values[I])), nil, StreamMode, 0, Stream);
 
-                    R := ChkStorage.CreateStream (PWideChar(WideString (Values[I])), StreamMode or STGM_CREATE, 0, 0, Stream);
                     if (R = S_OK) and (assigned (Stream)) then begin
-                      if (not WriteStreamComplete (Stream, S)) then begin
+
+                      if (not ReadStreamComplete (Stream, S)) then begin
                         Completed := false;
                       end;
+
+                      Stream := nil;
+
+                      R := ChkStorage.CreateStream (PWideChar(WideString (Values[I])), StreamMode or STGM_CREATE, 0, 0, Stream);
+                      if (R = S_OK) and (assigned (Stream)) then begin
+                        if (not WriteStreamComplete (Stream, S)) then begin
+                          Completed := false;
+                        end;
+                      end else begin
+                        Completed := false;
+                      end;
+
+                      Stream := nil;
+
                     end else begin
                       Completed := false;
                     end;
 
-                    Stream := nil;
-
-                  end else begin
-                    Completed := false;
                   end;
 
+                end else begin
+                  Completed := false;
                 end;
+
+                Stream := nil;
+                Storage := nil;
+                ChkStorage := nil;
 
               end else begin
                 Completed := false;
               end;
 
-              Stream := nil;
-              Storage := nil;
-              ChkStorage := nil;
+              Application.ProcessMessages;
 
-            end else begin
+              // On an error, keep copying: the readable stations are then
+              // kept as a repair file (see below).
+              if (not Completed) then begin
+                DebOut (self, MethodName, 'Fehler beim Kopieren: ' + Call);
+              end;
+
+            end;
+
+          finally
+            Values.free;
+            Calls.free;
+          end;
+
+          RootStorage := nil;
+          ChkRootStorage := nil;
+
+          for I := 1 to 5 do begin
+            Sleep (50);
+            Application.ProcessMessages;
+          end;
+
+          // Replace the old file only after copying has fully succeeded
+
+          if (Completed) then begin
+            if (not MoveFileEx (PChar(ChkFileName), PChar(FileName), MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH)) then begin
+              DebOut (self, MethodName, 'MoveFileEx: ' + GetLastErrorText);
               Completed := false;
             end;
+          end;
 
-            Application.ProcessMessages;
-
-            // On an error, keep copying: the readable stations are then
-            // kept as a repair file (see below).
-            if (not Completed) then begin
-              DebOut (self, MethodName, 'Fehler beim Kopieren: ' + Call);
+          if (not Completed) then begin
+            HintText := Format (SCheckIncomplete, [FileName]);
+            // Keep the incomplete copy as a repair file; the old file stays in use
+            RepFileName := ChangeFileExt (FileName, '.pxdrep');
+            if (FileExists (ChkFileName)) and
+               (MoveFileEx (PChar(ChkFileName), PChar(RepFileName), MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH)) then begin
+              HintText := HintText + Format (SCheckRepairFile, [RepFileName]);
+            end else begin
+              DeleteFile (ChkFileName);
             end;
-
           end;
 
-        finally
-          Values.free;
-          Calls.free;
         end;
-
-        RootStorage := nil;
-        ChkRootStorage := nil;
-
-        for I := 1 to 5 do begin
-          Sleep (50);
-          Application.ProcessMessages;
+      except
+        // A failed check (disk space, check file, ...) must not prevent the start: report it,
+        // the file is then opened as usual.
+        on E: Exception do begin
+          DebOut (self, MethodName, 'Exception: ' + E.Message);
+          HintText := Format (SCheckIncomplete, [FileName]) + #13#13 + E.Message;
+          // Release both files; an incomplete check file is of no use
+          Enum := nil;
+          Stream := nil;
+          Storage := nil;
+          ChkStorage := nil;
+          RootStorage := nil;
+          ChkRootStorage := nil;
+          if (ChkFileName <> '') then DeleteFile (ChkFileName);
         end;
-
-        // Replace the old file only after copying has fully succeeded
-
-        if (Completed) then begin
-          if (not MoveFileEx (PChar(ChkFileName), PChar(FileName), MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH)) then begin
-            DebOut (self, MethodName, 'MoveFileEx: ' + GetLastErrorText);
-            Completed := false;
-          end;
-        end;
-
-        if (not Completed) then begin
-          HintText := Format (SCheckIncomplete, [FileName]);
-          // Keep the incomplete copy as a repair file; the old file stays in use
-          RepFileName := ChangeFileExt (FileName, '.pxdrep');
-          if (FileExists (ChkFileName)) and
-             (MoveFileEx (PChar(ChkFileName), PChar(RepFileName), MOVEFILE_REPLACE_EXISTING or MOVEFILE_WRITE_THROUGH)) then begin
-            HintText := HintText + Format (SCheckRepairFile, [RepFileName]);
-          end else begin
-            DeleteFile (ChkFileName);
-          end;
-        end;
-
       end;
 
     finally

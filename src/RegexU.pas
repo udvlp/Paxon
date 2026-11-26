@@ -149,6 +149,10 @@ const
   // also keeps the bit indices safely within Integer range
   MaxVisitedBits = 1 shl 28;
 
+  // Upper limit for the backtracking stack (12 MB); every visited state pushes at
+  // most one entry, so without it the stack could grow up to MaxVisitedBits entries
+  MaxStackDepth = 1 shl 20;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -643,7 +647,12 @@ var
 
   procedure Push (aKind: Byte; aA, aB: Integer);
   begin
-    if (Top >= Length (FStack)) then SetLength (FStack, 2 * Length (FStack) + 64);
+    if (Top >= Length (FStack)) then begin
+      if (Top >= MaxStackDepth) then begin
+        raise ERegexError.CreateFmt ('Regulaerer Ausdruck "%s": Eingabe mit %d Zeichen ist zu lang', [FExpression, Len]);
+      end;
+      SetLength (FStack, 2 * Length (FStack) + 64);
+    end;
     FStack[Top].Kind := aKind;
     FStack[Top].A := aA;
     FStack[Top].B := aB;

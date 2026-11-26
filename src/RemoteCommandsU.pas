@@ -43,7 +43,7 @@ type
   protected
     PacketConnection: IConnectionForModule;
     RemoteCommands: TRemoteCommands;
-    procedure   SendTextData (S: String); virtual;
+    procedure   SendTextData (S: String; aControlChars: Boolean = false); virtual;
   public
     constructor create (aConnectionObj: IConnectionForModule; aRemoteCommands: TRemoteCommands); virtual;
     class function Help (Long: Boolean): String; virtual;
@@ -634,10 +634,12 @@ begin
 end;
 
 
-procedure   TRemoteCommand.SendTextData (S: String);
+procedure   TRemoteCommand.SendTextData (S: String; aControlChars: Boolean = false);
+// The output mostly contains data from outside (echo text, file names, names):
+// ^ sequences are only interpreted in the station's own texts (aControlChars).
 begin
   assert (assigned (PacketConnection));
-  PacketConnection.SendTextData (S, true, true, false, true);
+  PacketConnection.SendTextData (S, true, aControlChars, false, true);
 end;
 
 
@@ -875,7 +877,7 @@ begin
   if (Length (T) = 0) then begin
     T := RemotePrompt + SNoInfo + #13
   end;
-  SendTextData (T);
+  SendTextData (T, true);
 end;
 
 
@@ -896,31 +898,60 @@ resourcestring
   SNameHello = 'Hallo %s.';
   SNameError = 'Fehler.';
 
+const
+  MaxNameLength = 30;
+
 var
   E: IStationDatabaseEntry;
+  StationCall, BaseCall, N: String;
+  IsBase: Boolean;
+  I: Integer;
 
 begin
 
-  E := StationDatabase.Open (PacketConnection.Call, true);
-  if (not assigned (E)) then begin
-    E := StationDatabase.Add (StripSSID (PacketConnection.Call));
-    // Add returns nil if the station has been created in the meantime: then use that one
-    if (not assigned (E)) then E := StationDatabase.Open (StripSSID (PacketConnection.Call));
+  // The name comes from the remote station: no control characters, limited length.
+  N := '';
+  for I := 1 to Length (Params) do begin
+    if (Params[I] >= ' ') then N := N + Params[I];
   end;
+  N := Trim (Copy (Trim (N), 1, MaxNameLength));
 
-  if (assigned (E)) then begin
-    if (Params = '') then begin
-      if (E.Name = '') then begin
-        SendTextData (Format ('%s' + SNameUnknown + #13, [RemotePrompt]));
-      end else begin
-        SendTextData (Format ('%s' + SNameHello + #13, [RemotePrompt, E.Name]));
-      end;
-    end else begin
-      E.Name := Params;
+  StationCall := PacketConnection.Call;
+  BaseCall := StripSSID (StationCall);
+  IsBase := (StationCall = BaseCall) or (StationCall = BaseCall + '-0');
+
+  if (N = '') then begin
+
+    E := StationDatabase.Open (StationCall, true);
+    if (assigned (E)) and (E.Name <> '') then begin
       SendTextData (Format ('%s' + SNameHello + #13, [RemotePrompt, E.Name]));
+    end else begin
+      SendTextData (Format ('%s' + SNameUnknown + #13, [RemotePrompt]));
     end;
+
   end else begin
-    SendTextData (RemotePrompt + SNameError + #13);
+
+    // Only the station's own entry is changed. An SSID other than 0 never gets an entry of its
+    // own (that would drop the denials of the entry without SSID, see RemoteCommandAllowed) and
+    // may only fill in a missing name of the entry without SSID, not overwrite it.
+    E := StationDatabase.Open (StationCall, IsBase);
+    if (not assigned (E)) then begin
+      E := StationDatabase.Open (BaseCall);
+      if (not assigned (E)) then begin
+        E := StationDatabase.Add (BaseCall);
+        // Add returns nil if the station has been created in the meantime: then use that one
+        if (not assigned (E)) then E := StationDatabase.Open (BaseCall);
+      end;
+      if (assigned (E)) and (not IsBase) and (E.Name <> '') and (E.Name <> N) then E := nil;
+    end;
+
+    if (assigned (E)) then begin
+      E.Name := N;
+      SendTextData (Format ('%s' + SNameHello + #13, [RemotePrompt, N]));
+    end else begin
+      SendTextData (RemotePrompt + SNameError + #13);
+    end;
+
   end;
 
 end;
@@ -947,7 +978,7 @@ begin
   if (Length (T) = 0) then begin
     T := RemotePrompt + SNoNews + #13
   end;
-  SendTextData (T);
+  SendTextData (T, true);
 end;
 
 
@@ -1158,8 +1189,9 @@ begin
 
     if (DirectoryExists (RemoteFolder + S)) then begin
 
+      // Junctions and symbolic links inside the remote folder are not followed.
       T := IncludeTrailingPathDelimiter (ExpandFileName (RemoteFolder + S));
-      if (AnsiStartsText (RemoteFolder, T)) then begin
+      if (AnsiStartsText (RemoteFolder, T)) and (not ContainsReparsePoint (RemoteFolder, T)) then begin
         Folder := ExtractRelativePath (RemoteFolder, T);
         Found := true;
       end;
@@ -1176,7 +1208,7 @@ begin
           DebOut (self, MethodName, SR.Name);
           // Only accept folders inside the remote folder (not e.g. ..\..\Win*).
           U := IncludeTrailingPathDelimiter (ExpandFileName (T + SR.Name));
-          if (AnsiStartsText (RemoteFolder, U)) then begin
+          if (AnsiStartsText (RemoteFolder, U)) and (not ContainsReparsePoint (RemoteFolder, U)) then begin
             Folder := ExtractRelativePath (RemoteFolder, U);
             Found := true;
             break;
@@ -1238,7 +1270,7 @@ var
   Files: TFileEntryArray;
   I: Integer;
   S: String;
-  Folder, Wildcard: String;
+  Folder, Wildcard, T: String;
   SendFilePreprocessor: TSendFilePreprocessor;
   Stream: TFileStream;
   RemoteFolder: String;
@@ -1261,7 +1293,10 @@ begin
 
   // Ein Ordnername wird nicht zu "alle Dateien darin" erweitert: read sendet
   // nur ausdrücklich genannte Dateien oder Platzhalter (sonst bis zu 1000 Dateien).
-  if (DirectoryExists (ExpandFileName (RemoteFolder + S))) then begin
+  // Only checked inside the remote folder: otherwise the answer would tell whether a folder
+  // outside exists. FindRemoteFiles rejects those with the same message.
+  T := ExpandFileName (RemoteFolder + S);
+  if (AnsiStartsText (RemoteFolder, IncludeTrailingPathDelimiter (T))) and (DirectoryExists (T)) then begin
     SendTextData (RemotePrompt + Format (SRemoteCommandReadFolderAccessDenied, [Params]) + #13);
     exit;
   end;
@@ -1346,7 +1381,7 @@ begin
 
   end else begin
 
-    SendTextData (RemotePrompt + Format (SRemoteCommandReadFolderAccessDenied, [Folder]) + #13);
+    SendTextData (RemotePrompt + Format (SRemoteCommandReadFolderAccessDenied, [Params]) + #13);
 
   end;
 

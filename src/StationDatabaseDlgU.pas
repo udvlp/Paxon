@@ -88,6 +88,11 @@ type
     CallsList: TStringList;
     StationEntry: IStationDatabaseEntry;
 
+    // Values shown when the station was selected: only fields changed in the dialog are written back
+    FLoadedName: String;
+    FLoadedNotes: String;
+    FLoadedStationType: Integer;
+
     TextsForm: TTextsForm;
     SoundsForm: TSoundsForm;
     RemotecommandsForm: TRemotecommandsForm;
@@ -473,7 +478,8 @@ const
 var
   E: IStationDatabaseEntry;
   I: Integer;
-  S: String;
+  S, T: String;
+  IC: TIncomingConnect;
 
 begin
 
@@ -484,21 +490,28 @@ begin
 
   if (assigned (StationEntry)) then begin
 
-    StationEntry.Name := NameEdit.Text;
+    // Only write what was changed in the dialog: values changed meanwhile by others (e.g. the
+    // name via //name, the station type via the SID) must not be overwritten with old ones.
+    if (NameEdit.Text <> FLoadedName) then StationEntry.Name := NameEdit.Text;
 
-    StationEntry.Notes := copy (NotesMemo.Text, 1, 16384);
+    T := copy (NotesMemo.Text, 1, 16384);
+    if (T <> FLoadedNotes) then StationEntry.Notes := T;
 
-    I := StationTypeCombobox.ItemIndex + Ord (st_unknown);
-    if (I <= Ord (st_unknown)) or (I >= Ord (st_last)) then I := Ord (st_unknown);
-    StationEntry.StationType := TStationType(I);
+    if (StationTypeCombobox.ItemIndex <> FLoadedStationType) then begin
+      I := StationTypeCombobox.ItemIndex + Ord (st_unknown);
+      if (I <= Ord (st_unknown)) or (I >= Ord (st_last)) then I := Ord (st_unknown);
+      StationEntry.StationType := TStationType(I);
+    end;
 
     if (FirewallCheckbox.Checked) then begin
       I := FirewallCombobox.ItemIndex + 1;
       if (I < Ord (Low(TIncomingConnect))) or (I > Ord (High (TIncomingConnect))) then I := Ord (Low(TIncomingConnect));
-      StationEntry.IncomingConnect := TIncomingConnect (I);
+      IC := TIncomingConnect (I);
     end else begin
-      StationEntry.IncomingConnect := ic_default;
+      IC := ic_default;
     end;
+    // Compared with the stored value, as FirewallCheckboxClick may already have written it
+    if (IC <> StationEntry.IncomingConnect) then StationEntry.IncomingConnect := IC;
 
     SoundsForm.Save;
     TextsForm.Save;
@@ -545,6 +558,10 @@ begin
           FirewallLabel.Enabled := true;
           FirewallCombobox.ItemIndex := Ord (E.IncomingConnect) - Ord (ic_accept);
         end;
+
+        FLoadedName := NameEdit.Text;
+        FLoadedNotes := copy (NotesMemo.Text, 1, 16384);
+        FLoadedStationType := StationTypeCombobox.ItemIndex;
 
         SoundsForm.SetNewCall (Item.Caption);
         TextsForm.SetNewCall (Item.Caption);
@@ -678,7 +695,7 @@ var
   SDP: TStationDatabasePasswordDlg;
   AddNewEntry: Boolean;
   LI: TListItem;
-  StreamName: string;
+  StreamName, NewStreamName: string;
 
 begin
 
@@ -708,8 +725,15 @@ begin
         end;
         if SDP.ShowModal = mrOk then begin
           assert (assigned (StationEntry));
-          if Length (StreamName) > 0 then StationEntry.DeletePassword (StreamName);
+          // Write the new password first; delete the old one only if it is stored under another
+          // name and the new one has been written, so that a write error does not lose both.
+          TStationDatabaseEntry.PasswordStringsToStreamName (SDP.OwnCallsign, SDP.PasswordKind, SDP.PasswordMethod,
+                                                             NewStreamName);
           StationEntry.SetPasswordValue (SDP.OwnCallsign, SDP.PasswordKind, SDP.PasswordMethod, SDP.PasswordValue);
+          if (Length (StreamName) > 0) and (AnsiCompareText (StreamName, NewStreamName) <> 0) and
+             (StationEntry.GetPasswordValue (NewStreamName) = SDP.PasswordValue) then begin
+            StationEntry.DeletePassword (StreamName);
+          end;
         end;
       finally
         SDP.Release;

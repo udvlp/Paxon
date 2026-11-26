@@ -195,7 +195,18 @@ begin
     e_abort: Sounds.PlayEvent (se_transfer_error, PacketConnection);
   end;
 
-  if (FileOpened) then CloseFile (FilePathName);
+  // A failing close (e.g. disk full on the final flush) must not skip the rest of the
+  // cleanup; the file is then treated as not saved.
+  if (FileOpened) then begin
+    try
+      CloseFile (FilePathName);
+    except
+      on E: Exception do begin
+        DebOut (self, MethodName, 'CloseFile: ' + E.Message);
+        FileOpened := false;
+      end;
+    end;
+  end;
 
   if (assigned (PacketConnection)) and (Why in [e_finish, e_abort, e_cancel]) then begin
 
@@ -217,7 +228,7 @@ begin
 
   end;
 
-  if (Why <> e_finish) then begin
+  if ((Why <> e_finish) or (not FileOpened)) and (FileName <> '') then begin
     try
       Recycle (FileName);
     except

@@ -487,11 +487,14 @@ begin
     if (LineHeader.LineType = 1) then begin
       FConsole.ScrollTo (0, Y - (FConsole.ClientSize.Y div 2 + 1));
     end else begin
-      for Y := FConsole.Rows - 1 downto 0 do begin
+      // Search the last list line from the bottom; Y is -1 if there is none.
+      Y := FConsole.Rows - 1;
+      while (Y >= 0) do begin
         LineHeader := FConsole.ScreenPtrH (Y);
-        if (not assigned (LineHeader)) or (LineHeader.LineType = 1) then break;
+        if (assigned (LineHeader)) and (LineHeader.LineType = 1) then break;
+        dec (Y);
       end;
-      if (Y > 0) then begin
+      if (Y >= 0) then begin
         FConsole.ScrollTo (0, Y - (FConsole.ClientSize.Y div 2 + 1));
         FConsole.CaretX := 0;
         FConsole.CaretY := Y;

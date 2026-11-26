@@ -377,6 +377,18 @@ var
 
 begin
 
+  // First take the removed devices out of DeviceList: DeInit and ApplySettings
+  // process messages for seconds, and a status change of another device then walks
+  // through DeviceList (TDevices.StatusChange), which must not hold freed devices.
+  with Listview do begin
+    for N := 0 to Items.Count - 1 do begin
+      DeviceList.DeviceItem[N] := TDevice(Items[N].Data);
+    end;
+    DeviceList.Quantity := Items.Count;
+  end;
+
+  AddedDevices.Clear;
+
   if (DeletedDevices.Count > 0) then begin
     DeletedDevices.Pack;
     DebOut (self, MethodName, 'Gelöschte Geraete deinitialisieren...');
@@ -389,16 +401,12 @@ begin
     DeletedDevices.Clear;
   end;
 
-  AddedDevices.Clear;
-
   DebOut (self, MethodName, 'Einstellungen uebernehmen...');
 
   with Listview do begin
     for N := 0 to Items.Count - 1 do begin
       TDevice(Items[N].Data).ApplySettings;
-      DeviceList.DeviceItem[N] := TDevice(Items[N].Data);
     end;
-    DeviceList.Quantity := Items.Count;
     DeviceList.Update;
   end;
 

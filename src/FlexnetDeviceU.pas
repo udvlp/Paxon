@@ -90,6 +90,9 @@ type
     procedure   ClearMonitor;
   public
     FlexNetDevice: TFlexnetDevice;
+    // Copied at the start: a monitor thread that does not end in time is left
+    // running (see Run) and must not touch the device object any more.
+    DeviceNo: Integer;
     procedure   Execute; override;
   end;
 
@@ -541,6 +544,7 @@ begin
             MonitorThread.Priority := tpLower;
             MonitorThread.FreeOnTerminate := false;
             MonitorThread.FlexNetDevice := self;
+            MonitorThread.DeviceNo := No;
             MonitorThread.Resume;
 
             Count := 0;
@@ -1278,6 +1282,8 @@ procedure   TMonitorThread.SetMonitor;
 var
   Trace: TTrace;
 begin
+  // the DLL also reads the fields not set here (handle, rest of call)
+  FillChar (Trace, SizeOf (Trace), 0);
   with Trace do begin
     ch_mask := $FFFF;
     type_filter := 0;
@@ -1433,12 +1439,12 @@ begin
 
                   Sent := (Frame.Tx <> 0);
 
-                  Device := FlexNetDevice.No;
+                  Device := DeviceNo;
                   Port := Frame.ChannelRef;
 
                   l2_ack_monitor;
 
-                  ChannelList.Monitor (MonitorFrame);
+                  if (assigned (ChannelList)) then ChannelList.Monitor (MonitorFrame);
 
                 end else begin
 

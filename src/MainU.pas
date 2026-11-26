@@ -627,6 +627,9 @@ procedure   TMainWindow.PaxonDestroy;
 var
   Registry: TRegistry;
   I: Integer;
+  WP: TWindowPlacement;
+  MonInfo: TMonitorInfo;
+  R: TRect;
 
   // Close a modeless form while all globals still exist: its OnClose saves or
   // discards (station database, device parameters) and unsubscribes. caFree only
@@ -702,13 +705,24 @@ begin
         if Registry.OpenKey (RootRegKey + '\Windows\Main', true) then begin
           try
             Registry.WriteInteger ('S', Ord (WindowState));
-            WindowState := wsNormal;
-            Application.RestoreTopMosts;
-            Application.ProcessMessages;
-            Registry.WriteInteger ('X', left);
-            Registry.WriteInteger ('Y', top);
-            Registry.WriteInteger ('DX', width);
-            Registry.WriteInteger ('DY', height);
+            // The normal (restored) bounds, also while maximized or minimized.
+            // rcNormalPosition is in workspace coordinates, i.e. relative to the
+            // work area of the window's monitor; FormCreate expects screen coordinates.
+            WP.length := SizeOf (WP);
+            if (GetWindowPlacement (Handle, @WP)) then begin
+              R := WP.rcNormalPosition;
+              MonInfo.cbSize := SizeOf (MonInfo);
+              if (GetMonitorInfo (MonitorFromWindow (Handle, MONITOR_DEFAULTTONEAREST), @MonInfo)) then begin
+                OffsetRect (R, MonInfo.rcWork.Left - MonInfo.rcMonitor.Left,
+                               MonInfo.rcWork.Top - MonInfo.rcMonitor.Top);
+              end;
+            end else begin
+              R := BoundsRect;
+            end;
+            Registry.WriteInteger ('X', R.Left);
+            Registry.WriteInteger ('Y', R.Top);
+            Registry.WriteInteger ('DX', R.Right - R.Left);
+            Registry.WriteInteger ('DY', R.Bottom - R.Top);
           except
           end;
           Registry.CloseKey;

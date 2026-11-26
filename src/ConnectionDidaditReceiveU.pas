@@ -72,9 +72,15 @@ implementation
 
 
 uses
-  DebOutU, FolderU, ReceiveFilePostprocessorU, SoundsU, SoundsConstsU;
+  DebOutU, FolderU, ReceiveFilePostprocessorU, SoundsU, SoundsConstsU, UnhandledExceptionU;
 
 {$I+}
+
+
+const
+  // A frame is at most twice the maximum block size (16384) plus header;
+  // data without FEND beyond this limit is discarded.
+  MaxReceiveBuffer = 4 * 16384;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -248,6 +254,11 @@ begin
 
       end;
 
+      if (Length (ReceiveBuffer) > MaxReceiveBuffer) then begin
+        DebOut (self, MethodName, 'Puffer ohne FEND übergelaufen (%d Bytes): verworfen.', [Length (ReceiveBuffer)]);
+        ReceiveBuffer := '';
+      end;
+
     end;
 
   end;
@@ -325,6 +336,12 @@ begin
       if (FileLen < 0) then begin
         DebOut (self, MethodName, 'INFO ohne gültige Größe.');
         SendError (203);
+        exit;
+      end;
+
+      if (Trim (FileName) = '') then begin
+        DebOut (self, MethodName, 'INFO ohne Dateinamen.');
+        SendError (205);
         exit;
       end;
 
@@ -654,7 +671,12 @@ begin
 
       ReceiveFilePostprocessor := TReceiveFilePostprocessor.create (PacketConnection);
       try
-        ReceiveFilePostprocessor.Execute (FileSender);
+        // report an error, but finish cleaning up below (stream, TransferEnd)
+        try
+          ReceiveFilePostprocessor.Execute (FileSender);
+        except
+          on E: Exception do ShowUnhandledException (E, ClassName, 'ReceiveFilePostprocessor');
+        end;
       finally
         ReceiveFilePostprocessor.free;
       end;
@@ -679,8 +701,13 @@ begin
   end;
 
   // Index file only if INFO was accepted and the partial file was opened.
+  // A failure must not skip closing the file and releasing the FileSender.
   if (FileOpened) then begin
-    BlockList.WriteIndexFile (IndexName);
+    try
+      BlockList.WriteIndexFile (IndexName);
+    except
+      on E: Exception do DebOut (self, MethodName, 'Indexdatei: ' + E.Message);
+    end;
   end;
   BlockList.free;
 

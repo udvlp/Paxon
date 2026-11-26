@@ -26,6 +26,7 @@ uses
 
 const
   ExtraBytesPerLine = 20;
+  MaxCols = 255; // TLineHeader.Length is a Byte
 
 
 type
@@ -637,6 +638,7 @@ end;
 procedure   TConsole.SetCols (N: Integer);
 begin
   assert ((csLoading in ComponentState) or (not FActive));
+  if (N > MaxCols) then N := MaxCols;
   if (FCols <> N) then begin
     FCols := N;
   end;
@@ -1162,10 +1164,14 @@ begin
     end;
     BlockLen := BlockStart - BlockEnd;
 
-    LineHeader := ScreenPtrH (FFileHeader.Cursor.Y);
-    LineHeader.Length := FFileHeader.Cursor.X + BlockLen;
-
     if (BlockLen > 0) then begin
+
+      // Only text extends the line; a CR or LF alone (BlockLen 0, cursor possibly
+      // back at column 0 after a CR) must not cut off text written before.
+      LineHeader := ScreenPtrH (FFileHeader.Cursor.Y);
+      if (FFileHeader.Cursor.X + BlockLen > LineHeader.Length) then begin
+        LineHeader.Length := FFileHeader.Cursor.X + BlockLen;
+      end;
 
       Dec (aTextLen, BlockLen);
 
@@ -1270,11 +1276,12 @@ begin
       FillChar (ScreenPtrT (X, Y)^, FCols - X, Ch);
       FillChar (ScreenPtrC (X, Y)^, FCols - X, 0);
       Dec (Count, FCols - X);
-      I := FCols;
-      while (Count > 0) do begin
+      // the rest continues at column 0 of the following lines, up to the last line
+      while (Count > 0) and (Y < FRows - 1) do begin
         Inc (Y);
-        FillChar (ScreenPtrT (X, Y)^, I, Ch);
-        FillChar (ScreenPtrC (X, Y)^, I, 0);
+        I := Min (Integer(Count), FCols);
+        FillChar (ScreenPtrT (0, Y)^, I, Ch);
+        FillChar (ScreenPtrC (0, Y)^, I, 0);
         Dec (Count, I);
       end;
     end else begin

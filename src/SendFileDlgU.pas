@@ -165,6 +165,7 @@ type
     FSendFileQueueSubscriber: ISubscriber;
     FChannelSubscriber: ISubscriber;
     FChannel: IChannel;
+    FSubscribedQueue: ISendFileQueue;
     FStartMode: TStartMode;
     TemplatesBeforePopup: TPopupMenu;
     TemplatesAfterPopup: TPopupMenu;
@@ -195,6 +196,8 @@ type
     procedure   Execute (aChannelObj: IChannel); overload;
     procedure   Execute (aChannelObj: IChannel; aText: String); overload;
     procedure   Execute (aChannelObj: IChannel; const aFiles: Array of String); overload;
+    procedure   AddFiles (const aFiles: array of String);
+    procedure   AddText (const aText: String);
 
     procedure   BeforeDestruction; override;
 
@@ -353,8 +356,6 @@ end;
 procedure   TSendFileDlg.FormClose (Sender: TObject; var Action: TCloseAction);
 const
   MethodName = 'FormClose';
-var
-  V: IConnection;
 
 begin
 
@@ -364,12 +365,12 @@ begin
 
   FChannel.SendFileDialogDone;
 
-  // Fetch the connection only once: the device thread can set it to nil at any time.
-  V := FChannel.PacketConnection;
-  if (assigned (V)) and (assigned (V.SendFileQueue)) then begin
-    (V.SendFileQueue as IPublisher).UnSubscribe (FSendFileQueueSubscriber);
+  // Unsubscribe from the queue actually subscribed to: after a reconnect the
+  // connection has another one.
+  if (assigned (FSubscribedQueue)) then begin
+    (FSubscribedQueue as IPublisher).UnSubscribe (FSendFileQueueSubscriber);
+    FSubscribedQueue := nil;
   end;
-  V := nil;
 
   (FChannel as IPublisher).UnSubscribe (FChannelSubscriber);
 
@@ -441,9 +442,16 @@ begin
 end;
 
 
-procedure   TSendFileDlg.Execute (aChannelObj: IChannel; const aFiles: array of String);
+procedure   TSendFileDlg.AddFiles (const aFiles: array of String);
+// Adds files (folders with their contents) to the file list, without duplicates.
 const
-  MethodName = 'Execute';
+  MethodName = 'AddFiles';
+
+
+  procedure AddFile (const FileName: String);
+  begin
+    if (FilesListbox.Items.IndexOf (FileName) < 0) then FilesListbox.Items.Add (FileName);
+  end;
 
 
   procedure ScanDirectories (Path: String);
@@ -461,7 +469,7 @@ const
             ScanDirectories (IncludeTrailingPathDelimiter (Path + SR.Name));
           end;
         end else begin
-          FilesListbox.Items.Add (Path + SR.Name);
+          AddFile (Path + SR.Name);
         end;
       end;
       I := FindNext (SR);
@@ -474,6 +482,63 @@ var
   I, N: Integer;
   SR: TSearchRec;
 
+begin
+
+  // Files are sent as files: leave the text input mode.
+  if (not SendRadiobutton1.Checked) then begin
+    SendRadiobutton1.Checked := true;
+    SendRadiobutton1Click (nil);
+  end;
+
+  for N := 0 to (Length (aFiles) - 1) do begin
+
+    I := FindFirst (aFiles[N], faAnyFile, SR);
+    FindClose (SR);
+    if (I = 0) then begin
+
+      if ((SR.Attr and faVolumeID) = 0) then begin
+        if ((SR.Attr and faDirectory) <> 0) then begin
+          ScanDirectories (IncludeTrailingPathDelimiter (aFiles[N]));
+        end else begin
+          AddFile (aFiles[N]);
+        end;
+      end;
+
+    end;
+
+  end;
+
+  UpdateFileList;
+
+  DialogDone := (FilesListbox.Items.Count > 0);
+
+end;
+
+
+procedure   TSendFileDlg.AddText (const aText: String);
+// Appends text to the text input (or sets it, if empty) and switches to text input.
+var
+  S: String;
+begin
+
+  if (not SendRadiobutton2.Checked) then begin
+    SendRadiobutton2.Checked := true;
+    SendRadiobutton2Click (nil);
+  end;
+
+  S := TextMemo.Text;
+  if (Length (S) > 0) and (not (S[Length (S)] in [#13, #10])) then S := S + #13#10;
+  TextMemo.Text := S + aText;
+
+  DialogDone := (TextMemo.Lines.Count >= 1);
+
+  PageControl.ActivePage := TabSheetText;
+  ButtonBack.Enabled := true;
+
+end;
+
+
+procedure   TSendFileDlg.Execute (aChannelObj: IChannel; const aFiles: array of String);
 begin
 
   FChannel := aChannelObj;
@@ -490,25 +555,7 @@ begin
   TabSheetText.Enabled := false;
 
   FilesListbox.Items.Clear;
-  for N := 0 to (Length (aFiles) - 1) do begin
-
-    I := FindFirst (aFiles[N], faAnyFile, SR);
-    FindClose (SR);
-    if (I = 0) then begin
-
-      if ((SR.Attr and faVolumeID) = 0) then begin
-        if ((SR.Attr and faDirectory) <> 0) then begin
-          ScanDirectories (IncludeTrailingPathDelimiter (aFiles[N]));
-        end else begin
-          FilesListbox.Items.Add (aFiles[N]);
-        end;
-      end;
-
-    end;
-
-  end;
-
-  UpdateFileList;
+  AddFiles (aFiles);
 
   ProtocolRadiobuttonAutobin.Checked := true;
   ProtocolRadiobuttonClick (ProtocolRadiobuttonAutobin);
@@ -551,13 +598,9 @@ begin
   R.Checked := true;
   ProtocolRadiobuttonClick (R);
 
-  V := FChannel.PacketConnection;
-  if (assigned (V)) and (assigned (V.SendFileQueue)) then begin
-    (V.SendFileQueue as IPublisher).Subscribe (FSendFileQueueSubscriber);
-  end;
-
   (FChannel as IPublisher).Subscribe (FChannelSubscriber);
 
+  // Also subscribes to the send file queue of the connection.
   ChannelChanged;
 
   Show;
@@ -852,7 +895,7 @@ procedure   TSendFileDlg.UpdateFileList;
 var
   L, I, N, Q, K: Integer;
   S: string;
-  SR: TSearchRec;
+  Size64: Int64;
   OldFileEntries: array of TSendFileEntry;
   B: Boolean;
 
@@ -880,12 +923,11 @@ begin
     end else begin
       S := FilesListbox.Items[I];
       FileEntries[K].Name := S;
-      if (FindFirst (S, faAnyFile, SR) = 0) then begin
-        FileEntries[K].SizeValue := SR.Size;
-      end else begin
-        FileEntries[K].SizeValue := 0;
-      end;
-      FindClose (SR);
+      // TSearchRec.Size is an Integer; larger files are rejected when sending.
+      Size64 := GetFileSize64 (S);
+      if (Size64 < 0) then Size64 := 0;
+      if (Size64 > MaxInt) then Size64 := MaxInt;
+      FileEntries[K].SizeValue := Size64;
       FileEntries[K].Quantity := 0;
       FileEntries[K].AllParts := true;
       SetLength (FileEntries[K].PartItems, 0);
@@ -1135,12 +1177,15 @@ var
   Wrap: Boolean;
   K, L, M: Integer;
   Retry: Boolean;
+  SentFiles: TStringList;
+  Failed: Boolean;
 
 begin
 
   Ok := false;
 
-  if (assigned (PGP)) and (PGPCheckBox.Checked) then begin
+  // Same condition as in Send: a checked but disabled box does not sign.
+  if (assigned (PGP)) and (PGPCheckBox.Enabled) and (PGPCheckBox.Checked) then begin
 
     I := PGPKeyCombobox.ItemIndex;
     if (I >= 0) and (I < PGPKeyCombobox.Items.Count) then begin
@@ -1198,30 +1243,70 @@ begin
 
       UpdateFileList;
 
-      for N := Low (FileEntries) to High (FileEntries) do begin
+      Failed := false;
+      SentFiles := TStringList.create;
+      try
 
-        S := FileEntries[N].Name;
+        for N := Low (FileEntries) to High (FileEntries) do begin
 
-        Retry := true;
-        Stream := nil;
-        while (Retry) do begin
-          try
-            Stream := TFileStream.create (S, fmOpenRead or
-                                          fmShareDenyWrite); // Stream is freed again in SendFilePreprocessor or SendXXX.
-            Retry := false;
-          except
-            Stream := nil;
-            with TDlgMessage.create (self) do begin
-              Retry := IsPositiveResult (Run (SFileOpenErrorTitle, SFileOpenError, [mbYes, mbNo]));
-              Release;
+          S := FileEntries[N].Name;
+
+          // Sizes beyond MaxInt cannot be announced (AutoBIN, DIDADIT, BinSplit header).
+          if (GetFileSize64 (S) > MaxInt) then begin
+            DebOut (self, MethodName, 'Datei zu groß, nicht gesendet: ' + S);
+            continue;
+          end;
+
+          Retry := true;
+          Stream := nil;
+          while (Retry) do begin
+            try
+              Stream := TFileStream.create (S, fmOpenRead or
+                                            fmShareDenyWrite); // Stream is freed again in SendFilePreprocessor or SendXXX.
+              Retry := false;
+            except
+              Stream := nil;
+              with TDlgMessage.create (self) do begin
+                Retry := IsPositiveResult (Run (SFileOpenErrorTitle, SFileOpenError, [mbYes, mbNo]));
+                Release;
+              end;
             end;
           end;
+
+          if (assigned (Stream)) then begin
+            // An error in one file must not stop the others, and the files already
+            // queued must not be sent a second time on the next click.
+            try
+              Send (Stream, @FileEntries[N], FTransferProtocol);
+              SentFiles.Add (S);
+            except
+              on E: Exception do begin
+                DebOut (self, MethodName, 'Fehler: ' + E.Message);
+                Failed := true;
+                with TDlgMessage.create (self) do begin
+                  Run (SFileOpenErrorTitle, E.Message, [mbOk]);
+                  Release;
+                end;
+              end;
+            end;
+          end;
+
         end;
 
-        if (assigned (Stream)) then begin
-          Send (Stream, @FileEntries[N], FTransferProtocol);
+        for N := 0 to SentFiles.Count - 1 do begin
+          I := FilesListbox.Items.IndexOf (SentFiles[N]);
+          if (I >= 0) then FilesListbox.Items.Delete (I);
         end;
 
+      finally
+        SentFiles.free;
+      end;
+
+      // On an error the dialog stays open with the files not sent.
+      if (Failed) then begin
+        UpdateFileList;
+        DialogDone := (FilesListbox.Items.Count > 0);
+        exit;
       end;
 
     end else if SendRadiobutton2.Checked then begin
@@ -1311,12 +1396,26 @@ resourcestring
 var
   V: IConnection;
   S: String;
+  Queue: ISendFileQueue;
 begin
+  // Fetch the connection only once: the device thread can set it to nil at any time.
   V := FChannel.PacketConnection;
   if (assigned (V)) then begin
     S := V.Call;
+    Queue := V.SendFileQueue;
   end else begin
     S := SNotConnected;
+    Queue := nil;
+  end;
+  // After a reconnect the connection has a new queue: move the subscription.
+  if (Queue <> FSubscribedQueue) then begin
+    if (assigned (FSubscribedQueue)) then begin
+      (FSubscribedQueue as IPublisher).UnSubscribe (FSendFileQueueSubscriber);
+    end;
+    FSubscribedQueue := Queue;
+    if (assigned (FSubscribedQueue)) then begin
+      (FSubscribedQueue as IPublisher).Subscribe (FSendFileQueueSubscriber);
+    end;
   end;
   Caption := Format (SSendTitle, [S]);
   UpdateDone;

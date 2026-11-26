@@ -210,7 +210,18 @@ resourcestring
 
 begin
 
-  if (FileOpened) then CloseFile (FilePathName);
+  // A failing close (e.g. disk full on the final flush) must not skip the rest of the
+  // cleanup; the file is then treated as not saved.
+  if (FileOpened) then begin
+    try
+      CloseFile (FilePathName);
+    except
+      on E: Exception do begin
+        DebOut (self, MethodName, 'CloseFile: ' + E.Message);
+        FileOpened := false;
+      end;
+    end;
+  end;
 
   DebOut (self, MethodName, 'Zeilen empfangen: ' + IntToStr(LinesReceived));
 
@@ -242,7 +253,7 @@ begin
   PacketConnection.FileSender.Release;
   PacketConnection.FileSender := nil;
 
-  if (Why <> e_finish) then begin
+  if (Why <> e_finish) or (not FileOpened) then begin
     try
       Recycle (FileName);
     except

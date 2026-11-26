@@ -477,7 +477,10 @@ begin
   if (SignatureData.Checked <> PGPTrue) then begin
     Sounds.PlayEvent (se_pgp_unknown, nil);
   end else if (SignatureData.Verified = PGPTrue) then begin
-    if (assigned (SignatureData.SigningKey)) and (SignatureData.KeyValidity >= kPGPValidity_Marginal) then begin
+    // A revoked, disabled or expired key does not make the signature valid (the text says so)
+    if (assigned (SignatureData.SigningKey)) and (SignatureData.KeyValidity >= kPGPValidity_Marginal) and
+       (SignatureData.KeyRevoked <> PGPTrue) and (SignatureData.KeyDisabled <> PGPTrue) and
+       (SignatureData.KeyExpired <> PGPTrue) then begin
       Sounds.PlayEvent (se_pgp_valid, nil);
     end else begin
       Sounds.PlayEvent (se_pgp_unknown, nil);

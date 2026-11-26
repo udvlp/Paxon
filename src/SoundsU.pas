@@ -606,7 +606,7 @@ begin
                   end;
                   se_pgp_valid: begin
                     Sound (196, 80);
-                    Sound (196, 784);
+                    Sound (784, 80);
                   end;
                   se_pgp_unknown: begin
                     Sound (262, 40);

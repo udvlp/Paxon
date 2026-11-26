@@ -375,19 +375,25 @@ begin
 
       with P do begin
 
+        // Windows numbers COM ports up to COM255 (USB adapters often get high numbers).
         with PortComboBox do begin
           Items.Clear;
-          for N := 1 to 40 do begin
+          for N := 1 to 255 do begin
             Items.Add (Format ('COM%d', [N]));
           end;
-          ItemIndex := CommNo - 1;
+          if (CommNo >= 1) and (CommNo <= 255) then ItemIndex := CommNo - 1 else ItemIndex := -1;
         end;
 
+        // A baud rate from the registry that is not in the list is added, so that
+        // the drop-down list can show it and OK keeps it.
         with BaudrateCombobox do begin
           Items.Clear;
           for N := 0 to High (Baudrates) do begin
             Items.Add (IntToStr(Baudrates[N]));
             if (CommBaudrate = Baudrates[N]) then ItemIndex := N;
+          end;
+          if (ItemIndex < 0) and (CommBaudrate > 0) then begin
+            ItemIndex := Items.Add (IntToStr (CommBaudrate));
           end;
         end;
 
@@ -405,10 +411,19 @@ begin
 
         if (FNewParam = nil) then FNewParam := ParameterClass.Create;
 
+        // nothing selected: keep the previous value (P)
         with FNewParam as THostmodeSerialDeviceParameter do begin
-          CommNo := StrToIntDef (Copy (PortComboBox.Items[PortComboBox.ItemIndex], 4, MaxInt), 1);
+          if (PortComboBox.ItemIndex >= 0) then begin
+            CommNo := StrToIntDef (Copy (PortComboBox.Items[PortComboBox.ItemIndex], 4, MaxInt), 1);
+          end else begin
+            CommNo := P.CommNo;
+          end;
           DeviceID := CommNo;
-          CommBaudrate := StrToIntDef (BaudrateCombobox.Items[BaudrateCombobox.ItemIndex], 38400);
+          if (BaudrateCombobox.ItemIndex >= 0) then begin
+            CommBaudrate := StrToIntDef (BaudrateCombobox.Items[BaudrateCombobox.ItemIndex], 38400);
+          end else begin
+            CommBaudrate := P.CommBaudrate;
+          end;
           TncInit.Assign (InitMemo.Lines);
           TncDeinit.Assign (DeinitMemo.Lines);
         end;

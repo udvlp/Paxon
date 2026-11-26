@@ -195,19 +195,25 @@ var
   L: Integer;
   B: Boolean;
   H: Integer;
+  T: TThread;
 
 begin
 
   DebOut (self, MethodName, 'begin...');
 
-  if (assigned (FThread)) then begin
+  // Read FThread once: the device thread sets it to nil when it ends. The object
+  // itself stays valid until here: it frees itself only after OnTerminate, which
+  // runs via Synchronize in the main thread (the loop below).
+  T := FThread;
 
-    H := FThread.Handle;
+  if (assigned (T)) then begin
+
+    H := T.Handle;
     L := GetTickCount;
     B := False;
 
     DebOut (self, MethodName, 'Thread.Terminate');
-    FThread.Terminate;
+    T.Terminate;
 
     DebOut (self, MethodName, 'Warte auf Beendigung');
 
@@ -256,7 +262,8 @@ const
   MethodName = 'ThreadTerminate';
 begin
   DebOut (self, MethodName, 'begin...');
-  FThread := nil;
+  // Init may already have started a new device thread: only forget our own.
+  if (FThread = Sender) then FThread := nil;
   DebOut (self, MethodName, 'end.');
 end;
 
@@ -363,7 +370,8 @@ begin
       end;
     end;
   finally
-    DeviceItem.FThread := nil;
+    // Init may already have started a new device thread: only forget this one.
+    if (DeviceItem.FThread = self) then DeviceItem.FThread := nil;
   end;
 
 end;

@@ -185,6 +185,8 @@ begin
     Error := not TfOpen (MessageWindow);
     if (Error) then begin
       SetStatus (gs_error, STFOpenFailed);
+      // otherwise the DLL stays loaded and CommOpened reports an open interface
+      FreeDLL;
     end;
   end;
 

@@ -124,6 +124,7 @@ end;
 function    TBinSplitPart.ReadHeader: Boolean;
 const
   MethodName = 'ReadHeader';
+  MaxHeaderSize = 1024; // the header is far shorter; do not search a whole foreign file for #0
 var
   L, N, I: Integer;
   HasError: Boolean;
@@ -152,7 +153,7 @@ begin
           break;
         end;
       end;
-      if (not HasError) or (N < 256) then break;
+      if (not HasError) or (N < 256) or (L + 256 >= MaxHeaderSize) then break;
       Inc (L, 256);
     end;
 

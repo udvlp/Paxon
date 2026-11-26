@@ -12,9 +12,17 @@ for %%d in (Bin Temp Temp\debugmon src\VCL\paxon\build) do (
 )
 
 echo Paxon.exe
+rem -GD writes src\Paxon.drc (the resourcestring IDs) and a detailed Bin\Paxon.map
+if exist src\Paxon.drc del src\Paxon.drc
 pushd src
-"%DCC32%" -B -Q Paxon.dpr || (popd & goto error)
+"%DCC32%" -B -Q -GD Paxon.dpr || (popd & goto error)
 popd
+if exist Bin\Paxon.map del Bin\Paxon.map
+
+rem The language DLLs replace resourcestrings by ID: their Paxon_DRC.rc must match Paxon.exe
+for %%l in (ENU FRA) do (
+  call :checkdrc %%l || goto error
+)
 
 for %%l in (ENU FRA) do (
   echo Paxon.%%l
@@ -44,3 +52,14 @@ exit /b 0
 echo.
 echo Build failed.
 exit /b 1
+
+rem Compares the #define lines (name and ID) of src\%1\Paxon_DRC.rc with src\Paxon.drc
+:checkdrc
+powershell -NoProfile -Command "$e = @(Select-String -LiteralPath 'src\Paxon.drc' -Pattern '^#define\s' -CaseSensitive | ForEach-Object { $_.Line.Trim() }); $l = @(Select-String -LiteralPath 'src\%1\Paxon_DRC.rc' -Pattern '^#define\s' -CaseSensitive | ForEach-Object { $_.Line.Trim() }); if ($e.Count -eq 0 -or $e.Count -ne $l.Count -or (Compare-Object $e $l -CaseSensitive)) { exit 1 }"
+if errorlevel 1 (
+  echo.
+  echo src\%1\Paxon_DRC.rc does not match the resourcestrings of Paxon.exe ^(src\Paxon.drc^).
+  echo Regenerate it from src\Paxon.drc: names and IDs of all #define lines must be identical.
+  exit /b 1
+)
+exit /b 0

@@ -80,6 +80,12 @@ uses
 {$I+}
 
 
+const
+  // A frame is at most twice the maximum block size (16384) plus header;
+  // data without FEND beyond this limit is discarded.
+  MaxReceiveBuffer = 4 * 16384;
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -369,6 +375,11 @@ begin
 
     end;
 
+    if (Length (ReceiveBuffer) > MaxReceiveBuffer) then begin
+      DebOut (self, MethodName, 'Puffer ohne FEND übergelaufen (%d Bytes): verworfen.', [Length (ReceiveBuffer)]);
+      ReceiveBuffer := '';
+    end;
+
   end;
 
   DebOut (self, MethodName, 'end.');
@@ -413,7 +424,7 @@ begin
       Move (DataText[I * sizeof (Req^) + 1], Req^, sizeof (Req^));
 
       DebOut (self, MethodName, 'Empfange REQ: Offset %d, Länge %d.', [Req^.Offset, Req^.Length]);
-      if (Req.Offset < 0) or (Req.Length < 1) or (Req.Offset + Req.Length > Stream.Size) then begin
+      if (Req.Offset < 0) or (Req.Length < 1) or (Int64 (Req.Offset) + Req.Length > Stream.Size) then begin
         SendError (101, [Req.Offset, Req.Length]);
         B := true;
         Dispose (Req);

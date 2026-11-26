@@ -48,6 +48,10 @@ type
 
     FRadioChannel: array[0..7] of IRadioChannel;
     FConnectionList: array[0..255] of IConnection;
+    // Channels whose connection was killed (dl_kill) and freed while the TNC still has
+    // the link: not taken over as a new connection until the TNC reports it gone.
+    // Protected by ConnectionsCriticalSection.
+    FKillPending: array[0..255] of Boolean;
     FMonitorFrame: TMonitorFrame;
     FTncChannelCount: Integer;
     FExtendedHostmode: Boolean;
@@ -80,6 +84,8 @@ type
     procedure   SetMonitor;
     procedure   OwnCallsignsChanged;
     function    SetOwnCallsigns (AllChannels: Boolean): Integer;
+    function    KillPending (TNCChannel: Integer): Boolean;
+    procedure   SetKillPending (TNCChannel: Integer; Value: Boolean);
     function    GetResyncCount: Integer;
     procedure   IncResyncCount;
     procedure   SetStatusReady;
@@ -181,6 +187,39 @@ uses
   DebOutU, Registry, MainU, ChannelsU, RadioChannelU, ConfigU,
   SsidIteratorU, UnhandledExceptionU, StrUtils, ConnectionsListU,
   HostmodeTFWinDeviceU;
+
+
+// Compares a connection path as entered (RealPath) with the TNC's answer to 'C':
+// case, "VIA", SSID -0 and repeated blanks do not count.
+
+function    NormalizePath (const Path: String): String;
+var
+  SL: TStringList;
+  N: Integer;
+  S: String;
+begin
+  result := '';
+  SL := TStringList.create;
+  try
+    SL.Delimiter := ' ';
+    SL.DelimitedText := UpperCase (Path);
+    for N := 0 to SL.Count - 1 do begin
+      S := SL[N];
+      if (S = '') or (S = 'VIA') or (S = 'V') then continue;
+      if (Length (S) > 2) and (Copy (S, Length (S) - 1, 2) = '-0') then SetLength (S, Length (S) - 2);
+      if (result <> '') then result := result + ' ';
+      result := result + S;
+    end;
+  finally
+    SL.free;
+  end;
+end;
+
+
+function    SamePath (const A, B: String): Boolean;
+begin
+  result := (NormalizePath (A) = NormalizePath (B));
+end;
 
 
 type
@@ -481,15 +520,17 @@ begin
 
   end;
 
-  // The new device thread accepts messages again (see DiscardMessages).
+  // inherited Init calls DeInit if a device thread still exists, which closes the
+  // messages: only afterwards does the new device thread accept messages again
+  // (see DiscardMessages).
+  inherited;
+
   MessagesCriticalSection.Enter;
   try
     FMessagesClosed := false;
   finally
     MessagesCriticalSection.Leave;
   end;
-
-  inherited;
 
   Debout (self, MethodName, 'end.');
 
@@ -1149,6 +1190,8 @@ begin
                 DebOut (self, MethodName, 'Terminated, break. (1)');
                 break;
               end;
+              // Only code 1 carries the list of channels with pending data.
+              if (I <> 1) then TNCChannelList := '';
             end;
           end;
 
@@ -1160,6 +1203,7 @@ begin
           for N := 1 to Length (TNCChannelList) do begin
 
             TNCChannel := Ord (TNCChannelList[N]) - 1;
+            if (TNCChannel < 0) then continue;
 
             if (TNCChannel > FTncChannelCount) then begin
 
@@ -1215,7 +1259,7 @@ begin
 
                         if (assigned (PacketConnection)) then begin
 
-                          if (PacketConnection.RealPath <> TNCChannelConnectedTo) then begin
+                          if (not SamePath (PacketConnection.RealPath, TNCChannelConnectedTo)) then begin
                             DebOut (self, MethodName, 'FULLCHECK: TNCChannelConnectedTo = ' + TNCChannelConnectedTo);
                             DebOut (self, MethodName, 'FULLCHECK: RealPath = ' + PacketConnection.RealPath);
                             DebOut (self, MethodName, 'Verbindung.Getrennt... (1)');
@@ -1240,7 +1284,9 @@ begin
 
                         end else begin
 
-                          if (TNCChannelConnectedTo <> '') then begin
+                          // A link we killed is not taken over again before it is gone.
+                          if (TNCChannelConnectedTo = '') then SetKillPending (TNCChannel, false);
+                          if (TNCChannelConnectedTo <> '') and (not KillPending (TNCChannel)) then begin
                             DebOut (self, MethodName, 'FULLCHECK: Verbindung aufgetaucht.');
                             DebOut (self, MethodName, 'FULLCHECK: TNCChannelConnectedTo = ' + TNCChannelConnectedTo);
                             ConnectionEstablished (TNCChannel, TNCChannelConnectedTo, false);
@@ -1298,6 +1344,9 @@ begin
                           DebOut (self, MethodName, 'Verbindungsstatus: ' + S);
 
                           S := Copy (S, Length (Linkstatus[I]) + 2, MaxInt);
+
+                          // Any link status ends (or replaces) a link we killed.
+                          SetKillPending (TNCChannel, false);
 
                           case I of
 
@@ -1494,7 +1543,8 @@ begin
                         // Eine Verbindung nur übernehmen, wenn der TNC eine Gegenstation
                         // meldet. Sonst (z. B. nach dl_kill) entstünde eine Verbindung mit
                         // leerem Rufzeichen, die nie wieder abgebaut wird.
-                        if (GetCommandC (TNCChannel, TNCChannelConnectedTo)) and (TNCChannelConnectedTo <> '') then begin
+                        if (GetCommandC (TNCChannel, TNCChannelConnectedTo)) and (TNCChannelConnectedTo <> '') and
+                           (not KillPending (TNCChannel)) then begin
                           ConnectionEstablished (TNCChannel, TNCChannelConnectedTo, false);
                           PacketConnection := FConnectionList[TNCChannel];
                         end;
@@ -2831,6 +2881,31 @@ begin
 end;
 
 
+function    THostmodeDevice.KillPending (TNCChannel: Integer): Boolean;
+begin
+  result := false;
+  if (TNCChannel < Low (FKillPending)) or (TNCChannel > High (FKillPending)) then exit;
+  ConnectionsCriticalSection.Enter;
+  try
+    result := FKillPending[TNCChannel];
+  finally
+    ConnectionsCriticalSection.Leave;
+  end;
+end;
+
+
+procedure   THostmodeDevice.SetKillPending (TNCChannel: Integer; Value: Boolean);
+begin
+  if (TNCChannel < Low (FKillPending)) or (TNCChannel > High (FKillPending)) then exit;
+  ConnectionsCriticalSection.Enter;
+  try
+    FKillPending[TNCChannel] := Value;
+  finally
+    ConnectionsCriticalSection.Leave;
+  end;
+end;
+
+
 procedure   THostmodeDevice.LockParam;
 begin
   FParamCriticalSection.Enter;
@@ -2932,7 +3007,12 @@ begin
         try
           H := aConnectionObj.Handle;
           assert ((H >= Low (FConnectionList)) and (H <= High (FConnectionList)));
-          if (FConnectionList[H] = aConnectionObj) then FConnectionList[H] := nil;
+          if (FConnectionList[H] = aConnectionObj) then begin
+            FConnectionList[H] := nil;
+            // The 'D' goes out only with msg_disconnect; until the TNC reports the link
+            // gone, polling must not take it over as a new incoming connection.
+            FKillPending[H] := true;
+          end;
         finally
           ConnectionsCriticalSection.Leave;
         end;
@@ -3159,6 +3239,9 @@ begin
   while (not CommandStr (TNCChannel, true, 'C', S, I)) and (not Terminated) do Resync;
   if (Terminated) then exit;
 
+  // Only code 1 is the connection path; anything else is an error message.
+  if (I <> 1) then exit;
+
   I := Pos (':', S);
   if (I >= 1) and (I <= 8) then Delete (S, 1, I);
   if (Length (S) >= 1) and (S[1] = ' ') then Delete (S, 1, 1);
@@ -3296,8 +3379,10 @@ begin
 
           while E do begin
 
-            if (K > 255) then begin // channel number is a byte
-              K := 255;
+            // channel number is a byte, and 255 is the poll channel ('G'): the
+            // channel list of 'G255' holds channel + 1, which must fit into a byte
+            if (K > 254) then begin
+              K := 254;
               E := false;
               break;
             end;
@@ -3362,7 +3447,7 @@ begin
 
         end;
 
-        if (K > 255) then K := 255;
+        if (K > 254) then K := 254;
 
       end else begin
 

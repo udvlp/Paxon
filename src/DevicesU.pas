@@ -333,6 +333,7 @@ begin
   for N := 0 to Quantity - 1 do begin
     K := DeviceItem[N].RadioChannels (A);
     for I := 0 to K - 1 do begin
+      if (RadioChannelCount > High (aRadioChannels)) then break;
       aRadioChannels[RadioChannelCount] := A[I];
       Inc (RadioChannelCount);
     end;

@@ -97,6 +97,10 @@ Var STARTMENU_FOLDER
 
 !insertmacro MUI_PAGE_DIRECTORY
 
+; The page suggests the folder of the previous installation; the uninstaller reads it from there
+!define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKLM"
+!define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon"
+!define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "SetupStartMenu"
 !insertmacro MUI_PAGE_STARTMENU "Application" $STARTMENU_FOLDER
 
 Page custom InstallOptions "" "$(IOTITLE1)"
@@ -242,8 +246,8 @@ Section "Paxon"
 
 	File "..\Bin\Paxon.exe"
 	File "..\Bin\Paxon.fon"
-	File /nonfatal "..\Bin\Paxon-EN.pxl"
-	File /nonfatal "..\Bin\Paxon-FR.pxl"
+	File "..\Bin\Paxon-EN.pxl"
+	File "..\Bin\Paxon-FR.pxl"
 
 	SetOutPath "$INSTDIR\Sound"
 
@@ -300,8 +304,17 @@ Section "Paxon"
 
 	SetOutPath "$INSTDIR"
 
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupStartMenu" "$STARTMENU_FOLDER"
-  !insertmacro MUI_STARTMENU_WRITE_BEGIN "Application"
+	; On an update to another folder (or without shortcuts: ">folder"), remove the old shortcut
+	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupStartMenu"
+	StrCmp $R0 "" OldStartMenuDone
+	StrCmp $R0 $STARTMENU_FOLDER OldStartMenuDone
+		Delete "$SMPROGRAMS\$R0\Paxon.lnk"
+		RMDir "$SMPROGRAMS\$R0"
+	OldStartMenuDone:
+
+	; Also written when no shortcuts are created, so that the page remembers this choice
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupStartMenu" "$STARTMENU_FOLDER"
+	!insertmacro MUI_STARTMENU_WRITE_BEGIN "Application"
 	CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 	CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Paxon.lnk" "$INSTDIR\Paxon.exe"
 	!insertmacro MUI_STARTMENU_WRITE_END
@@ -312,19 +325,21 @@ Section "Paxon"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupDesktopIcon" $R0
 	StrCmp $R0 "1" "" NoDesktopIcon
 	CreateShortCut "$DESKTOP\Paxon.lnk" "$INSTDIR\Paxon.exe"
+	Goto DesktopIconDone
 	NoDesktopIcon:
+	; deselected on an update: remove the shortcut of the previous installation
+	Delete "$DESKTOP\Paxon.lnk"
+	DesktopIconDone:
 
-	; Quicklaunch Icon
+	; Quick Launch has no effect since Windows 7: no longer offered, remove the shortcut
+	; of older installations
 
-	!insertmacro MUI_INSTALLOPTIONS_READ $R0 "install.ini" "Field 3" "State"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupQuicklaunchIcon" $R0
-	StrCmp $R0 "1" "" NoQuicklaunchIcon
-	CreateShortCut "$R4\Microsoft\Internet Explorer\Quick Launch\Paxon.lnk" "$INSTDIR\Paxon.exe"
-	NoQuicklaunchIcon:
+	Delete "$R4\Microsoft\Internet Explorer\Quick Launch\Paxon.lnk"
+	DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupQuicklaunchIcon"
 
 	; Register Filetypes
 
-	!insertmacro MUI_INSTALLOPTIONS_READ $R0 "install.ini" "Field 4" "State"
+	!insertmacro MUI_INSTALLOPTIONS_READ $R0 "install.ini" "Field 3" "State"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupRegisterFiletypes" $R0
 	StrCmp $R0 "1" "" NoFiletypes
 		!insertmacro CreateFileAssociation ".pxd" "Paxon.Database" "Paxon Database"
@@ -456,16 +471,10 @@ Function InstallOptions
 	!insertmacro MUI_INSTALLOPTIONS_WRITE "install.ini" "Field 2" "State" $R0
 
 	!insertmacro MUI_INSTALLOPTIONS_WRITE "install.ini" "Field 3" "Text" $(FIELD3)
-	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupQuicklaunchIcon"
-	StrCmp $R0 "" 0 +2
-	StrCpy $R0 "1"
-	!insertmacro MUI_INSTALLOPTIONS_WRITE "install.ini" "Field 3" "State" $R0
-
-	!insertmacro MUI_INSTALLOPTIONS_WRITE "install.ini" "Field 4" "Text" $(FIELD4)
 	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupRegisterFiletypes"
 	StrCmp $R0 "" 0 +2
 	StrCpy $R0 "1"
-	!insertmacro MUI_INSTALLOPTIONS_WRITE "install.ini" "Field 4" "State" $R0
+	!insertmacro MUI_INSTALLOPTIONS_WRITE "install.ini" "Field 3" "State" $R0
 
 	!insertmacro MUI_INSTALLOPTIONS_DISPLAY "install.ini"
 
@@ -516,11 +525,14 @@ Section "Uninstall"
 	RMDir "$INSTDIR\Sound"
 	RMDir "$INSTDIR"
 
-  ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupStartMenu"
-	Delete "$SMPROGRAMS\$R0\Paxon.lnk"
-	RMDir "$SMPROGRAMS\$R0"
+	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Paxon" "SetupStartMenu"
+	StrCmp $R0 "" StartMenuDone
+		Delete "$SMPROGRAMS\$R0\Paxon.lnk"
+		RMDir "$SMPROGRAMS\$R0"
+	StartMenuDone:
 
 	Delete "$DESKTOP\Paxon.lnk"
+	; Quick Launch shortcut of older installations
 	Delete "$R4\Microsoft\Internet Explorer\Quick Launch\Paxon.lnk"
 
 	RMDir /r "$R4\Ulf Haueisen\Paxon\Incomplete Files"
