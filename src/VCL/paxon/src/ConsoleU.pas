@@ -559,7 +559,12 @@ begin
           N := FStream.Read (FFileHeader^, FileHeaderSize);
           if (N = FileHeaderSize) and (FFileHeader^.FormatVersion in [4..FormatVersion]) then begin
             if (FFileHeader.Rows = 0) then FFileHeader.Rows := 1250; // for compatibility only
-            if (FFileHeader.Rows = FRows) then begin
+            // A damaged or foreign file must not lead outside the buffer: the size
+            // must match the layout, FirstLine must be a buffer line, Cols (0 in
+            // older files) must match.
+            if (FFileHeader.Rows = FRows) and (FStream.Size = FileHeaderSize + BufferSize) and
+               (FFileHeader.FirstLine >= 0) and (FFileHeader.FirstLine < FRows) and
+               ((FFileHeader.Cols = 0) or (FFileHeader.Cols = FCols)) then begin
               ClearMemory := false;
             end else begin
               FStream.Free;
@@ -611,6 +616,7 @@ begin
     FFileHeader := Pointer(FBuffer);
 
     FFileHeader.FormatVersion := FormatVersion;
+    FFileHeader.Cols := FCols;
 
     if (ClearMemory) then begin
       ClrScr;
@@ -1615,7 +1621,7 @@ begin
         ScrollTo (FOrigin.X, FCaret.Y - FClientSize.Y + 1);
       end;
       LineHeader := ScreenPtrH (FCaret.Y);
-      if (FCaret.X > LineHeader.Length) then FCaret.X := LineHeader.Length;
+      if (assigned (LineHeader)) and (FCaret.X > LineHeader.Length) then FCaret.X := LineHeader.Length;
       InvalidateLine (FCaret.Y);
       UpdateCaretPos;
       CursorKey := true;
@@ -1634,8 +1640,9 @@ begin
           ScrollTo (FOrigin.X, FOrigin.Y - FClientSize.Y);
         end;
       end;
+      // after "clear output" FCaret.Y is -1: no line header
       LineHeader := ScreenPtrH (FCaret.Y);
-      if (FCaret.X > LineHeader.Length) then FCaret.X := LineHeader.Length;
+      if (assigned (LineHeader)) and (FCaret.X > LineHeader.Length) then FCaret.X := LineHeader.Length;
       InvalidateLine (FCaret.Y);
       UpdateCaretPos;
       Key := 0;
@@ -1657,7 +1664,7 @@ begin
         end;
       end;
       LineHeader := ScreenPtrH (FCaret.Y);
-      if (FCaret.X > LineHeader.Length) then FCaret.X := LineHeader.Length;
+      if (assigned (LineHeader)) and (FCaret.X > LineHeader.Length) then FCaret.X := LineHeader.Length;
       InvalidateLine (FCaret.Y);
       UpdateCaretPos;
       Key := 0;

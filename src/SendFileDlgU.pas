@@ -1268,18 +1268,22 @@ var
   B: Boolean;
   FileSender: ISendFile;
   V: IConnection;
+  Queue: ISendFileQueue;
 begin
   DebOut (self, MethodName, 'begin...');
   V := FChannel.PacketConnection;
-  if (assigned (V)) and (assigned (V.SendFileQueue)) then begin
-    with V.SendFileQueue do begin
+  // Fetch the queue once: the connection may close in between.
+  Queue := nil;
+  if (assigned (V)) then Queue := V.SendFileQueue;
+  if (assigned (Queue)) then begin
+    with Queue do begin
       Lock;
       try
         if (Count >= 1) then begin
           QueueListbox.Items.Clear;
           for N := 0 to count - 1 do begin
             FileSender := Items[N];
-            QueueListbox.Items.Add (FileSender.TargetFilename);
+            if (assigned (FileSender)) then QueueListbox.Items.Add (FileSender.TargetFilename);
           end;
           B := true;
         end else begin

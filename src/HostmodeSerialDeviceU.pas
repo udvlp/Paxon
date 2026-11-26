@@ -119,13 +119,21 @@ var
   DCB: TDCB;
   S: string;
   Error: Boolean;
+  Baudrate: Integer;
 
 begin
 
   DebOut (self, MethodName, 'begin...');
   Error := false;
 
-  S := Format ('COM%d', [(FParam as THostmodeSerialDeviceParameter).CommNo]);
+  // runs in the device thread: read the parameters under the lock (ApplySettings)
+  LockParam;
+  try
+    S := Format ('COM%d', [(FParam as THostmodeSerialDeviceParameter).CommNo]);
+    Baudrate := (FParam as THostmodeSerialDeviceParameter).CommBaudrate;
+  finally
+    UnlockParam;
+  end;
 
   CheckFifo (S);
 
@@ -160,7 +168,7 @@ begin
   if (not Error) then begin
     FillChar (DCB, sizeof (DCB), 0);
     DCB.DCBlength := sizeof (DCB);
-    DCB.BaudRate := (FParam as THostmodeSerialDeviceParameter).CommBaudrate;
+    DCB.BaudRate := Baudrate;
     DCB.Flags := (1 shl  0)  // fBinary:1, binary mode, no EOF check (default: 1)
               or (0 shl  1)  // fParity:1, enable parity checking (default: 0)
               or (0 shl  2)  // fOutxCtsFlow:1, CTS output flow control (default: 0)
@@ -425,6 +433,7 @@ begin
   if (assigned (FNewParam)) then begin
     FNewParam.free;
     FNewParam := nil;
+    UpdateParamText;
   end;
 end;
 
@@ -447,8 +456,7 @@ begin
 
     TNCInitChanged := not (FParam.TncInit.Equals (FNewParam.TncInit));
 
-    FParam.free;
-    FParam := FNewParam;
+    ReplaceParam (FNewParam);
     FNewParam := nil;
 
     if (TNCInitChanged) and (assigned (FThread)) then begin

@@ -971,18 +971,21 @@ var
   V: IConnection;
 begin
   SendTextData (RemotePrompt + SCStatusTitle + #13#13);
+  // Only collect the lines under the lock: sending echoes to the channel window via
+  // SendMessage, and the main thread may wait for ConnectionsList.Lock meanwhile.
+  S := '';
   ConnectionsList.Lock;
   try
     for I := 0 to ConnectionsList.Count - 1 do begin
       V := ConnectionsList.Items[I];
       if (V.Outgoing) then T := '>' else T := '<';
-      S := Format ('  %-9s %s %-9s'#13, [V.MyCall, T, V.Call]);
-      SendTextData (S);
+      S := S + Format ('  %-9s %s %-9s'#13, [V.MyCall, T, V.Call]);
     end;
-    SendTextData (#13);
+    V := nil;
   finally
     ConnectionsList.UnLock;
   end;
+  SendTextData (S + #13);
 end;
 
 
@@ -1226,6 +1229,11 @@ const
 resourcestring
   SRemoteCommandReadFolderAccessDenied = 'Zugriff verweigert. Ordner: %s';
 
+const
+  // Files of one connection that may wait in the send queue. Each queued file stays
+  // open (and locked against writing) until it is sent.
+  MaxQueuedFiles = 50;
+
 var
   Files: TFileEntryArray;
   I: Integer;
@@ -1234,6 +1242,14 @@ var
   SendFilePreprocessor: TSendFilePreprocessor;
   Stream: TFileStream;
   RemoteFolder: String;
+  Queue: ISendFileQueue;
+
+  function QueueFull: Boolean;
+  begin
+    Queue := PacketConnection.SendFileQueue;
+    result := (not assigned (Queue)) or (Queue.Count >= MaxQueuedFiles);
+    Queue := nil;
+  end;
 
 begin
 
@@ -1257,6 +1273,11 @@ begin
       for I := 0 to Length (Files) - 1 do begin
 
         if (Files[I].Attr and (faDirectory or faVolumeID) = 0) then begin
+
+          if (QueueFull) then begin
+            SendTextData (RemotePrompt + Format (SRemoteCommandReadFolderAccessDenied, [Params]) + #13);
+            break;
+          end;
 
           SendFilePreprocessor := TSendFilePreprocessor.create;
           try

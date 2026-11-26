@@ -63,6 +63,7 @@ type
   public
 
     procedure   ApplyPage; override;
+    procedure   CancelPage; override;
 
   end;
 
@@ -86,7 +87,7 @@ implementation
 
 
 uses
-  DebOutU, AddDeviceU, MessageBoxU, MainU;
+  DebOutU, AddDeviceU, MessageBoxU, MainU, FlexnetDeviceU;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,7 +196,8 @@ resourcestring
 var
   Dialog: TAddDeviceForm;
   DeviceItem: TDevice;
-  N: Integer;
+  N, I: Integer;
+  HasFlexnet: Boolean;
 
 begin
 
@@ -213,8 +215,20 @@ begin
 
     with Dialog do begin
 
+      // The FlexNet DLL keeps global state: only one FlexNet device is possible.
+      // Devices removed but not yet applied are still running, so count them too.
+      HasFlexnet := false;
+      for I := 0 to Listview.Items.Count - 1 do begin
+        if (TDevice (Listview.Items[I].Data) is TFlexnetDevice) then HasFlexnet := true;
+      end;
+      for I := 0 to DeletedDevices.Count - 1 do begin
+        if (TDevice (DeletedDevices[I]) is TFlexnetDevice) then HasFlexnet := true;
+      end;
+
+      // Objects: index into DeviceClasses
       for N := 0 to (Length (DeviceClasses) - 1) do begin
-        Listbox.Items.Add (DeviceClasses[N].Name);
+        if (HasFlexnet) and (DeviceClasses[N].InheritsFrom (TFlexnetDevice)) then continue;
+        Listbox.Items.AddObject (DeviceClasses[N].Name, TObject (N));
       end;
 
       Listbox.ItemIndex := 0;
@@ -222,6 +236,7 @@ begin
       if (ShowModal = mrOk) then begin
 
         N := Listbox.ItemIndex;
+        if (N >= 0) and (N < Listbox.Items.Count) then N := Integer (Listbox.Items.Objects[N]) else N := -1;
         if (N >= 0) and (N < Length (DeviceClasses)) then begin
 
           DeviceItem := DeviceList.CreateDevice (DeviceClasses[N]);
@@ -392,6 +407,21 @@ begin
 
   DebOut (self, MethodName, 'ok.');
 
+end;
+
+
+procedure   TDeviceSettings.CancelPage;
+var
+  N: Integer;
+begin
+  // Discard parameters changed in the device dialogs but not applied (FNewParam);
+  // removed devices are still live until applied
+  for N := 0 to Listview.Items.Count - 1 do begin
+    TDevice (Listview.Items[N].Data).CancelSettings;
+  end;
+  for N := 0 to DeletedDevices.Count - 1 do begin
+    if (assigned (DeletedDevices[N])) then TDevice (DeletedDevices[N]).CancelSettings;
+  end;
 end;
 
 

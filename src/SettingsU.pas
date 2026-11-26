@@ -29,6 +29,7 @@ type
   TTabForm = class (TFormUlf)
   public
     procedure   ApplyPage; virtual;
+    procedure   CancelPage; virtual;
   end;
 
 
@@ -67,6 +68,7 @@ type
 
     TabForm: array [0..8] of TTabForm;
     InChange: Boolean;
+    ClosingWithOk: Boolean;
     function     InitTab (Index: Integer): TControl;
 
   end;
@@ -116,6 +118,12 @@ begin
 end;
 
 
+procedure   TTabForm.CancelPage;
+begin
+  // do nothing
+end;
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -128,6 +136,7 @@ begin
   inherited;
 
   InChange := false;
+  ClosingWithOk := false;
 
   for I := Low(TabForm) to High (TabForm) do TabForm[I] := nil;
 
@@ -183,7 +192,18 @@ end;
 
 
 procedure   TSettingsForm.FormClose (Sender: TObject; var Action: TCloseAction);
+var
+  I: Integer;
 begin
+  // Closed without OK (Cancel, close box, program end): discard pending changes
+  // that the pages have already handed to live objects (e.g. device parameters)
+  if (not ClosingWithOk) then begin
+    for I := Low (TabForm) to High (TabForm) do begin
+      if (assigned (TabForm[I])) then begin
+        TabForm[I].CancelPage;
+      end;
+    end;
+  end;
   Action := caFree;
   Settings := nil;
 end;
@@ -210,6 +230,7 @@ end;
 procedure   TSettingsForm.FormOkBtnClick (Sender: TObject);
 begin
   FormApplyBtnClick (Sender);
+  ClosingWithOk := true;
   Close;
 end;
 

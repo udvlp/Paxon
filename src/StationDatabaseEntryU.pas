@@ -43,6 +43,7 @@ type
     FCriticalSection: TCriticalSection;
 
     FStateT: TValueState;
+    FStateR: TValueState;
 
     FEntryType: TStationType;
     FIncomingConnect: TIncomingConnect;
@@ -58,7 +59,7 @@ type
     function    GetNotes: String;
 
     procedure   LoadT;
-    procedure   SaveT;
+    function    SaveT: Boolean;
 
     procedure   SetStationType (const Value: TStationType);
     function    GetStationType: TStationType;
@@ -70,7 +71,9 @@ type
     procedure   SetStorage (const Value: IStorage);
 
     procedure   LoadRemoteCommandList;
-    procedure   SaveRemoteCommandList;
+    function    SaveRemoteCommandList: Boolean;
+
+    function    CommitDatabase: Boolean;
 
   public
 
@@ -78,6 +81,8 @@ type
 
     procedure   AfterConstruction; override;
     procedure   BeforeDestruction; override;
+
+    procedure   Save (ReleaseStorage: Boolean);
 
     property    Storage: IStorage read GetStorage write SetStorage;
 
@@ -226,18 +231,53 @@ begin
 
   DebOut (self, MethodName, FCall);
 
-  if (FStateT = vs_changed) then SaveT;
+  Save (true);
 
-  if (assigned (FRemoteCommands)) then begin
-    SaveRemoteCommandList;
-    FRemoteCommands.free;
-  end;
-
-  FStorage := nil;
+  FRemoteCommands.free;
   FCriticalSection.free;
 
   inherited;
 
+end;
+
+
+procedure   TStationDatabaseEntry.Save (ReleaseStorage: Boolean);
+// Schreibt noch offene Werte und committet die Datenbank. Mit ReleaseStorage wird
+// der Storage danach freigegeben (STGM_SHARE_EXCLUSIVE), damit ein neues Open
+// derselben Station ihn wieder öffnen kann.
+var
+  Saved: Boolean;
+begin
+  FCriticalSection.Enter;
+  try
+    if (assigned (FStorage)) then begin
+      Saved := false;
+      if (FStateT = vs_changed) then begin
+        SaveT;
+        Saved := true;
+      end;
+      if (FStateR = vs_changed) then begin
+        SaveRemoteCommandList;
+        Saved := true;
+      end;
+      if (Saved) then CommitDatabase;
+    end;
+    if (ReleaseStorage) then FStorage := nil;
+  finally
+    FCriticalSection.Leave;
+  end;
+end;
+
+
+function    TStationDatabaseEntry.CommitDatabase: Boolean;
+// Commit auf dem Root der Datenbank (siehe TStationDatabase.Commit); der eigene
+// Storage ist im Direktmodus geöffnet und braucht kein Commit.
+begin
+  if (assigned (StationDatabase)) then begin
+    result := StationDatabase.Commit;
+  end else begin
+    result := false;
+  end;
 end;
 
 
@@ -298,12 +338,12 @@ end;
 
 procedure   TStationDatabaseEntry.SetName (const Value: String);
 const
+  MethodName = 'SetName';
   StreamName: WideString = 'N';
 
 var
   Stream: IStream;
   R: HResult;
-  N, L: Integer;
 
 begin
   FCriticalSection.Enter;
@@ -312,10 +352,13 @@ begin
     R := FStorage.CreateStream (PWideChar(StreamName), StreamMode or STGM_CREATE, 0, 0, Stream);
     if (R = S_OK) then begin
       assert (assigned (Stream));
-      N := Length (Value);
-      if (N > 0) then begin
-        Stream.Write (PChar(Value), N, @L);
+      if (not WriteStreamComplete (Stream, Value)) then begin
+        DebOut (Self, MethodName, 'Schreibfehler.');
       end;
+      Stream := nil;
+      CommitDatabase;
+    end else begin
+      DebOut (Self, MethodName, 'CreateStream Fehler.');
     end;
   finally
     FCriticalSection.Leave;
@@ -352,12 +395,12 @@ end;
 
 procedure   TStationDatabaseEntry.SetNotes (const Value: String);
 const
+  MethodName = 'SetNotes';
   StreamName: WideString = 'C';
 
 var
   Stream: IStream;
   R: HResult;
-  N, L: Integer;
 
 begin
   FCriticalSection.Enter;
@@ -366,10 +409,13 @@ begin
     R := FStorage.CreateStream (PWideChar(StreamName), StreamMode or STGM_CREATE, 0, 0, Stream);
     if (R = S_OK) then begin
       assert (assigned (Stream));
-      N := Length (Value);
-      if (N > 0) then begin
-        Stream.Write (PChar(Value), N, @L);
+      if (not WriteStreamComplete (Stream, Value)) then begin
+        DebOut (Self, MethodName, 'Schreibfehler.');
       end;
+      Stream := nil;
+      CommitDatabase;
+    end else begin
+      DebOut (Self, MethodName, 'CreateStream Fehler.');
     end;
   finally
     FCriticalSection.Leave;
@@ -418,16 +464,17 @@ begin
 end;
 
 
-procedure   TStationDatabaseEntry.SaveT;
+function    TStationDatabaseEntry.SaveT: Boolean;
+// Bei einem Fehler bleibt FStateT = vs_changed; Save versucht es dann erneut.
 const
   MethodName = 'SaveT';
   StreamName: WideString = 'T';
 var
   Stream: IStream;
   R: HResult;
-  L: Integer;
-  B: Byte;
+  S: String;
 begin
+  result := false;
   FCriticalSection.Enter;
   try
     DebOut (self, MethodName, FCall);
@@ -435,11 +482,17 @@ begin
     R := FStorage.CreateStream (PWideChar(StreamName), StreamMode or STGM_CREATE, 0, 0, Stream);
     if (R = S_OK) then begin
       assert (assigned (Stream));
-      B := integer(FEntryType);
-      Stream.Write (@B, 1, @L);
-      Stream.Write (@FIncomingConnect, 1, @L);
+      SetLength (S, 2);
+      S[1] := Chr (Ord (FEntryType));
+      S[2] := Chr (Ord (FIncomingConnect));
+      result := WriteStreamComplete (Stream, S);
+      Stream := nil;
     end;
-    FStateT := vs_loaded;
+    if (result) then begin
+      FStateT := vs_loaded;
+    end else begin
+      DebOut (self, MethodName, 'Schreibfehler.');
+    end;
   finally
     FCriticalSection.Leave;
   end;
@@ -459,12 +512,18 @@ end;
 
 
 procedure   TStationDatabaseEntry.SetStationType (const Value: TStationType);
+// Vorher laden: Der Stream T enthält auch IncomingConnect, das sonst mit dem
+// Vorgabewert überschrieben würde. Geschrieben wird sofort.
 begin
   FCriticalSection.Enter;
   try
+    if (FStateT = vs_uninitialized) then LoadT;
     if (Value <> FEntryType) then begin
       FEntryType := Value;
       FStateT := vs_changed;
+    end;
+    if (FStateT = vs_changed) then begin
+      if (SaveT) then CommitDatabase;
     end;
   finally
     FCriticalSection.Leave;
@@ -485,12 +544,17 @@ end;
 
 
 procedure   TStationDatabaseEntry.SetIncomingConnect (const Value: TIncomingConnect);
+// Wie SetStationType: vorher laden, sofort schreiben.
 begin
   FCriticalSection.Enter;
   try
+    if (FStateT = vs_uninitialized) then LoadT;
     if (Value <> FIncomingConnect) then begin
       FIncomingConnect := Value;
       FStateT := vs_changed;
+    end;
+    if (FStateT = vs_changed) then begin
+      if (SaveT) then CommitDatabase;
     end;
   finally
     FCriticalSection.Leave;
@@ -554,7 +618,6 @@ var
   StreamName: WideString;
   Stream: IStream;
   R: HResult;
-  L: Integer;
   S: string;
 
 begin
@@ -573,12 +636,11 @@ begin
     if (R = S_OK) then begin
       DebOut (Self, MethodName, 'CreateStream ok.');
       assert (assigned (Stream));
-      L := 0;
-      if (aPasswordStr <> '') then begin
-        Stream.Write (PChar(aPasswordStr), Length (aPasswordStr), @L);
-      end else begin
-        Stream.Write (nil, 0, @L);
+      if (not WriteStreamComplete (Stream, aPasswordStr)) then begin
+        DebOut (Self, MethodName, 'Schreibfehler.');
       end;
+      Stream := nil;
+      CommitDatabase;
     end else begin
       DebOut (Self, MethodName, 'CreateStream Fehler.');
     end;
@@ -638,6 +700,7 @@ begin
         Storage.DestroyElement (PWideChar(W));
       except
       end;
+      CommitDatabase;
     end;
   finally
     FCriticalSection.Leave;
@@ -646,15 +709,28 @@ end;
 
 
 function    TStationDatabaseEntry._release: Integer;
+// Bei Zähler 0 wird noch unter der Cache-Sperre gespeichert und der Storage
+// (STGM_SHARE_EXCLUSIVE) freigegeben, erst dann ausgetragen: Ein paralleles Open
+// derselben Station wartet auf die Sperre und kann den Storage danach öffnen.
+// Save nimmt nur die eigene Sperre (Reihenfolge Cache vor Entry wie überall).
 // Herunterzählen und Austragen aus dem Cache geschehen unter der Cache-Sperre.
 // Sonst könnte Open oder Add eines anderen Threads zwischen dem Zähler 0 und
 // RemoveFromCache das sterbende Objekt im Cache finden und weiterverwenden.
+const
+  MethodName = '_release';
 begin
   if (assigned (StationDatabase)) then begin
     StationDatabase.LockCache;
     try
       result := InterlockedDecrement (FRefCount);
       if (result = 0) then begin
+        try
+          Save (true);
+        except
+          on E: Exception do begin
+            DebOut (self, MethodName, E.Message);
+          end;
+        end;
         StationDatabase.RemoveFromCache (self);
       end;
     finally
@@ -710,7 +786,6 @@ function    TStationDatabaseEntry.SetSoundEvent (Event: TSoundEvent; Signal: TSi
 var
   Stream: IStream;
   R: HResult;
-  L: Integer;
   StreamName: WideString;
   SL: TStringList;
   S: String;
@@ -733,8 +808,9 @@ begin
         SL.free;
       end;
       assert (Length (S) > 0);
-      Stream.Write (PChar(S), Length (S), @L);
-      result := true;
+      result := WriteStreamComplete (Stream, S);
+      Stream := nil;
+      if (result) then result := CommitDatabase;
     end;
   finally
     FCriticalSection.Leave;
@@ -756,6 +832,7 @@ begin
       FStorage.DestroyElement (PWideChar(StreamName));
     except
     end;
+    CommitDatabase;
   finally
     FCriticalSection.Leave;
   end;
@@ -801,7 +878,6 @@ function    TStationDatabaseEntry.SetText (TextKind: TTextKind; const Text: Stri
 var
   Stream: IStream;
   R: HResult;
-  L: Integer;
   StreamName: WideString;
   SL: TStringList;
   S: String;
@@ -824,8 +900,9 @@ begin
         SL.free;
       end;
       assert (Length (S) > 0);
-      Stream.Write (PChar(S), Length (S), @L);
-      result := true;
+      result := WriteStreamComplete (Stream, S);
+      Stream := nil;
+      if (result) then result := CommitDatabase;
     end;
   finally
     FCriticalSection.Leave;
@@ -850,6 +927,7 @@ begin
       DebOut (self, MethodName, '%d', [H]);
     except
     end;
+    CommitDatabase;
   finally
     FCriticalSection.Leave;
   end;
@@ -883,6 +961,8 @@ begin
 
     end;
 
+    FStateR := vs_loaded;
+
   finally
     FCriticalSection.Leave;
   end;
@@ -890,15 +970,19 @@ begin
 end;
 
 
-procedure   TStationDatabaseEntry.SaveRemoteCommandList;
+function    TStationDatabaseEntry.SaveRemoteCommandList: Boolean;
+// Bei einem Fehler bleibt FStateR = vs_changed; Save versucht es dann erneut.
+const
+  MethodName = 'SaveRemoteCommandList';
 var
   Stream: IStream;
   R: HResult;
-  L: Integer;
   S: String;
   StreamName: WideString;
 
 begin
+
+  result := true;
 
   if (assigned (FRemoteCommands)) then begin
 
@@ -909,11 +993,17 @@ begin
 
       R := FStorage.CreateStream (PWideChar(StreamName), StreamMode or STGM_CREATE, 0, 0, Stream);
 
-      if (R = S_OK) then begin
+      result := (R = S_OK);
+      if (result) then begin
         S := FRemoteCommands.CommaText;
-        if (Length (S) > 0) then begin
-          Stream.Write (PChar(S), Length (S), @L);
-        end;
+        result := WriteStreamComplete (Stream, S);
+        Stream := nil;
+      end;
+
+      if (result) then begin
+        FStateR := vs_loaded;
+      end else begin
+        DebOut (self, MethodName, 'Schreibfehler.');
       end;
 
     finally
@@ -956,6 +1046,8 @@ begin
     assert (assigned (FRemoteCommands));
     if (State) then S := '1' else S := '0';
     FRemoteCommands.Values[aCommand] := S;
+    FStateR := vs_changed;
+    if (SaveRemoteCommandList) then CommitDatabase;
   finally
     FCriticalSection.Leave;
   end;
@@ -973,6 +1065,8 @@ begin
     I := FRemoteCommands.IndexOfName (aCommand);
     if (I >= 0) then begin
       FRemoteCommands.Delete (I);
+      FStateR := vs_changed;
+      if (SaveRemoteCommandList) then CommitDatabase;
     end;
   finally
     FCriticalSection.Leave;

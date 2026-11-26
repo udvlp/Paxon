@@ -316,6 +316,7 @@ begin
   if (assigned (FNewParam)) then begin
     FNewParam.free;
     FNewParam := nil;
+    UpdateParamText;
   end;
 end;
 
@@ -337,8 +338,7 @@ begin
 
     TNCInitChanged := not (FParam.TncInit.Equals (FNewParam.TncInit));
 
-    FParam.free;
-    FParam := FNewParam;
+    ReplaceParam (FNewParam);
     FNewParam := nil;
 
     if (TNCInitChanged) and (assigned (FThread)) then begin

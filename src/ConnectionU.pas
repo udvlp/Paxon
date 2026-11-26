@@ -48,6 +48,8 @@ type
   private
 
     Released: Boolean;
+    FReleasedFlag: Integer;      // 1 once Release has started (InterlockedExchange)
+    FDisconnectedFlag: Integer;  // 1 once Disconnected has started (InterlockedExchange)
 
     FAllEventHandles: Array[TEventEnum] of THandle;
 
@@ -136,6 +138,8 @@ type
 
     procedure   Run;
     procedure   CreateThread;
+    procedure   StopThread;
+    function    InOwnThread: Boolean;
     function    GetSendFileQueue: ISendFileQueue;
     procedure   ChannelSendText (const Text: String);
 
@@ -259,6 +263,25 @@ uses
   TextsU, UnhandledExceptionU, ConnectionsListU, SynchronizeU;
 
 
+// Waits up to TimeValue ms for thread aThread to end; true if it has ended.
+// No Application.ProcessMessages: in the device thread it would swallow its
+// thread messages (disconnect, UI frames); in the main thread it would let
+// arbitrary events re-enter. PeekMessage with PM_NOREMOVE only dispatches
+// messages sent via SendMessage (this is how the connection thread outputs
+// text in the channel) and leaves posted messages in the queue.
+
+function    WaitForThread (aThread: THandle; TimeValue: DWord): Boolean;
+var
+  D: DWord;
+  Msg: TMsg;
+begin
+  D := MsgWaitForMultipleObjects (1, aThread, false, TimeValue, QS_SENDMESSAGE);
+  result := (D = WAIT_OBJECT_0) or (D = WAIT_FAILED);
+  PeekMessage (Msg, 0, 0, 0, PM_NOREMOVE);
+  if (GetCurrentThreadID = MainThreadID) then CheckSynchronize;
+end;
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -339,6 +362,13 @@ begin
 
   Release;
 
+  // The last reference was dropped in the connection thread itself (Release could
+  // only signal it): the thread object frees itself when the thread ends.
+  if (assigned (FThread)) then begin
+    FThread.FreeOnTerminate := true;
+    FThread := nil;
+  end;
+
   // Destroy the timer window, otherwise a later WM_TIMER calls the freed
   // object. The window belongs to the main thread; DestroyTimerWindow destroys it there.
   if (TimerWindow <> 0) then DestroyTimerWindow;
@@ -380,20 +410,33 @@ const
 
 var
   K: IChannelForConnection;
+  M: IConnectionAbstract;
 
 begin
 
-  if (not Released) then begin
+  // The device thread and the main thread may both release the connection.
+  if (InterlockedExchange (FReleasedFlag, 1) = 0) then begin
 
     Released := true;
+
+    // End the connection thread first: it uses the modules, remote commands and
+    // send queue that are released below.
+    StopThread;
 
     ConnectionsList.Remove (self as IConnection);
 
     FStationDatabaseEntry := nil;
 
-    if (assigned (FProtocolModule)) then begin
-      FProtocolModule.Release;
+    FCriticalSection.Enter;
+    try
+      M := FProtocolModule;
       FProtocolModule := nil;
+    finally
+      FCriticalSection.Leave;
+    end;
+    if (assigned (M)) then begin
+      M.Release;
+      M := nil;
     end;
 
     K := ChannelRef;
@@ -477,6 +520,11 @@ begin
 
   if (not assigned (FOwnerDevice)) then FDiscLevel := dl_kill;
 
+  // A remote command (//q, //d) calls this in the connection thread. From there only
+  // the first step (normal disconnect) is allowed: the further levels end the
+  // connection thread, which cannot wait for itself.
+  if (FDiscLevel <> dl_none) and (InOwnThread) then exit;
+
   DestroyTimerWindow;
 
   case FDiscLevel of
@@ -532,26 +580,8 @@ const
 
 var
   L: DWord;
-  B: Boolean;
   H: THandle;
   K: IChannelForConnection;
-
-  // Waits up to TimeValue ms for thread aThread to end; true if it has ended.
-  // No Application.ProcessMessages: in the device thread it would swallow its
-  // thread messages (disconnect, UI frames); in the main thread it would let
-  // arbitrary events re-enter. PeekMessage with PM_NOREMOVE only dispatches
-  // messages sent via SendMessage (this is how the connection thread outputs
-  // text in the channel) and leaves posted messages in the queue.
-  function    WaitForThread (aThread: THandle; TimeValue: DWord): Boolean;
-  var
-    D: DWord;
-    Msg: TMsg;
-  begin
-    D := MsgWaitForMultipleObjects (1, aThread, false, TimeValue, QS_SENDMESSAGE);
-    result := (D = WAIT_OBJECT_0) or (D = WAIT_FAILED);
-    PeekMessage (Msg, 0, 0, 0, PM_NOREMOVE);
-    if (GetCurrentThreadID = MainThreadID) then CheckSynchronize;
-  end;
 
   function    ThreadHandle: THandle;
   begin
@@ -567,48 +597,26 @@ begin
 
   assert (assigned (FOwnerDevice));
 
+  // The main thread (last disconnect level) and the device thread (the TNC reports
+  // the disconnect) may both get here; only the first one handles it.
+  if (InterlockedExchange (FDisconnectedFlag, 1) <> 0) then exit;
+
   if (TimerWindow <> 0) then DestroyTimerWindow;
 
   // Let the connection thread finish processing the receive queue; abort
-  // if it is not running (any more) or after 4 seconds.
-  L := GetTickCount;
-  while (not FReceiveQueue.isEmpty) do begin
-    H := ThreadHandle;
-    if (H = 0) then break;
-    if (WaitForThread (H, 50)) then break;
-    if (GetTickCount - L >= 4000) then break;
-  end;
-
-  FThreadCriticalSection.Enter;
-  try
-
-    if (assigned (FThread)) then begin
-
-      H := FThread.Handle;
-      FThreadTerminateEvent.SetEvent;
-      L := GetTickCount;
-      B := False;
-
-      repeat
-        if (WaitForThread (H, 50)) then begin
-          B := true;
-          break;
-        end;
-      until (GetTickCount - L >= 4000);
-
-      if (B) then begin
-        FThread.free;
-        FThread := nil;
-      end else begin
-        TerminateThread (H, 1);
-      end;
-      FThread := nil;
-
+  // if it is not running (any more) or after 4 seconds. The connection
+  // thread itself cannot wait for itself.
+  if (not InOwnThread) then begin
+    L := GetTickCount;
+    while (not FReceiveQueue.isEmpty) do begin
+      H := ThreadHandle;
+      if (H = 0) then break;
+      if (WaitForThread (H, 50)) then break;
+      if (GetTickCount - L >= 4000) then break;
     end;
-
-  finally
-    FThreadCriticalSection.Leave;
   end;
+
+  StopThread;
 
   ConnectionStatus := vs_disconnected;
 
@@ -801,7 +809,14 @@ var
 
 begin
 
-  ConnectionsList.Add (self as IConnection);
+  // Release may already have run (device stopped right after the connect): then the
+  // connection must not be added any more, it would stay in the list forever.
+  ConnectionsList.Lock;
+  try
+    if (not Released) then ConnectionsList.Add (self as IConnection);
+  finally
+    ConnectionsList.UnLock;
+  end;
 
   try
 
@@ -852,7 +867,9 @@ begin
     end;
 
   finally
-    ConnectionsList.Remove (self as IConnection);
+    // After Release the connection is no longer in the list. Release may be
+    // waiting for this thread while holding ConnectionsList.Lock.
+    if (not Released) then ConnectionsList.Remove (self as IConnection);
   end;
 
 end;
@@ -1460,9 +1477,73 @@ begin
 end;
 
 
+// Ends the connection thread: signals it and waits up to 4 seconds. Called in the
+// connection thread itself, it only signals (a thread cannot wait for itself); a later
+// call from another thread then waits. A thread that does not end in time is not
+// killed with TerminateThread, which would leave the locks it holds (queues, channel
+// output, heap) locked forever: the thread object frees itself when the thread ends.
+// The thread keeps a reference to the connection (RunStandard), so the connection
+// stays alive until then.
+
+procedure   TConnection.StopThread;
+const
+  MethodName = 'StopThread';
+var
+  H: THandle;
+  L: DWord;
+  B: Boolean;
+begin
+  FThreadCriticalSection.Enter;
+  try
+    if (assigned (FThread)) then begin
+      FThreadTerminateEvent.SetEvent;
+      if (FThread.ThreadID <> GetCurrentThreadID) then begin
+        H := FThread.Handle;
+        L := GetTickCount;
+        B := false;
+        repeat
+          if (WaitForThread (H, 50)) then begin
+            B := true;
+            break;
+          end;
+        until (GetTickCount - L >= 4000);
+        if (B) then begin
+          FThread.free;
+        end else begin
+          DebOut (self, MethodName, 'Thread endet nicht, gibt sich am Ende selbst frei.');
+          FThread.FreeOnTerminate := true;
+        end;
+        FThread := nil;
+      end;
+    end;
+  finally
+    FThreadCriticalSection.Leave;
+  end;
+end;
+
+
+function    TConnection.InOwnThread: Boolean;
+begin
+  FThreadCriticalSection.Enter;
+  try
+    result := (assigned (FThread)) and (FThread.ThreadID = GetCurrentThreadID);
+  finally
+    FThreadCriticalSection.Leave;
+  end;
+end;
+
+
+// FProtocolModule is changed in the connection thread (modules start and end) and
+// read in the main thread (CancelTransfer) and the device thread (Release).
+
 function    TConnection.GetConnectionModule: IConnectionAbstract;
 begin
-  result := FProtocolModule;
+  FCriticalSection.Enter;
+  try
+    result := FProtocolModule;
+  finally
+    FCriticalSection.Leave;
+  end;
 end;
 
 
@@ -1471,10 +1552,20 @@ const
   MethodName = 'SetConnectionModule';
 var
   S: String;
+  Old: IConnectionAbstract;
 begin
-  FProtocolModule := Value;
-  if (assigned (FProtocolModule)) then begin
-    S := FProtocolModule.Name;
+  FCriticalSection.Enter;
+  try
+    Old := FProtocolModule;
+    FProtocolModule := Value;
+  finally
+    FCriticalSection.Leave;
+  end;
+  // Drop the old module outside the lock: its destruction may synchronize with the
+  // main thread, which may be waiting for FCriticalSection (GetFileSender).
+  Old := nil;
+  if (assigned (Value)) then begin
+    S := Value.Name;
   end else begin
     S := 'nil';
   end;
@@ -1483,9 +1574,12 @@ end;
 
 
 procedure   TConnection.CancelTransfer;
+var
+  M: IConnectionAbstract;
 begin
-  if (assigned (FProtocolModule)) then begin
-    FProtocolModule.CancelTransfer;
+  M := ConnectionModule;
+  if (assigned (M)) then begin
+    M.CancelTransfer;
   end;
 end;
 

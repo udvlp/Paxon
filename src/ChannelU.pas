@@ -43,7 +43,9 @@ type
 
     FFileTransferPercent: Single;
 
-    FileSender: ISendFile;
+    // Set in the connection thread (Notify), read in the main thread: access only via
+    // the property FileSender, and work with a local copy.
+    FFileSender: ISendFile;
 
     FSaveCriticalSection: TCriticalSection;
     FOutputCriticalSection: TCriticalSection;
@@ -77,6 +79,9 @@ type
     procedure   SetStatus (aStatus: TConnectionStatus);
     procedure   SetImage;
     procedure   UpdateProgress;
+    function    GetFileSender: ISendFile;
+    procedure   SetFileSender (const Value: ISendFile);
+    property    FileSender: ISendFile read GetFileSender write SetFileSender;
     function    GetPacketConnection: IConnection;
     procedure   SetChannelConnection (const aConnectionObj: IConnection);
     procedure   Notify (P: Pointer);
@@ -767,6 +772,7 @@ var
   FocusSet: Boolean;
   WasActive: Boolean;
   V: IConnection;
+  D: ISendFile;
 
 begin
 
@@ -781,10 +787,12 @@ begin
 
     V := PacketConnection;
 
-    if (assigned (V)) then V.Status.ChannelRef := self;
-
-    if (assigned (V)) and (assigned (V.FileSender)) then begin
-      (V.FileSender as IPublisher).subscribe (self);
+    if (assigned (V)) then begin
+      V.Status.ChannelRef := self;
+      // read once: the connection thread may end the transfer meanwhile
+      D := V.FileSender;
+      if (assigned (D)) then (D as IPublisher).subscribe (self);
+      D := nil;
     end;
 
     FReceive := false;
@@ -1189,6 +1197,7 @@ var
   S: String;
   T: array[low(TConnectionStatus)..high (TConnectionStatus)] of string;
   V: IConnection;
+  D: ISendFile;
 
 begin
 
@@ -1201,18 +1210,20 @@ begin
 
     A := Status;
 
-    if (assigned (FileSender)) and (assigned (FPacketConnection)) then begin
+    D := FileSender;
+
+    if (assigned (D)) and (assigned (FPacketConnection)) then begin
 
       if (A = vs_connected) then begin
-        case FileSender.Active of
+        case D.Active of
           fts_preparing: begin
             S := 'Warte...';
           end;
           fts_transferring: begin
-            S := FileSender.TargetFilename;
+            S := D.TargetFilename;
             if (S = '') then S := SFilenameUnknown;
-            if (FileSender.Absolute > 0) then begin
-              S := Format ('%s (%dk)', [S, Round (FileSender.Absolute / 1024)]);
+            if (D.Absolute > 0) then begin
+              S := Format ('%s (%dk)', [S, Round (D.Absolute / 1024)]);
             end;
           end;
         end;
@@ -1369,32 +1380,63 @@ procedure    TChannel.Notify (P: Pointer);
 const
   MethodName = 'Notify';
 var
-  D: ISendFile;
+  D, F: ISendFile;
 begin
   if (assigned (P)) then begin
     D := (IUnknown(P) as ISendFile);
     if (D.Active > fts_inactive) then begin
-      if (FileSender = nil) then begin
+      F := FileSender;
+      if (F = nil) then begin
         FileSender := D;
+        F := D;
       end else begin
-        if ((D as IUnknown) <> (FileSender as IUnknown)) then begin
+        if ((D as IUnknown) <> (F as IUnknown)) then begin
           beep;
-          DebOut (self, MethodName, 'FileSender = ' + IntToHex (Cardinal(FileSender), 8) + ' ' +
-                  IntToHex (Cardinal(FileSender as IUnknown), 8) + ' ' + FileSender.TargetFilename);
+          DebOut (self, MethodName, 'FileSender = ' + IntToHex (Cardinal(F), 8) + ' ' +
+                  IntToHex (Cardinal(F as IUnknown), 8) + ' ' + F.TargetFilename);
           DebOut (self, MethodName, '          D = ' + IntToHex (Cardinal(D), 8) + ' ' + IntToHex (Cardinal(D as IUnknown), 8) +
                   ' ' + D.TargetFilename);
         end;
       end;
-      FFileTransferPercent := FileSender.Percent;
+      FFileTransferPercent := F.Percent;
+      F := nil;
       if (FChannelActive) then DisplayStatus;
     end else begin
-      if (assigned (FileSender)) then begin
-        FileSender.Release;
-        FileSender := nil;
+      F := FileSender;
+      FileSender := nil;
+      if (assigned (F)) then begin
+        F.Release;
+        F := nil;
       end;
       if (FChannelActive) then DisplayStatus;
     end;
   end;
+end;
+
+
+function    TChannel.GetFileSender: ISendFile;
+begin
+  FConnectionCriticalSection.Enter;
+  try
+    result := FFileSender;
+  finally
+    FConnectionCriticalSection.Leave;
+  end;
+end;
+
+
+procedure   TChannel.SetFileSender (const Value: ISendFile);
+var
+  Old: ISendFile;
+begin
+  FConnectionCriticalSection.Enter;
+  try
+    Old := FFileSender;
+    FFileSender := Value;
+  finally
+    FConnectionCriticalSection.Leave;
+  end;
+  Old := nil; // released outside the lock
 end;
 
 

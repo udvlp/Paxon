@@ -245,6 +245,8 @@ type
     procedure   DevicesReady (B: Boolean);
 
     property    IsReady: Boolean read FIsReady;
+    // true once Paxon is shutting down (PaxonDestroy has started)
+    property    IsShuttingDown: Boolean read PaxonDestroyed;
     procedure   ImageListInit;
 
   end;
@@ -270,7 +272,7 @@ uses
   DeviceStatusU, PGPClassU, Commctrl, Registry, MultiMon,
   ReceiveFilePostprocessorU, SoundsU, SoundsConstsU,
   TextsU, TextsConstsU, DropTargetU, LanguagesU,
-  RemoteCommandsU, ConnectionsListU;
+  RemoteCommandsU, ConnectionsListU, SendFileDlgU;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -626,11 +628,44 @@ var
   Registry: TRegistry;
   I: Integer;
 
+  // Close a modeless form while all globals still exist: its OnClose saves or
+  // discards (station database, device parameters) and unsubscribes. caFree only
+  // posts a release, so free it here instead of after the globals are gone.
+  procedure   CloseOwnForm (F: TForm; const aName: String);
+  begin
+    if (not assigned (F)) then exit;
+    try
+      F.Close;
+      if (F.Visible) then F.Hide;
+      F.Free;
+    except
+      on E: Exception do begin
+        ShowUnhandledException (E, ClassName, 'CloseOwnForm ' + aName);
+      end;
+    end;
+  end;
+
 begin
 
   // Runs on WM_ENDSESSION and once more afterwards in FormDestroy: clean up only once.
   if (PaxonDestroyed) then exit;
   PaxonDestroyed := true;
+
+  // First close our own modeless forms (before the program end sound, which pumps
+  // messages, and before DeviceList, MyCalls, ChannelList and StationDatabase go away)
+  CloseOwnForm (Settings, 'Settings');
+  Settings := nil;
+  CloseOwnForm (StationDatabaseDlg, 'StationDatabaseDlg');
+  StationDatabaseDlg := nil;
+  CloseOwnForm (DevicesStatus, 'DevicesStatus');
+  DevicesStatus := nil;
+  for I := Screen.FormCount - 1 downto 0 do begin
+    if (I < Screen.FormCount) and (Screen.Forms[I] is TSendFileDlg) then begin
+      // no "really cancel text input?" question at program end
+      Screen.Forms[I].OnCloseQuery := nil;
+      CloseOwnForm (Screen.Forms[I], 'SendFileDlg');
+    end;
+  end;
 
   if (assigned (Sounds)) and (not StartupError) then begin
     try

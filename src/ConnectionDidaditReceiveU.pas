@@ -43,6 +43,8 @@ type
     Receivebuffer: String;
     BlockSize: Integer;
     BlockList: TDidaditReceiveBlockList;
+    IndexName: String;
+    FileOpened: Boolean;
 
     procedure   InfoBlock (const DataText: String); virtual;
     function    DataBlock (const DataText: String; const BlockMD5: TMD5Digest): Boolean; virtual;
@@ -94,6 +96,8 @@ begin
 
   Abort := false;
   MD5Error := false;
+  FileOpened := false;
+  IndexName := '';
 
   BlockList := TDidaditReceiveBlockList.create;
 
@@ -255,6 +259,17 @@ procedure   TConnectionDidaditReceive.InfoBlock (const DataText: String);
 const
   MethodName = 'InfoBlock';
 
+  function CallToFileName (const Call: String): String;
+  var
+    I: Integer;
+  begin
+    // Callsign as part of a file name: only letters, digits and '-'.
+    result := UpperCase (Call);
+    for I := 1 to Length (result) do begin
+      if (not (result[I] in ['A'..'Z', '0'..'9', '-'])) then result[I] := '_';
+    end;
+  end;
+
 resourcestring
   SInvalidHeader = 'Ungültiger Header.';
   SCannotOpenFile = 'Datei kann nicht geöffnet werden.';
@@ -334,14 +349,29 @@ begin
         BlockSize := DEFAULT_BLOCKSIZE;
       end;
 
-      T := MD5ToString (MD5);
+      // The partial file is named after MD5 and callsign: a transfer of another
+      // station with the same MD5 never touches this station's partial file.
+      // It is resumed only if its index file names the same callsign and size.
+      BlockList.Call := UpperCase (PacketConnection.Call);
+      T := MD5ToString (MD5) + '_' + CallToFileName (PacketConnection.Call);
       S := ApplicationDataPath + IncompleteFiles + T + '.pxf';
+      Offset := -1;
       if (FileExists (S)) then begin
         Offset := BlockList.ReadIndexFile (T);
-      end else begin
+        if (Offset < 0) then begin
+          DebOut (self, MethodName, 'Teildatei gehört nicht zu dieser Übertragung: neu beginnen.');
+          // If deleting fails (e.g. file in use), CreateIncompleteFile fails as well
+          // and the transfer is aborted with error 300.
+          if (not DeleteFile (S)) then begin
+            DebOut (self, MethodName, 'Löschen fehlgeschlagen: ' + S);
+          end;
+        end;
+      end;
+      if (Offset < 0) then begin
         S := CreateIncompleteFile (T);
         Offset := 0;
       end;
+      IndexName := T;
 
       FileSender.TransferProtocol := prot_Didadit;
       FileSender.Absolute := FileLen;
@@ -370,6 +400,7 @@ begin
 
         try
           (FileSender.Stream as TFileStreamUlf).Open;
+          FileOpened := true;
           // if (FileDate <> -1) then FileSetDate ((FileSender.Stream as TFileStreamUlf).Handle, FileDate);
         except
           Abort := true;
@@ -563,7 +594,8 @@ var
 begin
 
   // Check the completely received file against the MD5 from the INFO block.
-  // Excess bytes at the end (e.g. from an older transfer) are truncated.
+  // The file belongs to this transfer (new, or resumed with matching callsign
+  // and size), so excess bytes at the end may be truncated.
 
   try
 
@@ -646,7 +678,10 @@ begin
 
   end;
 
-  BlockList.WriteIndexFile (MD5ToString (MD5));
+  // Index file only if INFO was accepted and the partial file was opened.
+  if (FileOpened) then begin
+    BlockList.WriteIndexFile (IndexName);
+  end;
   BlockList.free;
 
   FileSender.TransferEnd;

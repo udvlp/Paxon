@@ -48,6 +48,7 @@ type
     function    Open (const Call: String): IStationDatabaseEntry; overload;
     function    Open (const Call: String; TryWithoutSSID: Boolean): IStationDatabaseEntry; overload;
     function    Add  (Call: String): IStationDatabaseEntry;
+    function    Commit: Boolean;
     procedure   RemoveFromCache (P: TObject);
     procedure   LockCache;
     procedure   UnlockCache;
@@ -226,11 +227,52 @@ end;
 
 
 procedure   TStationDatabase.BeforeDestruction;
+// Noch lebende Entries schreiben ihre offenen Werte, bevor der Root freigegeben
+// wird; danach wird der Root ein letztes Mal committet.
+var
+  I: Integer;
 begin
+  if (assigned (FCriticalSection)) and (assigned (FCache)) then begin
+    FCriticalSection.Enter;
+    try
+      for I := 0 to FCache.Count - 1 do begin
+        try
+          TStationDatabaseEntry (FCache.Objects[I]).Save (false);
+        except
+        end;
+      end;
+      Commit;
+    finally
+      FCriticalSection.Leave;
+    end;
+  end;
+  if (StationDatabase = self) then StationDatabase := nil;
   FRootStorage := nil;
   FCache.free;
   FCriticalSection.free;
   inherited;
+end;
+
+
+function    TStationDatabase.Commit: Boolean;
+// Der Root ist im Direktmodus geöffnet: Jede Änderung geht sofort in die Datei,
+// Teil-Storages brauchen kein Commit. Commit auf dem Root schreibt die internen
+// Puffer (FAT, Verzeichnis) auf die Platte und meldet, anders als Release, Fehler.
+// Keine Cache-Sperre: Wird aus Entries unter deren Sperre aufgerufen.
+const
+  MethodName = 'Commit';
+var
+  HR: HResult;
+begin
+  if (assigned (FRootStorage)) then begin
+    HR := FRootStorage.Commit (STGC_DEFAULT);
+    Result := (HR = S_OK);
+    if (not Result) then begin
+      DebOut (self, MethodName, 'Fehler %.8x', [HR]);
+    end;
+  end else begin
+    Result := false;
+  end;
 end;
 
 
@@ -248,7 +290,7 @@ begin
       result := false;
     end else begin
       HR := FRootStorage.DestroyElement (PWideChar(W));
-      Result := (HR = S_OK);
+      Result := (HR = S_OK) and (Commit);
     end;
   finally
     FCriticalSection.Leave;
@@ -294,7 +336,7 @@ var
 begin
   try
     HR := FRootStorage.MoveElementTo (PWideChar(Old), FRootStorage, PWideChar(New), STGMOVE_MOVE);
-    Result := (HR = S_OK);
+    Result := (HR = S_OK) and (Commit);
   except
     Result := false;
   end;
@@ -373,6 +415,7 @@ begin
     E := TStationDatabaseEntry.Create (W);
     HR := FRootStorage.CreateStorage (PWideChar(W), StorageMode or STGM_FAILIFTHERE, 0, 0, Storage);
     if (HR = S_OK) and (assigned (Storage)) then begin
+      Commit;
       E.Storage := Storage;
       FCache.AddObject (W, E);
       result := E;

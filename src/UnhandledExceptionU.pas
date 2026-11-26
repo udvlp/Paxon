@@ -88,6 +88,10 @@ threadvar
   // Die zuletzt gemeldete Ausnahme dieses Threads. Eine weitergeworfene
   // Ausnahme durchläuft oft mehrere Handler; gemeldet wird sie nur einmal.
   LastReported: Pointer;
+  // The address alone is not enough: a later exception object can get the same
+  // address. A re-raise passes the handlers within moments, so class and time count too.
+  LastReportedClass: TClass;
+  LastReportedTick: Cardinal;
 
 
 procedure   ShowDialog (const aText: String);
@@ -156,11 +160,14 @@ var
 
 begin
 
-  if (assigned (anException)) and (Pointer (anException) = LastReported) then begin
+  if (assigned (anException)) and (Pointer (anException) = LastReported) and
+     (anException.ClassType = LastReportedClass) and (GetTickCount - LastReportedTick < 2000) then begin
     DebOut ('EXCEPTION bereits gemeldet: ' + aClassName + ' (' + aContext + ')');
     exit;
   end;
   LastReported := Pointer (anException);
+  if (assigned (anException)) then LastReportedClass := anException.ClassType else LastReportedClass := nil;
+  LastReportedTick := GetTickCount;
 
   T := '';
   S := '';
@@ -191,6 +198,8 @@ begin
 
   if (GetCurrentThreadID = MainThreadID) then begin
     ShowDialog (S + #13 + T);
+    // the modal dialog may stay open for long; the re-raise comes only afterwards
+    LastReportedTick := GetTickCount;
   end else if (assigned (Notifier)) then begin
     Notifier.Post (S + #13 + T);
   end;

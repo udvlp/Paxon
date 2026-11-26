@@ -189,7 +189,19 @@ var
 begin
   DebOut (self, MethodName, 'begin...');
   DebOut (self, MethodName, 'Erzeuge ' + VClass.ClassName);
-  ConnectionModule := VClass.Create (self, aConnectionObj);
+  try
+    ConnectionModule := VClass.Create (self, aConnectionObj);
+  except
+    // A module that fails to start (Init) only ends this transfer, like an exception
+    // in its EventLoop: the half-built module has already unregistered itself
+    // (BeforeDestruction -> Release), so register this module again.
+    on E: Exception do begin
+      ShowUnhandledException (E, ClassName, MethodName + ' (' + VClass.ClassName + ')');
+      aConnectionObj.ConnectionModule := self;
+      aConnectionObj.CanCancel := FCanCancel;
+      exit;
+    end;
+  end;
   aConnectionObj.ConnectionModule := ConnectionModule;
   try
     try

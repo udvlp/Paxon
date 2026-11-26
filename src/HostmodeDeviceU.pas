@@ -91,8 +91,20 @@ type
 
   protected
 
+    // FParam is replaced in the main thread (ApplySettings) while the device thread
+    // reads it: replace it only with ReplaceParam, read it in the device thread only
+    // under LockParam (or via GetTncInit, GetTncDeinit, ParamDeviceID).
     FParam: THostmodeDeviceParameter;
     FNewParam: THostmodeDeviceParameter;
+    FParamCriticalSection: TCriticalSection;
+    FThreadTncList: TStringList; // device thread only
+
+    procedure   LockParam;
+    procedure   UnlockParam;
+    procedure   ReplaceParam (aNewParam: THostmodeDeviceParameter);
+    procedure   GetTncInit (L: TStrings);
+    procedure   GetTncDeinit (L: TStrings);
+    function    ParamDeviceID: Integer;
 
     function    CommOpen: Boolean; virtual; abstract;
     function    CommClose: Boolean; virtual; abstract;
@@ -299,6 +311,8 @@ begin
 
   inherited;
 
+  FParamCriticalSection := TCriticalSection.create;
+  FThreadTncList := TStringList.create;
   FParam := ParameterClass.Create;
 
   for I := Low (FConnectionList) to High (FConnectionList) do begin
@@ -390,6 +404,9 @@ begin
   FNewParam.free;
 
   FParam.free;
+
+  FThreadTncList.free;
+  FParamCriticalSection.free;
 
   inherited;
 
@@ -938,7 +955,7 @@ begin
                   NewRadioChannel[N] := TRadioChannel.Create (self);
                   NewRadioChannel[N].Name := FDeviceName + ' ' + S;
                   NewRadioChannel[N].Handle := N + 1;
-                  NewRadioChannel[N].ID := Format ('HM%d%d', [FParam.DeviceID, N + 1]);
+                  NewRadioChannel[N].ID := Format ('HM%d%d', [ParamDeviceID, N + 1]);
 
                   B := true;
 
@@ -962,7 +979,7 @@ begin
             NewRadioChannel[0] := TRadioChannel.Create (self);
             NewRadioChannel[0].Name := FDeviceName + ' ' + PTCPortName;
             NewRadioChannel[0].Handle := -1;
-            NewRadioChannel[0].ID := Format ('HM%d%d', [FParam.DeviceID, 0]);
+            NewRadioChannel[0].ID := Format ('HM%d%d', [ParamDeviceID, 0]);
             B := true;
 
           end;
@@ -989,7 +1006,7 @@ begin
               NewRadioChannel[N] := TRadioChannel.Create (self);
               NewRadioChannel[N].Name := FDeviceName + ' PACTOR';
               NewRadioChannel[N].Handle := 255;
-              NewRadioChannel[N].ID := Format ('HM%d%d', [FParam.DeviceID, 255]);
+              NewRadioChannel[N].ID := Format ('HM%d%d', [ParamDeviceID, 255]);
 
             end;
 
@@ -1009,7 +1026,7 @@ begin
               if (N = 0) then S := 'intern' else S := 'Port ' + IntToStr (N);
               NewRadioChannel[N].Name := FDeviceName + ' ' + S;
               NewRadioChannel[N].Handle := N;
-              NewRadioChannel[N].ID := Format ('HM%d%d', [FParam.DeviceID, N]);
+              NewRadioChannel[N].ID := Format ('HM%d%d', [ParamDeviceID, N]);
               B := true;
             end;
 
@@ -1021,7 +1038,7 @@ begin
           NewRadioChannel[0] := TRadioChannel.Create (self);
           NewRadioChannel[0].Name := FDeviceName;
           NewRadioChannel[0].Handle := -1;
-          NewRadioChannel[0].ID := Format ('HM%d', [FParam.DeviceID]);
+          NewRadioChannel[0].ID := Format ('HM%d', [ParamDeviceID]);
         end;
 
       end;
@@ -1147,7 +1164,10 @@ begin
             if (TNCChannel > FTncChannelCount) then begin
 
               for K := 1 to 7 do begin
-                CommandStr (TNCChannel, true, 'G', S, R);
+                if (not CommandStr (TNCChannel, true, 'G', S, R)) then begin
+                  Resync;
+                  break;
+                end;
               end;
 
             end else begin
@@ -1205,7 +1225,7 @@ begin
                               PacketConnection.Release;
                               ConnectionsCriticalSection.Enter;
                               try
-                                FConnectionList[TNCChannel] := nil;
+                                if (FConnectionList[TNCChannel] = PacketConnection) then FConnectionList[TNCChannel] := nil;
                               finally
                                 ConnectionsCriticalSection.Leave;
                               end;
@@ -1291,7 +1311,7 @@ begin
                                   PacketConnection.Release;
                                   ConnectionsCriticalSection.Enter;
                                   try
-                                    FConnectionList[TNCChannel] := nil;
+                                    if (FConnectionList[TNCChannel] = PacketConnection) then FConnectionList[TNCChannel] := nil;
                                   finally
                                     ConnectionsCriticalSection.Leave;
                                   end;
@@ -1328,7 +1348,7 @@ begin
                                   PacketConnection.Release;
                                   ConnectionsCriticalSection.Enter;
                                   try
-                                    FConnectionList[TNCChannel] := nil;
+                                    if (FConnectionList[TNCChannel] = PacketConnection) then FConnectionList[TNCChannel] := nil;
                                   finally
                                     ConnectionsCriticalSection.Leave;
                                   end;
@@ -1355,7 +1375,7 @@ begin
                                   PacketConnection.Release;
                                   ConnectionsCriticalSection.Enter;
                                   try
-                                    FConnectionList[TNCChannel] := nil;
+                                    if (FConnectionList[TNCChannel] = PacketConnection) then FConnectionList[TNCChannel] := nil;
                                   finally
                                     ConnectionsCriticalSection.Leave;
                                   end;
@@ -1380,7 +1400,7 @@ begin
                                   PacketConnection.Release;
                                   ConnectionsCriticalSection.Enter;
                                   try
-                                    FConnectionList[TNCChannel] := nil;
+                                    if (FConnectionList[TNCChannel] = PacketConnection) then FConnectionList[TNCChannel] := nil;
                                   finally
                                     ConnectionsCriticalSection.Leave;
                                   end;
@@ -1580,7 +1600,10 @@ begin
 
                 if (StateCheck) then begin
 
-                  CommandStr (TNCChannel, true, 'O', U, I);
+                  if (not CommandStr (TNCChannel, true, 'O', U, I)) then begin
+                    Resync;
+                    I := -1;
+                  end;
                   if (I = 1) then begin
                     Q := StrToIntDef (U, -1);
                     if (Q >= 0) then begin
@@ -1588,7 +1611,10 @@ begin
                     end;
                   end;
 
-                  CommandStr (TNCChannel, true, 'F', U, I);
+                  if (not CommandStr (TNCChannel, true, 'F', U, I)) then begin
+                    Resync;
+                    I := -1;
+                  end;
                   if (I = 1) then begin
                     Q := StrToIntDef (U, -1);
                     if (Q >= 0) then begin
@@ -1660,8 +1686,9 @@ begin
                 if (Terminated) then break;
 
                 V := '';
-                for N := 0 to FParam.TncInit.Count - 1 do begin
-                  S := Trim (FParam.TncInit[N]);
+                GetTncInit (FThreadTncList);
+                for N := 0 to FThreadTncList.Count - 1 do begin
+                  S := Trim (FThreadTncList[N]);
                   V := V + '  ' + S + ': ';
                   if (Length (S) >= 1) then begin
                     if (Upcase(S[1]) in ['C', 'D', 'M', 'Y', 'I', 'Q']) then begin
@@ -1771,7 +1798,7 @@ begin
                           PRecConnect (Msg.lParam)^.Result := vf_ok;
                         end else begin
                           DebOut (self, MethodName, 'Connect erfolgreich, aber Verbinde hat schon aufgegeben - trenne.');
-                          CommandStr (TNCChannel, true, 'D', U, Q);
+                          while (not CommandStr (TNCChannel, true, 'D', U, Q)) and (not Terminated) do Resync;
                         end;
                       end else begin
 
@@ -1870,7 +1897,7 @@ begin
                                 PRecConnect (Msg.lParam)^.Result := vf_ok;
                               end else begin
                                 DebOut (self, MethodName, 'Connect erfolgreich, aber Verbinde hat schon aufgegeben - trenne.');
-                                CommandStr (TNCChannel, true, 'D', U, Q);
+                                while (not CommandStr (TNCChannel, true, 'D', U, Q)) and (not Terminated) do Resync;
                               end;
                               break;
                             end else begin
@@ -2029,25 +2056,45 @@ begin
 
       DebOut (self, MethodName, 'RegKey = ' + FRegKey);
 
-      ConnectionsCriticalSection.Enter;
-      try
-        for N := 1 to FTncChannelCount do begin
-          if (assigned (FConnectionList[N])) then begin
-            FConnectionList[N].Save (FRegKey);
-            FConnectionList[N].Release;
-            FConnectionList[N] := nil;
-          end;
+      // When Paxon ends, the connections stay up in the TNC and are saved; the next
+      // start restores them. When only the device is stopped or reconfigured, nothing
+      // restores them: disconnect them, otherwise they would stay in their channels and
+      // the new device thread would take the links over as incoming connections.
+      // Disconnected calls into the channel (SendMessage to the main thread), hence
+      // outside ConnectionsCriticalSection.
+      for N := 1 to FTncChannelCount do begin
+        ConnectionsCriticalSection.Enter;
+        try
+          PacketConnection := FConnectionList[N];
+          FConnectionList[N] := nil;
+        finally
+          ConnectionsCriticalSection.Leave;
         end;
-      finally
-        ConnectionsCriticalSection.Leave;
+        if (assigned (PacketConnection)) then begin
+          try
+            if (assigned (MainWindow)) and (MainWindow.IsShuttingDown) then begin
+              PacketConnection.Save (FRegKey);
+            end else begin
+              if (CommOpened) then CommandStr (N, true, 'D', U, Q);
+              PacketConnection.Disconnected (dr_normal);
+            end;
+            PacketConnection.Release;
+          except
+            on E: Exception do begin
+              DebOut (self, MethodName, 'FEHLER beim Abbau der Verbindung: ' + E.Message);
+            end;
+          end;
+          PacketConnection := nil;
+        end;
       end;
 
       if (CommOpened) then begin
 
         DebOut (self, MethodName, 'TNC deinitialisieren...');
 
-        for N := 0 to FParam.TncDeinit.Count - 1 do begin
-          S := Trim (FParam.TncDeinit[N]);
+        GetTncDeinit (FThreadTncList);
+        for N := 0 to FThreadTncList.Count - 1 do begin
+          S := Trim (FThreadTncList[N]);
           if (S <> '') then begin
             DebOut (self, MethodName, 'DeInit ' + S);
             CommandStr (0, true, S, U, Q);
@@ -2382,6 +2429,12 @@ begin
       HasError := true;
     end else if (I <> 1) then begin
       DebOutCommand ('3b', '');
+      HasError := true;
+    end else if (Byte (C) <> ChannelRef) then begin
+      // The response belongs to another channel: an earlier response came after the
+      // timeout, and every further command would read the response of the previous
+      // one (data of one channel would go to another connection). The caller resyncs.
+      DebOutCommand ('3c', Format ('Antwort von Kanal %d statt %d', [Byte (C), ChannelRef]));
       HasError := true;
     end else begin
 
@@ -2778,6 +2831,66 @@ begin
 end;
 
 
+procedure   THostmodeDevice.LockParam;
+begin
+  FParamCriticalSection.Enter;
+end;
+
+
+procedure   THostmodeDevice.UnlockParam;
+begin
+  FParamCriticalSection.Leave;
+end;
+
+
+procedure   THostmodeDevice.ReplaceParam (aNewParam: THostmodeDeviceParameter);
+var
+  Old: THostmodeDeviceParameter;
+begin
+  LockParam;
+  try
+    Old := FParam;
+    FParam := aNewParam;
+  finally
+    UnlockParam;
+  end;
+  Old.free;
+end;
+
+
+procedure   THostmodeDevice.GetTncInit (L: TStrings);
+begin
+  LockParam;
+  try
+    L.Assign (FParam.TncInit);
+  finally
+    UnlockParam;
+  end;
+end;
+
+
+procedure   THostmodeDevice.GetTncDeinit (L: TStrings);
+begin
+  LockParam;
+  try
+    L.Assign (FParam.TncDeinit);
+  finally
+    UnlockParam;
+  end;
+end;
+
+
+function    THostmodeDevice.ParamDeviceID: Integer;
+begin
+  LockParam;
+  try
+    result := FParam.DeviceID;
+  finally
+    UnlockParam;
+  end;
+end;
+
+
 procedure   THostmodeDevice.TerminateConnection (aConnectionObj: IConnection);
 const
   MethodName = 'TerminateConnection';
@@ -2813,11 +2926,13 @@ begin
         DebOut (self, MethodName, 'Verbindung.Getrennt... (8)');
         aConnectionObj.Disconnected (dr_normal);
 
+        // The device thread may have torn the connection down meanwhile (the TNC
+        // reported the disconnect) and the slot may hold a new connection already.
         ConnectionsCriticalSection.Enter;
         try
           H := aConnectionObj.Handle;
           assert ((H >= Low (FConnectionList)) and (H <= High (FConnectionList)));
-          FConnectionList[H] := nil;
+          if (FConnectionList[H] = aConnectionObj) then FConnectionList[H] := nil;
         finally
           ConnectionsCriticalSection.Leave;
         end;
@@ -2847,7 +2962,8 @@ begin
 
       ConnectionsCriticalSection.Enter;
       try
-        FConnectionList[aConnectionObj.Handle] := nil;
+        H := aConnectionObj.Handle;
+        if (FConnectionList[H] = aConnectionObj) then FConnectionList[H] := nil;
       finally
         ConnectionsCriticalSection.Leave;
       end;
@@ -3292,7 +3408,7 @@ var
   I: Integer;
 begin
   if ((FMonitor and MonitorEnabled) <> 0)  then begin
-    CommandStr (0, true, 'M-', U, I);
+    if (not CommandStr (0, true, 'M-', U, I)) then Resync;
     S := 'M';
     if ((FMonitor and MonitorInformation) <> 0) then S := S + 'I';
     if ((FMonitor and MonitorUnproto) <> 0) then S := S + 'U';
@@ -3301,7 +3417,7 @@ begin
     S := 'MN';
   end;
   DebOut (self, MethodName, S);
-  CommandStr (0, true, S, U, I);
+  if (not CommandStr (0, true, S, U, I)) then Resync;
 end;
 
 

@@ -489,6 +489,7 @@ var
   Handle: U16;
   MonitorThread: TMonitorThread;
   MonitorTerminated: Boolean;
+  Reason: TDisconnectReason;
 
 begin
 
@@ -852,6 +853,13 @@ begin
             if (not Terminated) then begin
               // Aborted by an exception: stop reporting "ready"
               SetStatus (gs_error, 'Abbruch nach Fehler');
+            end;
+
+            // The connections are held in the kernel (l2_long_hold), saved and restored at the
+            // next start only when Paxon ends. After an exception, or when only the device is
+            // stopped or removed, nothing would read or disconnect them any more.
+            if (not Terminated) or (not assigned (MainWindow)) or (not MainWindow.IsShuttingDown) then begin
+              if (Terminated) then Reason := dr_normal else Reason := dr_linkfailure;
               // Disconnect the connections while the DLL is still loaded; otherwise they would remain in the
               // channels. EstablishConnection adds nothing more after AxInitOk = false. Disconnected
               // calls into the channel (SendMessage to the main thread), hence without the lock.
@@ -870,7 +878,7 @@ begin
                 except
                 end;
                 try
-                  PacketConnection.Disconnected (dr_linkfailure);
+                  PacketConnection.Disconnected (Reason);
                 except
                 end;
                 PacketConnection.Release;
@@ -1198,7 +1206,9 @@ begin
   // into the channel (SendMessage) and therefore outside the lock.
   CriticalSection.Enter;
   try
-    G := AxInitOk;
+    // The device thread may have removed the connection meanwhile (link gone), and
+    // FlexNet reuses QSO numbers: never stop a QSO that is no longer this connection's.
+    G := (AxInitOk) and (FConnectionList.IndexOf (aConnectionObj) >= 0);
     if (G) then begin
       case L of
         dl_end: l2_stop_qso (H);

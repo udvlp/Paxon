@@ -37,6 +37,7 @@ type
     DropFileArray: array of String;
     DropText: String;
     DropType: TDropType;
+    DropChannelNo: Integer;   // channel button the data was dropped on, 0 = current channel
     procedure   Timer;
   public
     procedure   AfterConstruction; override;
@@ -226,6 +227,7 @@ var
   S: String;
   P: PChar;
   N, I: Integer;
+  Item: TToolbarElement;
 
 begin
 
@@ -234,6 +236,13 @@ begin
     TimerID1 := 0;
   end;
   ChannelButton := nil;
+
+  // Target channel from the drop position: the switch timer may not have fired yet
+  DropChannelNo := 0;
+  if (FindDragTarget (pt, false) = MainWindow.ChannelToolbar) then begin
+    Item := MainWindow.ChannelToolbar.ElementAt (MainWindow.ChannelToolbar.ScreenToClient (pt));
+    if (assigned (Item)) and (Item.Tag > 0) then DropChannelNo := Item.Tag;
+  end;
 
   Forms.Application.Restore;
   SetForegroundWindow (MainWindow.Handle);
@@ -353,6 +362,12 @@ begin
   if (TimerID2 <> 0) then begin
     KillTimer (0, TimerID2);
     TimerID2 := 0;
+  end;
+  if (assigned (ChannelList)) then begin
+    if (DropChannelNo > 0) and (DropChannelNo <= ChannelList.Quantity) then begin
+      ChannelList.CurrentChannelNo := DropChannelNo;
+    end;
+    DropChannelNo := 0;
   end;
   if (assigned (ChannelList)) and (assigned (ChannelList.CurrentChannel)) then begin
     case DropType of

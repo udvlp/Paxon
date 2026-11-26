@@ -219,7 +219,7 @@ begin
           NumberValue := StrToIntDef (RegExpr.Match[1], -1);
           N := Y;
           B := false;
-          while (N >= 1) do begin
+          while (N >= 0) do begin
             P := FConsole.ScreenPtrT (0, N);
             if (not (P[0] in ['0'..'9', ' '])) then begin
               B := true;
@@ -228,7 +228,9 @@ begin
             dec (N);
           end;
 
-          if (B) then begin
+          // B: header line N found (P points to it); without it there is no board,
+          // P would still point to a list line
+          if (B) and (N >= 1) then begin
             LineHeader := FConsole.ScreenPtrH (N - 1);
             if (LineHeader.Length > 0) then begin
               U := FConsole.ScreenPtrT (0, N - 1);
@@ -238,18 +240,21 @@ begin
             end;
           end;
 
-          SetLength (S, FConsole.Cols);
-          Move (P^, S[1], FConsole.Cols);
-          S := TrimRight (S);
-          N := Pos ('@', S);
-          if (N > 0) then Delete (S, N, MaxInt);
-          // The loop variable of a for loop is undefined afterwards, hence while.
-          // R: last character of the last word (0 if none), L: its first character
-          R := Length (S);
-          while (R >= 1) and (not (S[R] in ['A'..'Z', 'a'..'z', '0'..'9', '-', '_'])) do dec (R);
-          L := R;
-          while (L >= 2) and (S[L-1] in ['A'..'Z', 'a'..'z', '0'..'9', '-', '_']) do dec (L);
-          if (R >= 1) then Board := Copy (S, L, R - L + 1) else Board := '';
+          Board := '';
+          if (B) then begin
+            SetLength (S, FConsole.Cols);
+            Move (P^, S[1], FConsole.Cols);
+            S := TrimRight (S);
+            N := Pos ('@', S);
+            if (N > 0) then Delete (S, N, MaxInt);
+            // The loop variable of a for loop is undefined afterwards, hence while.
+            // R: last character of the last word (0 if none), L: its first character
+            R := Length (S);
+            while (R >= 1) and (not (S[R] in ['A'..'Z', 'a'..'z', '0'..'9', '-', '_'])) do dec (R);
+            L := R;
+            while (L >= 2) and (S[L-1] in ['A'..'Z', 'a'..'z', '0'..'9', '-', '_']) do dec (L);
+            if (R >= 1) then Board := Copy (S, L, R - L + 1);
+          end;
 
         end;
 

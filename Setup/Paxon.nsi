@@ -33,13 +33,20 @@ VIAddVersionKey /LANG=0 "LegalCopyright" "1996-2026 Ulf Haueisen, Frankfurt, Ger
 
 CRCCheck on
 
+; Writes to Program Files and HKLM; say so explicitly instead of relying on the
+; installer detection of Windows
+RequestExecutionLevel admin
+
 !define MUI_WELCOMEPAGE
 !define MUI_LICENSEPAGE
 !define MUI_DIRECTORYPAGE
 !define MUI_STARTMENUPAGE
 !define MUI_FINISHPAGE
 !define MUI_FINISHPAGE_NOREBOOTSUPPORT
-!define MUI_FINISHPAGE_RUN "$INSTDIR\Paxon.exe"
+; Start Paxon via Explorer, i.e. as the logged-on user without elevation (an elevated
+; Paxon would use the admin's settings and could not receive drag and drop)
+!define MUI_FINISHPAGE_RUN ""
+!define MUI_FINISHPAGE_RUN_FUNCTION RunPaxon
 !define MUI_FINISHPAGE_RUN_NOTCHECKED
 !define MUI_ABORTWARNING
 
@@ -417,6 +424,11 @@ Function GUIInit
 
 	Pop $R0
 
+FunctionEnd
+
+
+Function RunPaxon
+	Exec '"$WINDIR\explorer.exe" "$INSTDIR\Paxon.exe"'
 FunctionEnd
 
 

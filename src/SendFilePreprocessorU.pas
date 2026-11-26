@@ -87,7 +87,7 @@ type
 implementation
 
 uses
-  DebOutU, SendFileU, CrcU;
+  DebOutU, SendFileU, CrcU, RTLConsts;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,8 +167,9 @@ var
   PartsCount: Integer;
   PartNo: Integer;
   CreatePart: Boolean;
-  HasError: Boolean;
   PartItems: TInterfaceList;
+  Queue: ISendFileQueue;
+  ExpectedBytes: Integer;
 
 begin
 
@@ -202,6 +203,15 @@ begin
 
   if (PartsCount > 1) then begin
 
+    // Fetch the queue once: the connection may close while splitting.
+    // FStream is freed in BeforeDestruction.
+    Queue := nil;
+    if (assigned (FPacketConnection)) then Queue := FPacketConnection.SendFileQueue;
+    if (not assigned (Queue)) then begin
+      DebOut (self, MethodName, 'Keine Sendewarteschlange: nicht gesendet.');
+      exit;
+    end;
+
     FileDateStr := FormatDateTime ('yyyymmddhhmmss', DT);
 
     SetLength (TempPath, MAX_PATH);
@@ -211,7 +221,7 @@ begin
       DebOut (self, MethodName, 'Temp-Pfad: Fehler');
     end else begin
       if (TempPath[I] <> '\') then TempPath := TempPath + '\';
-      DebOut (self, MethodName, 'Temp-Pfad: ' + S);
+      DebOut (self, MethodName, 'Temp-Pfad: ' + TempPath);
     end;
 
     // Always free FStream, even on write or read errors (full disk etc.)
@@ -230,53 +240,38 @@ begin
 
           CreatePart := (FAllParts) or (FSelectedParts[PartNo - 1]);
 
-          if (CreatePart) then begin
+          PartFilename := ChangeFileExt (ExtractFileName (FFileToSend), AnsiLowerCase (Format ('.b%2.2x', [PartNo])));
 
-            PartFilename := ChangeFileExt (ExtractFileName (FFileToSend), AnsiLowerCase (Format ('.b%2.2x', [PartNo])));
-            DebOut (self, MethodName, 'Teil-Dateiname: ' + PartFileName);
-
-            AdditionalData := 'P' + #13 + ApplicationName + ' ' + Version + #13#10;
-
-            SetLength (TempFileName, MAX_PATH);
-            GetTempFileName (PChar(TempPath), 'pbs', 0, PChar(TempFileName));
-            SetLength (TempFileName, StrLen(PChar(TempFileName)));
-            TempFileName := AnsiLowerCaseFileName (TempFileName);
-
-            DebOut (self, MethodName, 'Öffne Datei... ' + TempFileName);
-
-            FS := TFileStreamUlf.create;
-
-          end else begin
-
-            FS := nil;
-
-          end;
+          FS := nil;
 
           try
 
-            if (CreatePart) then begin
+            // Any error (open, write, short read) aborts: a skipped or truncated part
+            // would shift the following parts and break the overall CRC.
+            try
 
-              FS.IsTemporary := true;
-              FS.FileName := TempFileName;
+              if (CreatePart) then begin
 
-              try
+                DebOut (self, MethodName, 'Teil-Dateiname: ' + PartFileName);
+
+                AdditionalData := 'P' + #13 + ApplicationName + ' ' + Version + #13#10;
+
+                SetLength (TempFileName, MAX_PATH);
+                GetTempFileName (PChar(TempPath), 'pbs', 0, PChar(TempFileName));
+                SetLength (TempFileName, StrLen(PChar(TempFileName)));
+                TempFileName := AnsiLowerCaseFileName (TempFileName);
+
+                DebOut (self, MethodName, 'Öffne Datei... ' + TempFileName);
+
+                FS := TFileStreamUlf.create;
+                FS.IsTemporary := true;
+                FS.FileName := TempFileName;
+
                 FS.Mode := fmCreate;
                 FS.Open;
                 FS.Close;
                 FS.Mode := fmOpenReadWrite or fmShareDenyWrite;
                 FS.Open;
-                HasError := false;
-              except
-                on E: Exception do begin
-                  // Do not just skip this part: its bytes would not be read from FStream,
-                  // the following parts would get shifted data and a wrong
-                  // overall CRC. Therefore abort and report the error to the caller.
-                  DebOut (self, MethodName, 'Fehler: ' + E.Message);
-                  raise Exception.CreateFmt (SPartFileError, [PartFileName, E.Message]);
-                end;
-              end;
-
-              if (not HasError) then begin
 
                 DebOut (self, MethodName, 'ok.');
 
@@ -289,27 +284,35 @@ begin
                              FileDateStr,
                              AdditionalData]);
 
-                FS.write (S[1], Length (S));
+                // WriteBuffer raises EWriteError on a short write (e.g. disk full).
+                FS.WriteBuffer (S[1], Length (S));
 
                 CRC16 := 0;
                 CalcCRC16OfString (S, CRC16);
 
                 S := IntToHex (CRC16, 4) + #10;
-                FS.write (S[1], Length (S));
+                FS.WriteBuffer (S[1], Length (S));
 
               end;
-
-            end else begin
-
-              HasError := false;
-
-            end;
-
-            if (not HasError) then begin
 
               SetLength (Buffer, PartSizeBytes);
 
               N := FStream.read (Buffer[0], PartSizeBytes);
+
+              // All parts but the last are full; the last one holds the rest of the
+              // size given in the header. Anything else means a read error or a
+              // file changed since its size was determined.
+              if (PartNo < PartsCount) then begin
+                ExpectedBytes := PartSizeBytes;
+              end else begin
+                ExpectedBytes := FileByteSize - (PartsCount - 1) * PartSizeBytes;
+              end;
+              // No resourcestring of our own here: a new one would shift the IDs of the
+              // language DLLs. The message is wrapped in SPartFileError below.
+              if (N <> ExpectedBytes) then begin
+                DebOut (self, MethodName, Format ('Kurz gelesen: %d statt %d Bytes', [N, ExpectedBytes]));
+                raise EReadError.CreateRes (@SReadError);
+              end;
 
               CRC32 := $FFFFFFFF;
 
@@ -320,7 +323,7 @@ begin
 
               if (CreatePart) then begin
 
-                FS.write (Buffer[0], N);
+                FS.WriteBuffer (Buffer[0], N);
 
                 S := IntToHex ((not AccumulatedCRC32), 8) + #10;
 
@@ -329,39 +332,47 @@ begin
                 end;
 
                 S := S + IntToHex ((not CRC32), 8) + #10;
-                FS.write (S[1], Length (S));
+                FS.WriteBuffer (S[1], Length (S));
 
                 FS.Position := 0;
 
-                if (assigned (FPacketConnection)) and (assigned (FPacketConnection.SendFileQueue)) then begin
-                  FileSender := TSendFile.create (FPacketConnection);
-                  FileSender.SourceFilename := TempFileName;
-                  FileSender.TargetFilename := PartFileName;
-                  FileSender.TransferProtocol := FTransferProtocol;
-                  FileSender.Stream := FS;
-                  FileSender.TextBefore := InsertValues (FTextBefore, PartFileName, PartNo, PartsCount);
-                  FileSender.TextAfter := InsertValues (FTextAfter, PartFileName, PartNo, PartsCount);
-                  PartItems.Add (FileSender); // queue only after all parts
-                  FileSender := nil;
-                  FS := nil; // is freed in FileSender.
-                end else begin
-                  break;
-                end;
+                FileSender := TSendFile.create (FPacketConnection);
+                FileSender.SourceFilename := TempFileName;
+                FileSender.TargetFilename := PartFileName;
+                FileSender.TransferProtocol := FTransferProtocol;
+                FileSender.Stream := FS;
+                FS := nil; // is freed (and deleted) in FileSender.
+                FileSender.TextBefore := InsertValues (FTextBefore, PartFileName, PartNo, PartsCount);
+                FileSender.TextAfter := InsertValues (FTextAfter, PartFileName, PartNo, PartsCount);
+                PartItems.Add (FileSender); // queue only after all parts
+                FileSender := nil;
 
               end;
 
+            except
+              on E: Exception do begin
+                DebOut (self, MethodName, 'Fehler: ' + E.Message);
+                raise Exception.CreateFmt (SPartFileError, [PartFileName, E.Message]);
+              end;
             end;
 
           finally
 
-            if (assigned (FS)) then FS.free;
+            // A part file not handed over to a FileSender is not sent: delete it.
+            if (assigned (FS)) then begin
+              if (FS.DeleteIfTemporary) then begin
+                DebOut (self, MethodName, 'Gelöscht: ' + FS.FileName);
+              end;
+              FS.free;
+            end;
 
           end;
 
         end;
 
+        // If the connection closed meanwhile, Enqueue discards the parts.
         for I := 0 to PartItems.Count - 1 do begin
-          FPacketConnection.SendFileQueue.Enqueue (PartItems[I] as ISendFile);
+          Queue.Enqueue (PartItems[I] as ISendFile);
         end;
 
       finally
@@ -386,10 +397,15 @@ procedure   TSendFilePreprocessor.DontSplit;
 var
   FileSender: ISendFile;
   PartFileName: string;
+  Queue: ISendFileQueue;
 
 begin
 
-  if (assigned (FPacketConnection)) and (assigned (FPacketConnection.SendFileQueue)) then begin
+  // Fetch the queue once: the connection may close in between.
+  Queue := nil;
+  if (assigned (FPacketConnection)) then Queue := FPacketConnection.SendFileQueue;
+
+  if (assigned (Queue)) then begin
 
     PartFileName := ExtractFileName (FFileToSend);
 
@@ -398,11 +414,11 @@ begin
     FileSender.TransferProtocol := FTransferProtocol;
     FileSender.Stream := FStream;
     FileSender.TextBefore := InsertValues (FTextBefore, PartFileName, 1, 1);
+    FStream := nil; // is freed in FileSender.
     FileSender.TextAfter := InsertValues (FTextAfter, PartFileName, 1, 1);
 
-    FPacketConnection.SendFileQueue.Enqueue (FileSender);
+    Queue.Enqueue (FileSender);
     FileSender := nil;
-    FStream := nil; // is freed in FileSender.
 
   end;
 
@@ -457,12 +473,16 @@ procedure   TSendFilePreprocessor.ProcessText;
 var
   OutStream: TMemoryStream;
   FileSender: ISendFile;
+  Queue: ISendFileQueue;
 
 begin
 
   // Ohne Sendewarteschlange (Verbindung gerade getrennt) nichts senden; der
   // Stream wird in BeforeDestruction freigegeben.
-  if (not assigned (FPacketConnection)) or (not assigned (FPacketConnection.SendFileQueue)) then exit;
+  // Fetch the queue once: the connection may close in between.
+  Queue := nil;
+  if (assigned (FPacketConnection)) then Queue := FPacketConnection.SendFileQueue;
+  if (not assigned (Queue)) then exit;
 
   FileSender := TSendFile.create (FPacketConnection);
 
@@ -491,7 +511,7 @@ begin
   FileSender.TextBefore := InsertValues (FTextBefore, FFileToSend, 1, 1);
   FileSender.TextAfter := InsertValues (FTextAfter, FFileToSend, 1, 1);
 
-  FPacketConnection.SendFileQueue.Enqueue (FileSender);
+  Queue.Enqueue (FileSender);
 
 end;
 

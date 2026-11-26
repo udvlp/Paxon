@@ -165,7 +165,12 @@ begin
   DebOut (self, MethodName, 'begin...');
   FCriticalSection.Enter;
   try
-    result := FList.count;
+    // After Release the list is gone: the queue is empty.
+    if (assigned (FList)) then begin
+      result := FList.count;
+    end else begin
+      result := 0;
+    end;
   finally
     FCriticalSection.Leave;
   end;
@@ -180,7 +185,11 @@ begin
   DebOut (self, MethodName, 'begin...');
   FCriticalSection.Enter;
   try
-    result := FList.items[Index] as ISendFile;
+    if (assigned (FList)) then begin
+      result := FList.items[Index] as ISendFile;
+    end else begin
+      result := nil;
+    end;
   finally
     FCriticalSection.Leave;
   end;
@@ -191,17 +200,28 @@ end;
 procedure   TSendFileQueue.EnQueue (FileSender: ISendFile);
 const
   MethodName = 'EnQueue';
+var
+  Added: Boolean;
 begin
   DebOut (self, MethodName, 'begin...');
   FCriticalSection.Enter;
   try
-    assert (FList.IndexOf (FileSender) < 0);
-    FList.Add (FileSender);
-    FEvent.SetEvent;
+    Added := assigned (FList);
+    if (Added) then begin
+      assert (FList.IndexOf (FileSender) < 0);
+      FList.Add (FileSender);
+      FEvent.SetEvent;
+    end;
   finally
     FCriticalSection.Leave;
   end;
-  NotifySubscribers;
+  if (Added) then begin
+    NotifySubscribers;
+  end else begin
+    // Queue already released (connection closed): discard the file sender.
+    DebOut (self, MethodName, 'Warteschlange freigegeben: verworfen.');
+    if (assigned (FileSender)) then FileSender.Release;
+  end;
   DebOut (self, MethodName, 'end.');
 end;
 
@@ -213,14 +233,18 @@ begin
   DebOut (self, MethodName, 'begin...');
   FCriticalSection.Enter;
   try
-    assert (FList.Count >= 1);
-    result := FList.Items[0] as ISendFile;
-    FList.delete (0);
-    if FList.Count <= 0 then FEvent.ResetEvent;
+    if (assigned (FList)) then begin
+      assert (FList.Count >= 1);
+      result := FList.Items[0] as ISendFile;
+      FList.delete (0);
+      if FList.Count <= 0 then FEvent.ResetEvent;
+    end else begin
+      result := nil;
+    end;
   finally
     FCriticalSection.Leave;
   end;
-  NotifySubscribers;
+  if (assigned (result)) then NotifySubscribers;
   DebOut (self, MethodName, 'end.');
 end;
 
@@ -232,8 +256,12 @@ begin
   DebOut (self, MethodName, 'begin...');
   FCriticalSection.Enter;
   try
-    assert (FList.Count >= 1);
-    result := FList.Items[0] as ISendFile;
+    if (assigned (FList)) then begin
+      assert (FList.Count >= 1);
+      result := FList.Items[0] as ISendFile;
+    end else begin
+      result := nil;
+    end;
   finally
     FCriticalSection.Leave;
   end;
@@ -248,8 +276,12 @@ begin
   DebOut (self, MethodName, 'begin...');
   FCriticalSection.Enter;
   try
-    Result := FList.remove (FileSender);
-    if (FList.Count <= 0) then FEvent.ResetEvent;
+    if (assigned (FList)) then begin
+      Result := FList.remove (FileSender);
+      if (FList.Count <= 0) then FEvent.ResetEvent;
+    end else begin
+      Result := -1;
+    end;
   finally
     FCriticalSection.Leave;
   end;

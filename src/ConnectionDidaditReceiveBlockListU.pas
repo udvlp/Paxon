@@ -44,6 +44,7 @@ type
   private
     FBegin: PListElem;
     FSize: Integer;
+    FCall: String;
     procedure   Clear; virtual;
   public
     procedure   AfterConstruction; override;
@@ -51,9 +52,10 @@ type
     procedure   OutputList; virtual;
     function    Add (Offset: Integer; Length: Integer): Integer; virtual;
     property    Size: Integer read FSize write FSize;
+    property    Call: String read FCall write FCall;
     function    GetRequests (var Requests: array of TRequest): Integer; virtual;
-    procedure   WriteIndexFile (MD5: String); virtual;
-    function    ReadIndexFile (MD5: String): Integer; virtual;
+    procedure   WriteIndexFile (const BaseName: String); virtual;
+    function    ReadIndexFile (const BaseName: String): Integer; virtual;
   end;
 
 
@@ -255,10 +257,11 @@ begin
 end;
 
 
-procedure   TDidaditReceiveBlockList.WriteIndexFile (MD5: String);
+procedure   TDidaditReceiveBlockList.WriteIndexFile (const BaseName: String);
 const
   MethodName = 'WriteIndexFile';
   Section = 'Blocks';
+  FileSection = 'File';
 
 var
   IniFile: TIniFile;
@@ -270,12 +273,18 @@ var
 begin
 
   DebOut (self, MethodName, 'begin...');
-  FileName := ApplicationDataPath + IncompleteFiles + MD5 + '.pxi';
+  FileName := ApplicationDataPath + IncompleteFiles + BaseName + '.pxi';
 
   if (assigned (FBegin)) and ((FBegin.FromPos <> 0) or (FBegin.ToPos <> Size - 1)) then begin
 
     IniFile := TIniFile.create (FileName);
     try
+      // Remove keys of an older transfer before writing the current state.
+      IniFile.EraseSection (FileSection);
+      IniFile.EraseSection (Section);
+      // Callsign and size identify the transfer the partial file belongs to.
+      IniFile.WriteString (FileSection, 'CALL', FCall);
+      IniFile.WriteString (FileSection, 'SIZE', IntToStr (Size));
       N := 0;
       E := FBegin;
       while (assigned (E)) do begin
@@ -304,10 +313,14 @@ begin
 end;
 
 
-function    TDidaditReceiveBlockList.ReadIndexFile (MD5: String): Integer;
+function    TDidaditReceiveBlockList.ReadIndexFile (const BaseName: String): Integer;
 const
   MethodName = 'ReadIndexFile';
   Section = 'Blocks';
+  FileSection = 'File';
+
+// Result: resume offset, or -1 if there is no index file or it does not belong
+// to this transfer (other callsign, other size, older index file without these keys).
 
 var
   IniFile: TIniFile;
@@ -322,14 +335,27 @@ begin
 
   Clear;
 
-  FileName := ApplicationDataPath + IncompleteFiles + MD5 + '.pxi';
+  FileName := ApplicationDataPath + IncompleteFiles + BaseName + '.pxi';
 
-  result := 0;
+  result := -1;
 
   if (FileExists (FileName)) then begin
 
     IniFile := TIniFile.create (FileName);
     try
+
+      S := IniFile.ReadString (FileSection, 'CALL', '');
+      if (S = '') or (S <> FCall) then begin
+        DebOut (self, MethodName, 'Indexdatei ohne passendes Rufzeichen (%s).', [S]);
+        exit;
+      end;
+
+      if (StrToIntDef (IniFile.ReadString (FileSection, 'SIZE', ''), -1) <> Size) then begin
+        DebOut (self, MethodName, 'Indexdatei ohne passende Größe.');
+        exit;
+      end;
+
+      result := 0;
 
       N := 0;
       while (true) do begin
