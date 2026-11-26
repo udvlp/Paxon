@@ -6,7 +6,7 @@ Paxon ist ein Terminalprogramm für **Packet Radio** im Amateurfunk, geschrieben
 Pascal (Delphi 7) für Windows. Es entstand ab 1996 und war im deutschsprachigen
 Packet-Radio-Netz verbreitet.
 
-* **Version:** 3.0 (Build 3000)
+* **Version:** 3.1 (Build 3012)
 * **Plattform:** Windows, 32 Bit; läuft ohne Administratorrechte, geprüft unter Windows 11
 * **Sprache:** Object Pascal / Delphi 7, VCL
 * **Lizenz:** [MIT](LICENSE.md)

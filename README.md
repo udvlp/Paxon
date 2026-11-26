@@ -6,7 +6,7 @@ Paxon is a terminal program for amateur radio **packet radio**, written in Objec
 (Delphi 7) for Windows. Development started in 1996, and it was widely used in the
 German-speaking packet radio network.
 
-* **Version:** 3.0 (build 3000)
+* **Version:** 3.1 (build 3012)
 * **Platform:** Windows, 32-bit; runs without administrator rights, tested on Windows 11
 * **Language:** Object Pascal / Delphi 7, VCL
 * **License:** [MIT](LICENSE.md)
